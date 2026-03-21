@@ -1,139 +1,262 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Users, 
-  ShoppingBag, 
-  ShoppingCart, 
-  AlertTriangle, 
-  CreditCard, 
-  BarChart3,
-  ArrowRight,
-  TrendingUp,
-  ShieldAlert,
-  Activity
-} from 'lucide-react';
-import StatCard from '../../components/shared/StatCard';
 
 export default function AdminDashboard() {
   return (
-    <div className="space-y-12 pb-20">
-      {/* Header Section */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h1 className="font-serif-display text-4xl text-on-surface mb-2 tracking-tight">Tableau de bord Administrateur</h1>
-          <p className="text-outline font-medium opacity-80">Surveillance globale de la plateforme AgroConnect BF.</p>
+    <div className="space-y-12 pb-12">
+      {/* KPI Row */}
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-primary">
+          <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Utilisateurs</p>
+          <div className="flex items-end justify-between">
+            <h3 className="font-mono text-3xl font-medium">1 122</h3>
+            <span className="text-xs text-primary font-bold flex items-center gap-1">
+              <span className="material-symbols-outlined text-sm">trending_up</span>
+              +8 ce mois
+            </span>
+          </div>
         </div>
-        <div className="flex gap-3">
-          <Link 
-            to="/admin/stats" 
-            className="flex items-center gap-2 px-6 py-3 bg-surface-container-high text-primary rounded-2xl font-bold border border-primary/20 hover:bg-primary hover:text-white transition-all"
-          >
-            <BarChart3 className="w-5 h-5" />
-            Rapports Complets
-          </Link>
+        <div className="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-secondary">
+          <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Produits actifs</p>
+          <div className="flex items-end justify-between">
+            <h3 className="font-mono text-3xl font-medium">847</h3>
+            <span className="material-symbols-outlined text-secondary opacity-30 text-4xl">inventory_2</span>
+          </div>
         </div>
-      </header>
-
-      {/* KPI Grid */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-        <StatCard title="Utilisateurs" value="1 248" icon={Users} color="primary" trend={{ value: '4%', isUp: true }} />
-        <StatCard title="Produits" value="3,5k" icon={ShoppingBag} color="secondary" />
-        <StatCard title="Commandes" value="842" icon={ShoppingCart} color="primary-container" />
-        <StatCard title="Litiges" value={2} icon={AlertTriangle} color="error" />
-        <StatCard title="Volume d'affaires" value="15M F" icon={CreditCard} color="tertiary" />
-        <StatCard title="Activité" value="98%" icon={Activity} color="primary" />
+        <div className="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-tertiary">
+          <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Commandes</p>
+          <div className="flex items-end justify-between">
+            <h3 className="font-mono text-3xl font-medium">1 204</h3>
+            <span className="material-symbols-outlined text-tertiary opacity-30 text-4xl">shopping_basket</span>
+          </div>
+        </div>
+        <div className="bg-surface-container-lowest p-6 rounded-xl border-l-4 border-primary-container">
+          <p className="text-[10px] uppercase tracking-widest text-outline font-bold mb-1">Volume d'affaires</p>
+          <div className="flex items-end justify-between">
+            <h3 className="font-mono text-xl xl:text-2xl font-medium">42.5M FCFA</h3>
+            <span className="text-xs text-primary font-bold flex items-center gap-1">
+              <span className="material-symbols-outlined text-sm">trending_up</span>
+              +12%
+            </span>
+          </div>
+        </div>
       </section>
 
-      {/* Main Administrative Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Critical Alerts (Left 2/3) */}
-        <section className="lg:col-span-2 space-y-6">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-xl font-bold text-on-surface flex items-center gap-3">
-              Alertages & Litiges
-              <span className="bg-error text-on-error text-[10px] font-black px-2 py-0.5 rounded-full">2 ACTIONS REQUISES</span>
-            </h2>
+      {/* Alerts Row */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Link to="/admin/disputes" className="bg-error-container/40 p-4 rounded-xl flex items-center gap-4 transition-transform hover:scale-[1.01] cursor-pointer">
+          <div className="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center text-error">
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>report_problem</span>
           </div>
+          <div>
+            <h4 className="font-bold text-on-error-container text-sm">12 litiges ouverts</h4>
+            <p className="text-xs text-on-error-container/70">Nécessite une action immédiate</p>
+          </div>
+        </Link>
+        <Link to="/admin/users" className="bg-surface-container-high p-4 rounded-xl flex items-center gap-4 transition-transform hover:scale-[1.01] cursor-pointer">
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>verified_user</span>
+          </div>
+          <div>
+            <h4 className="font-bold text-on-surface text-sm">5 comptes à vérifier</h4>
+            <p className="text-xs text-outline">Nouveaux agriculteurs inscrits</p>
+          </div>
+        </Link>
+        <Link to="/admin/payments" className="bg-tertiary-fixed/30 p-4 rounded-xl flex items-center gap-4 transition-transform hover:scale-[1.01] cursor-pointer">
+          <div className="w-12 h-12 rounded-full bg-tertiary/10 flex items-center justify-center text-tertiary">
+            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>account_balance_wallet</span>
+          </div>
+          <div>
+            <h4 className="font-bold text-on-tertiary-fixed-variant text-sm">8 retraits en attente</h4>
+            <p className="text-xs text-on-tertiary-fixed-variant/70">Validation des paiements OM</p>
+          </div>
+        </Link>
+      </section>
 
-          <div className="space-y-4">
-            {[ 
-              { id: '#L-102', type: 'Litige Livraison', user: 'Adama B.', reason: 'Produit endommagé', impact: 'Fonds gelés (45 000 F)', level: 'Urgent' },
-              { id: '#S-054', type: 'Vérification Compte', user: 'Saran M.', reason: 'Document identité expiré', impact: 'Vente suspendue', level: 'Moyen' }
-            ].map((alert) => (
-              <div key={alert.id} className="bg-surface-container-low/50 hover:bg-surface-container-low transition-colors rounded-3xl p-6 border border-outline-variant/10 flex flex-col md:flex-row items-center gap-6">
-                <div className="w-16 h-16 bg-error/10 rounded-2xl flex items-center justify-center text-error border border-error/10">
-                  <ShieldAlert className="w-8 h-8" />
-                </div>
-                <div className="flex-1 text-center md:text-left">
-                  <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
-                    <span className="text-xs font-black text-outline uppercase">{alert.id}</span>
-                    <span className={`text-[8px] font-black px-2 py-0.5 rounded-full uppercase ${alert.level === 'Urgent' ? 'bg-error text-on-error' : 'bg-amber-100 text-amber-700'}`}>
-                      {alert.level}
-                    </span>
-                  </div>
-                  <h3 className="font-bold text-on-surface text-lg">{alert.type}</h3>
-                  <p className="text-sm text-outline font-medium">{alert.user} • <span className="text-error font-bold">{alert.reason}</span></p>
-                </div>
-                <div className="text-center md:text-right px-6 border-x border-outline-variant/10 hidden md:block">
-                  <p className="text-[10px] font-black text-outline uppercase tracking-widest mb-1 font-newsreader">{alert.impact}</p>
-                </div>
-                <Link to="/admin/disputes" className="w-full md:w-auto px-6 py-3 bg-primary text-on-primary rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-all">
-                  Intervenir
-                </Link>
+      {/* Analytics Bento */}
+      <section className="grid grid-cols-12 gap-6">
+        {/* Order Chart */}
+        <div className="col-span-12 lg:col-span-7 bg-surface-container-lowest p-8 rounded-xl">
+          <div className="flex justify-between items-center mb-10">
+            <h3 className="font-headline text-2xl text-on-surface">Commandes — 7 derniers jours</h3>
+            <div className="flex items-center gap-2 text-xs text-outline">
+              <span className="w-3 h-3 bg-primary rounded-full"></span>
+              <span>Volume quotidien</span>
+            </div>
+          </div>
+          <div className="h-64 flex items-end justify-between gap-4 px-4">
+            <div className="flex-1 bg-surface-container-low rounded-t-lg relative group transition-all hover:bg-primary-container h-[45%]">
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">142</div>
+            </div>
+            <div className="flex-1 bg-surface-container-low rounded-t-lg relative group transition-all hover:bg-primary-container h-[60%]">
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">185</div>
+            </div>
+            <div className="flex-1 bg-surface-container-low rounded-t-lg relative group transition-all hover:bg-primary-container h-[85%]">
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">260</div>
+            </div>
+            <div className="flex-1 bg-surface-container-low rounded-t-lg relative group transition-all hover:bg-primary-container h-[55%]">
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">170</div>
+            </div>
+            <div className="flex-1 bg-surface-container-low rounded-t-lg relative group transition-all hover:bg-primary-container h-[70%]">
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">215</div>
+            </div>
+            <div className="flex-1 bg-surface-container-low rounded-t-lg relative group transition-all hover:bg-primary-container h-[95%]">
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">294</div>
+            </div>
+            <div className="flex-1 bg-primary rounded-t-lg relative group h-[80%]">
+              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">245</div>
+            </div>
+          </div>
+          <div className="flex justify-between mt-4 text-[10px] uppercase tracking-tighter text-outline font-bold">
+            <span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span>
+          </div>
+        </div>
+
+        {/* Distribution Chart */}
+        <div className="col-span-12 lg:col-span-5 bg-surface-container-lowest p-8 rounded-xl flex flex-col">
+          <h3 className="font-headline text-2xl text-on-surface mb-8">Répartition utilisateurs</h3>
+          <div className="flex-1 flex items-center justify-center relative">
+            <svg className="w-48 h-48 -rotate-90">
+              <circle cx="96" cy="96" fill="transparent" r="80" stroke="#e1fbdc" strokeWidth="20"></circle>
+              <circle cx="96" cy="96" fill="transparent" r="80" stroke="#006b2c" strokeDasharray="502" strokeDashoffset="150" strokeLinecap="round" strokeWidth="20"></circle>
+              <circle cx="96" cy="96" fill="transparent" r="80" stroke="#984300" strokeDasharray="502" strokeDashoffset="400" strokeLinecap="round" strokeWidth="20"></circle>
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-3xl font-mono font-bold">1.1K</span>
+              <span className="text-[10px] text-outline uppercase font-bold">Total</span>
+            </div>
+          </div>
+          <div className="mt-8 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 bg-primary rounded-full"></span>
+                <span className="text-sm">Agriculteurs</span>
               </div>
-            ))}
+              <span className="font-mono font-bold">70%</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 bg-tertiary rounded-full"></span>
+                <span className="text-sm">Acheteurs</span>
+              </div>
+              <span className="font-mono font-bold">20%</span>
+            </div>
+            <div className="flex items-center justify-between opacity-40">
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 bg-outline rounded-full"></span>
+                <span className="text-sm">Transporteurs</span>
+              </div>
+              <span className="font-mono font-bold">10%</span>
+            </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* System Health & Logs (Right 1/3) */}
-        <section className="space-y-8">
-           <div className="bg-surface-container-lowest p-8 rounded-3xl border border-outline-variant/10">
-             <h3 className="text-sm font-black text-on-surface uppercase tracking-widest mb-6 flex items-center gap-2">
-               <TrendingUp className="w-4 h-4 text-primary" /> Performance Hebdo
-             </h3>
-             <div className="space-y-6">
-                <div>
-                   <div className="flex justify-between text-xs font-bold mb-2">
-                     <span className="text-outline">Nouveaux Inscrits</span>
-                     <span className="text-primary">+124</span>
-                   </div>
-                   <div className="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden">
-                      <div className="w-3/4 h-full bg-primary"></div>
-                   </div>
-                </div>
-                <div>
-                   <div className="flex justify-between text-xs font-bold mb-2">
-                     <span className="text-outline">Volume Transactions</span>
-                     <span className="text-primary-container">+1.2M F</span>
-                   </div>
-                   <div className="w-full h-1.5 bg-surface-container-low rounded-full overflow-hidden">
-                      <div className="w-1/2 h-full bg-primary-container"></div>
-                   </div>
-                </div>
-             </div>
-           </div>
+      {/* Tables Layout */}
+      <section className="grid grid-cols-12 gap-8">
+        {/* Latest Orders */}
+        <div className="col-span-12 xl:col-span-8">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="font-headline text-2xl text-on-surface">Dernières commandes</h3>
+            <Link to="/admin/orders" className="text-sm text-primary font-bold hover:underline">Voir tout</Link>
+          </div>
+          <div className="bg-surface-container-lowest rounded-xl overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-surface-container-low text-[10px] uppercase tracking-widest text-outline">
+                  <th className="p-4">Référence</th>
+                  <th className="p-4">Produit</th>
+                  <th className="p-4">Client</th>
+                  <th className="p-4">Montant</th>
+                  <th className="p-4">Statut</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm divide-y divide-surface-container-low">
+                <tr className="hover:bg-surface-container-low/50 transition-colors">
+                  <td className="p-4 font-mono font-medium">#CMD-2024-089</td>
+                  <td className="p-4">Oignon rouge (100kg)</td>
+                  <td className="p-4">S. Traoré - Ouaga</td>
+                  <td className="p-4 font-mono">85 000 F</td>
+                  <td className="p-4"><span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase">CONFIRMÉE</span></td>
+                </tr>
+                <tr className="hover:bg-surface-container-low/50 transition-colors">
+                  <td className="p-4 font-mono font-medium">#CMD-2024-090</td>
+                  <td className="p-4">Tomate locale (25kg)</td>
+                  <td className="p-4">Hotel des Arts</td>
+                  <td className="p-4 font-mono">12 500 F</td>
+                  <td className="p-4"><span className="bg-tertiary-fixed/40 text-tertiary px-3 py-1 rounded-full text-[10px] font-bold uppercase">EN TRANSIT</span></td>
+                </tr>
+                <tr className="hover:bg-surface-container-low/50 transition-colors">
+                  <td className="p-4 font-mono font-medium">#CMD-2024-091</td>
+                  <td className="p-4">Maïs blanc (500kg)</td>
+                  <td className="p-4">Agro-Poul</td>
+                  <td className="p-4 font-mono">115 000 F</td>
+                  <td className="p-4"><span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase">LIBÉRÉ</span></td>
+                </tr>
+                <tr className="hover:bg-surface-container-low/50 transition-colors">
+                  <td className="p-4 font-mono font-medium">#CMD-2024-092</td>
+                  <td className="p-4">Beurre de Karité (5L)</td>
+                  <td className="p-4">M. Konaté - Bobo</td>
+                  <td className="p-4 font-mono">25 000 F</td>
+                  <td className="p-4"><span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-[10px] font-bold uppercase">CONFIRMÉE</span></td>
+                </tr>
+                <tr className="hover:bg-surface-container-low/50 transition-colors">
+                  <td className="p-4 font-mono font-medium">#CMD-2024-093</td>
+                  <td className="p-4">Pomme de terre (50kg)</td>
+                  <td className="p-4">A. Sawadogo</td>
+                  <td className="p-4 font-mono">32 000 F</td>
+                  <td className="p-4"><span className="bg-surface-container-high text-outline px-3 py-1 rounded-full text-[10px] font-bold uppercase">EN ATTENTE</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-           <div className="bg-primary/5 rounded-[2.5rem] p-8 border border-primary/10">
-             <h3 className="text-xl font-serif-display text-primary mb-4">Système</h3>
-             <div className="space-y-3">
-               <div className="flex items-center gap-2 text-[10px] font-bold text-on-surface-variant uppercase">
-                 <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                 API Production: En ligne
-               </div>
-               <div className="flex items-center gap-2 text-[10px] font-bold text-on-surface-variant uppercase">
-                 <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                 DB Mongodb: Connecté
-               </div>
-               <div className="flex items-center gap-2 text-[10px] font-bold text-on-surface-variant uppercase opacity-50">
-                 <div className="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
-                 Dernier Backup: 04:00 AM
-               </div>
-             </div>
-           </div>
-        </section>
-
-      </div>
+        {/* Recent Disputes */}
+        <div className="col-span-12 xl:col-span-4">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="font-headline text-2xl text-on-surface">Derniers litiges</h3>
+          </div>
+          <div className="space-y-4">
+            <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/10">
+              <div className="flex justify-between items-start mb-2">
+                <span className="text-[10px] font-mono font-bold text-outline">#LIT-452</span>
+                <span className="bg-error/10 text-error px-2 py-0.5 rounded text-[10px] font-bold">URGENT</span>
+              </div>
+              <h4 className="text-sm font-bold mb-1">Produit non conforme</h4>
+              <p className="text-xs text-outline mb-3 line-clamp-1">Livraison d'oignons altérés reçue à Ouagadougou.</p>
+              <div className="flex items-center justify-between pt-3 border-t border-surface-container-low">
+                <span className="text-[10px] text-outline">Il y a 2 heures</span>
+                <Link to="/admin/disputes/LIT-452" className="text-[10px] font-bold text-primary uppercase">Gérer</Link>
+              </div>
+            </div>
+            <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/10">
+              <div className="flex justify-between items-start mb-2">
+                <span className="text-[10px] font-mono font-bold text-outline">#LIT-451</span>
+                <span className="bg-secondary-container text-secondary px-2 py-0.5 rounded text-[10px] font-bold">OUVERT</span>
+              </div>
+              <h4 className="text-sm font-bold mb-1">Retard de livraison</h4>
+              <p className="text-xs text-outline mb-3 line-clamp-1">Camion bloqué sur l'axe Bobo-Ouaga.</p>
+              <div className="flex items-center justify-between pt-3 border-t border-surface-container-low">
+                <span className="text-[10px] text-outline">Il y a 5 heures</span>
+                <Link to="/admin/disputes/LIT-451" className="text-[10px] font-bold text-primary uppercase">Gérer</Link>
+              </div>
+            </div>
+            <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/10">
+              <div className="flex justify-between items-start mb-2">
+                <span className="text-[10px] font-mono font-bold text-outline">#LIT-450</span>
+                <span className="bg-secondary-container text-secondary px-2 py-0.5 rounded text-[10px] font-bold">OUVERT</span>
+              </div>
+              <h4 className="text-sm font-bold mb-1">Défaut de paiement</h4>
+              <p className="text-xs text-outline mb-3 line-clamp-1">Problème lors du transfert Orange Money.</p>
+              <div className="flex items-center justify-between pt-3 border-t border-surface-container-low">
+                <span className="text-[10px] text-outline">Hier, 18:45</span>
+                <Link to="/admin/disputes/LIT-450" className="text-[10px] font-bold text-primary uppercase">Gérer</Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

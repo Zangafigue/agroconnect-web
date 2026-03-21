@@ -60,6 +60,7 @@ const AdminUsersPage = lazy(() => import('../pages/admin/AdminUsersPage'));
 const AdminUserDetailPage = lazy(() => import('../pages/admin/AdminUserDetailPage'));
 const AdminProductsPage = lazy(() => import('../pages/admin/AdminProductsPage'));
 const AdminOrdersPage = lazy(() => import('../pages/admin/AdminOrdersPage'));
+const AdminOrderDetailPage = lazy(() => import('../pages/admin/AdminOrderDetailPage'));
 const AdminDisputesPage = lazy(() => import('../pages/admin/AdminDisputesPage'));
 const AdminDisputeResolvePage = lazy(() => import('../pages/admin/AdminDisputeResolvePage'));
 const AdminPaymentsPage = lazy(() => import('../pages/admin/AdminPaymentsPage'));
@@ -151,6 +152,7 @@ export const router = createBrowserRouter([
     { path: '/admin/users/:id', element: <AdminUserDetailPage /> },
     { path: '/admin/products', element: <AdminProductsPage /> },
     { path: '/admin/orders', element: <AdminOrdersPage /> },
+    { path: '/admin/orders/:id', element: <AdminOrderDetailPage /> },
     { path: '/admin/disputes', element: <AdminDisputesPage /> },
     { path: '/admin/disputes/:id', element: <AdminDisputeResolvePage /> },
     { path: '/admin/payments', element: <AdminPaymentsPage /> },
