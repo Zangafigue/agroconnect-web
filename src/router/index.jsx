@@ -1,11 +1,25 @@
+<<<<<<< Updated upstream:src/router/index.jsx
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { lazy, Suspense } from 'react';
 import Layout from '../components/shared/Layout';
 import FarmerLayout from '../components/farmer/FarmerLayout';// Public & Auth
+=======
+import { lazy } from 'react';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { Loader, PrivateRoute, suspenseWrapper } from './router-utils';
+
+// Public & Auth
+>>>>>>> Stashed changes:src/router/index.tsx
 const HomePage = lazy(() => import('../pages/visitor/HomePage'));
 const CatalogPage = lazy(() => import('../pages/visitor/CatalogPage'));
+const ProducersPage = lazy(() => import('../pages/visitor/ProducersPage'));
+const HowItWorksPage = lazy(() => import('../pages/visitor/HowItWorksPage'));
+const NewsPage = lazy(() => import('../pages/visitor/NewsPage'));
+const AboutPage = lazy(() => import('../pages/visitor/AboutPage'));
 const ProductDetailPage = lazy(() => import('../pages/visitor/ProductDetailPage'));
+const FarmersLandingPage = lazy(() => import('../pages/visitor/FarmersLandingPage'));
+const TransportersLandingPage = lazy(() => import('../pages/visitor/TransportersLandingPage'));
 const LoginPage = lazy(() => import('../pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('../pages/auth/RegisterPage'));
 const VerifyOtpPage = lazy(() => import('../pages/auth/VerifyOtpPage'));
@@ -57,6 +71,7 @@ const AdminPaymentsPage = lazy(() => import('../pages/admin/AdminPaymentsPage'))
 const AdminStatsPage = lazy(() => import('../pages/admin/AdminStatsPage'));
 const AdminSettingsPage = lazy(() => import('../pages/admin/AdminSettingsPage'));
 
+<<<<<<< Updated upstream:src/router/index.jsx
 
 function PrivateRoute({ roles }) {
   const { token, user } = useAuthStore();
@@ -79,12 +94,21 @@ const suspenseWrapper = (Component) => (
     <Component />
   </Suspense>
 );
+=======
+
+>>>>>>> Stashed changes:src/router/index.tsx
 
 export const router = createBrowserRouter([
   // Public
   { path: '/', element: suspenseWrapper(HomePage) },
   { path: '/catalog', element: suspenseWrapper(CatalogPage) },
   { path: '/catalog/:id', element: suspenseWrapper(ProductDetailPage) },
+  {path: '/producers', element: suspenseWrapper(ProducersPage) },
+  { path: '/farmers', element: suspenseWrapper(FarmersLandingPage) },
+  { path: '/transporters', element: suspenseWrapper(TransportersLandingPage) },
+  { path: '/how-it-works', element: suspenseWrapper(HowItWorksPage) },
+  { path: '/news', element: suspenseWrapper(NewsPage) },
+  { path: '/about', element: suspenseWrapper(AboutPage) },
   
   // Auth
   { path: '/login', element: suspenseWrapper(LoginPage) },

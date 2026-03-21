@@ -1,27 +1,46 @@
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import VisitorHeader from '../../components/shared/VisitorHeader';
+import VisitorFooter from '../../components/shared/VisitorFooter';
+import { useProductStore } from '../../store/productStore';
+import { getSellerName, getSellerInitials } from '../../utils/seller';
+import { formatFCFA } from '../../utils/currency';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const { products, loading, fetchProducts } = useProductStore();
+  const [activeHowItWorks, setActiveHowItWorks] = useState('buyers');
+
+  const howItWorksContent = {
+    buyers: [
+      { id: 1, title: 'Exploration', desc: 'Naviguez par filière ou région pour trouver les produits dont vous avez besoin.', icon: '1' },
+      { id: 2, title: 'Négociation', desc: 'Discutez des quantités et des prix directement sur notre messagerie sécurisée.', icon: '2' },
+      { id: 3, title: 'Paiement', desc: 'Effectuez votre transaction via Mobile Money ou virement, les fonds sont sécurisés.', icon: '3' },
+      { id: 4, title: 'Réception', desc: 'Suivez votre commande jusqu\'à la livraison finale par nos partenaires logistiques.', icon: '4' }
+    ],
+    farmers: [
+      { id: 1, title: 'Inscription', desc: 'Créez votre profil certifié et mettez en avant votre savoir-faire agricole.', icon: '1' },
+      { id: 2, title: 'Publication', desc: 'Listez vos récoltes en quelques clics avec photos et prix du jour.', icon: '2' },
+      { id: 3, title: 'Vente Directe', desc: 'Recevez des offres d\'achat et discutez en direct avec vos clients.', icon: '3' },
+      { id: 4, title: 'Expédition', desc: 'Remettez vos produits aux transporteurs certifiés pour une livraison sécurisée.', icon: '4' }
+    ],
+    transporters: [
+      { id: 1, title: 'Certification', desc: 'Enregistrez vos véhicules et rejoignez notre réseau de logistique agréé.', icon: '1' },
+      { id: 2, title: 'Missions', desc: 'Trouvez des opportunités de transport de fret agricole partout au pays.', icon: '2' },
+      { id: 3, title: 'Livraison', desc: 'Optimisez vos trajets et assurez le transport sécurisé des produits.', icon: '3' },
+      { id: 4, title: 'Paiement Rapide', desc: 'Soyez payé immédiatement après la confirmation de réception par le client.', icon: '4' }
+    ]
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  const featuredProducts = Array.isArray(products) ? products.slice(0, 3) : [];
 
   return (
     <>
-      <header className="bg-[#ebffe5] dark:bg-slate-950 shadow-sm dark:shadow-none docked full-width top-0 sticky z-50">
-        <nav className="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
-          <div className="text-2xl font-bold font-headline text-[#006b2c] dark:text-green-400">
-            AgroConnect BF
-          </div>
-          <div className="hidden md:flex items-center space-x-8 font-headline text-sm font-medium tracking-tight">
-            <Link to="/catalog" className="text-[#0c200d]/80 dark:text-slate-300 hover:text-[#006b2c] transition-colors duration-200">Market</Link>
-            <Link to="#" className="text-[#0c200d]/80 dark:text-slate-300 hover:text-[#006b2c] transition-colors duration-200">Producers</Link>
-            <Link to="#" className="text-[#0c200d]/80 dark:text-slate-300 hover:text-[#006b2c] transition-colors duration-200">How it works</Link>
-            <Link to="#" className="text-[#0c200d]/80 dark:text-slate-300 hover:text-[#006b2c] transition-colors duration-200">News</Link>
-          </div>
-          <div className="flex items-center space-x-4">
-            <button onClick={() => navigate('/login')} className="px-5 py-2 text-[#006b2c] font-medium active:scale-95 transition-transform hover:bg-[#d6efd0] rounded-lg">Login</button>
-            <button onClick={() => navigate('/register')} className="px-6 py-2 bg-primary-container text-on-primary-container font-bold rounded-lg active:scale-95 transition-transform shadow-md">Sign Up</button>
-          </div>
-        </nav>
-      </header>
+      <VisitorHeader />
 
       <section className="h-[580px] bg-hero-field relative flex items-center" data-alt="Vaste champ agricole au Burkina Faso sous un lever de soleil ocre">
         <div className="max-w-7xl mx-auto px-8 w-full">
@@ -36,7 +55,7 @@ export default function HomePage() {
               Connectez-vous directement aux producteurs certifiés et transformez la chaîne d'approvisionnement agricole.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link to="/catalog" className="px-8 py-4 bg-[#16a34a] text-white font-bold rounded-xl active:scale-95 transition-transform shadow-lg hover:brightness-110">
+              <Link to="/catalog" className="px-8 py-4 bg-primary text-white font-bold rounded-xl active:scale-95 transition-transform shadow-lg hover:bg-primary-container">
                 Explorer le marché
               </Link>
               <Link to="/register" className="px-8 py-4 border-2 border-white text-white font-bold rounded-xl active:scale-95 transition-transform hover:bg-white hover:text-primary transition-colors">
@@ -86,12 +105,12 @@ export default function HomePage() {
             </div>
             <div className="border-2 border-primary/10 bg-white p-10 rounded-xl flex flex-col justify-between group hover:border-primary transition-all h-[280px]">
               <div className="flex justify-between items-start">
-                <span className="material-symbols-outlined text-4xl text-primary" data-icon="pets">pets</span>
+                <span className="material-symbols-outlined text-4xl text-primary" data-icon="agriculture">agriculture</span>
                 <span className="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors" data-icon="arrow_outward">arrow_outward</span>
               </div>
               <div>
-                <h3 className="text-3xl font-serif-display text-on-surface mb-2 tracking-tight">ÉLEVAGE</h3>
-                <p className="text-on-surface-variant font-body text-sm">Bétail et volaille élevés selon des normes de santé rigoureuses.</p>
+                <h3 className="text-3xl font-serif-display text-on-surface mb-2 tracking-tight">TUBERCULES</h3>
+                <p className="text-on-surface-variant font-body text-sm">Igname, Manioc et Patate douce du terroir burkinabè.</p>
               </div>
             </div>
           </div>
@@ -110,54 +129,41 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div onClick={() => navigate('/catalog/1')} className="bg-surface-container-lowest rounded-xl overflow-hidden group cursor-pointer">
-              <div className="h-56 relative overflow-hidden">
-                <img className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Épis de maïs jaune fraîchement récoltés" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOQbG8JDIK6vGUzBVqMEJ5zI6FC5ZhkVPnuqse0S7hCdxf2U1SSB1q3xTEZgDscGi3iG8HpJs0BFs99pmHUMXpLtkAOmMDnkvx6Ig1iGKkQ-FennHKWjN08QNs7jiDlzHtwQublD0HE7ntsHeYVnog2-QUB6Z8wssfeG_2tQ6Tr6yz5PaJnxFQLeLu0U2qjwW5m5S2uceFEn_uCOPn3NKAMarBkeewhCEL47SaG9t49jm7uRzdyL74SRQZ7WvEhK129gkC_5Fqi1M"/>
-                <span className="absolute top-4 left-4 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">CONFIRMÉE</span>
+            {loading ? (
+              <div className="col-span-full py-20 text-center">
+                <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-on-surface-variant font-bold">Chargement des produits...</p>
               </div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold text-on-surface font-headline">Maïs Blanc Premium</h3>
-                  <span className="font-mono text-primary font-bold text-lg">18,500 FCFA/sac</span>
+            ) : featuredProducts.length > 0 ? (
+              featuredProducts.map((product, index) => (
+                <div 
+                  key={`home-prod-${product.id || product._id || index}`} 
+                  className="bg-surface-container-lowest rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-500 group border border-outline-variant/5 cursor-pointer flex flex-col justify-between"
+                  onClick={() => navigate(`/catalog/${product.id || product._id}`)}
+                >
+                  <div className="aspect-[4/3] overflow-hidden relative">
+                    <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"/>
+                    <div className="absolute top-4 left-4 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Vedette</div>
+                  </div>
+                  <div className="p-6 flex-1 flex flex-col">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-xl font-bold text-on-surface font-headline">{product.name}</h3>
+                      <span className="font-mono text-primary font-bold text-lg">{formatFCFA(product.price)}/{product.unit}</span>
+                    </div>
+                    <div className="flex items-center gap-3 pt-4 border-t border-outline-variant/10 mt-auto">
+                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold">
+                        {getSellerInitials(product.seller)}
+                      </div>
+                      <span className="text-sm font-medium text-on-surface-variant">{getSellerName(product.seller)} — {product.location}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3 pt-4 border-t border-outline-variant/10">
-                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold">SM</div>
-                  <span className="text-sm font-medium text-on-surface-variant">Saran M. - Bobo Dioulasso</span>
+              ))
+            ) : (
+                <div className="col-span-full py-12 text-center bg-surface-container-low rounded-2xl border-2 border-dashed border-outline-variant/30">
+                    <p className="text-on-surface-variant font-bold">Aucun produit vedette disponible</p>
                 </div>
-              </div>
-            </div>
-            <div onClick={() => navigate('/catalog/2')} className="bg-surface-container-lowest rounded-xl overflow-hidden group cursor-pointer">
-              <div className="h-56 relative overflow-hidden">
-                <img className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Tomates rouges mûres en caisse" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAk6-lAhMJLJBTlmx9d2IIzbR0gcVOOw_fBHlBIl4VlOTHg8KepiSdx8EajQF2qBpAuBvbkwS-xqM-gccloBl7juIfbA2SlYqFmRyl57ompbSwmAVk6I9GOr_7L5w7cBoM0OUceaxN9nF8i3poBNFd4uMu8x7Q1Jqj9Wno34Nxf4zvsUyS6Cw-95nO363AkQwF1KE4VKPxJw7R_JgNQHeC-Nkx51IYPQCn8Ml0uS_8jdxkE5RaL8cE3EJS7Qzjtrb1y6ntCRj4wVqk"/>
-                <span className="absolute top-4 left-4 bg-primary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">LIBÉRÉ</span>
-              </div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold text-on-surface font-headline">Tomates de Réo</h3>
-                  <span className="font-mono text-primary font-bold text-lg">4,200 FCFA/caisse</span>
-                </div>
-                <div className="flex items-center gap-3 pt-4 border-t border-outline-variant/10">
-                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold">IK</div>
-                  <span className="text-sm font-medium text-on-surface-variant">Issaka K. - Sanguié</span>
-                </div>
-              </div>
-            </div>
-            <div onClick={() => navigate('/catalog/3')} className="bg-surface-container-lowest rounded-xl overflow-hidden group cursor-pointer">
-              <div className="h-56 relative overflow-hidden">
-                <img className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="Grains de sorgho séchés au soleil" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDywVW5KP-jWoZ0EksqG-UTRBQiapJjua8DKoNmWVpPDNfb-jnJvk1V_23Dm1x5s2UjE9kOltOgnUEqebBvnaQXXcJWzs7xv0eCT6-D8OcvG-ypK0uMCQ2xOYswpsGpt1_Mq67KOTzKjIfcdNlAP_z9X3PQ-ZIjAZlm9Q3jffmXTsn-4LnR0p9GrXY6Z1Ko8lNbLhpi8vhaCtHABiKmo9bVRIfzJy78NkqawhlHmYh6Txm1j9N3IhuDBj2M3yAA7ReV3EfizhFJw_4"/>
-                <span className="absolute top-4 left-4 bg-tertiary text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">EN ATTENTE</span>
-              </div>
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold text-on-surface font-headline">Sorgho Rouge Local</h3>
-                  <span className="font-mono text-primary font-bold text-lg">22,000 FCFA/sac</span>
-                </div>
-                <div className="flex items-center gap-3 pt-4 border-t border-outline-variant/10">
-                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold">AB</div>
-                  <span className="text-sm font-medium text-on-surface-variant">Adama B. - Ouahigouya</span>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </section>
@@ -198,41 +204,47 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-8">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-serif-display text-on-surface mb-8">Comment ça marche ?</h2>
-            <div className="inline-flex p-1 bg-surface-container-high rounded-lg font-label text-sm">
-              <button className="px-6 py-2 bg-white text-primary font-bold rounded shadow-sm">Acheteurs</button>
-              <button className="px-6 py-2 text-on-surface-variant hover:text-primary">Producteurs</button>
-              <button className="px-6 py-2 text-on-surface-variant hover:text-primary">Transporteurs</button>
+            <div className="inline-flex p-1 bg-surface-container-high rounded-xl font-label text-sm">
+              <button 
+                onClick={() => setActiveHowItWorks('buyers')}
+                className={`px-6 py-2 rounded-lg transition-all ${activeHowItWorks === 'buyers' ? 'bg-white text-primary font-bold shadow-sm' : 'text-on-surface-variant hover:text-primary'}`}
+              >
+                Acheteurs
+              </button>
+              <button 
+                onClick={() => setActiveHowItWorks('farmers')}
+                className={`px-6 py-2 rounded-lg transition-all ${activeHowItWorks === 'farmers' ? 'bg-white text-primary font-bold shadow-sm' : 'text-on-surface-variant hover:text-primary'}`}
+              >
+                Producteurs
+              </button>
+              <button 
+                onClick={() => setActiveHowItWorks('transporters')}
+                className={`px-6 py-2 rounded-lg transition-all ${activeHowItWorks === 'transporters' ? 'bg-white text-primary font-bold shadow-sm' : 'text-on-surface-variant hover:text-primary'}`}
+              >
+                Transporteurs
+              </button>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="relative group">
-              <div className="text-8xl font-serif-display text-primary/10 absolute -top-4 -left-4 group-hover:text-primary/20 transition-colors">1</div>
-              <div className="relative pt-12">
-                <h4 className="text-xl font-bold mb-2 font-headline">Exploration</h4>
-                <p className="text-on-surface-variant text-sm">Naviguez par filière ou région pour trouver les produits dont vous avez besoin.</p>
+            {howItWorksContent[activeHowItWorks].map((step) => (
+              <div key={step.id} className="relative group">
+                <div className="text-8xl font-serif-display text-primary/10 absolute -top-4 -left-4 group-hover:text-primary/20 transition-colors">{step.icon}</div>
+                <div className="relative pt-12">
+                  <h4 className="text-xl font-bold mb-2 font-headline">{step.title}</h4>
+                  <p className="text-on-surface-variant text-sm">{step.desc}</p>
+                </div>
               </div>
-            </div>
-            <div className="relative group">
-              <div className="text-8xl font-serif-display text-primary/10 absolute -top-4 -left-4 group-hover:text-primary/20 transition-colors">2</div>
-              <div className="relative pt-12">
-                <h4 className="text-xl font-bold mb-2 font-headline">Négociation</h4>
-                <p className="text-on-surface-variant text-sm">Discutez des quantités et des prix directement sur notre messagerie sécurisée.</p>
-              </div>
-            </div>
-            <div className="relative group">
-              <div className="text-8xl font-serif-display text-primary/10 absolute -top-4 -left-4 group-hover:text-primary/20 transition-colors">3</div>
-              <div className="relative pt-12">
-                <h4 className="text-xl font-bold mb-2 font-headline">Paiement</h4>
-                <p className="text-on-surface-variant text-sm">Effectuez votre transaction via Mobile Money ou virement, les fonds sont sécurisés.</p>
-              </div>
-            </div>
-            <div className="relative group">
-              <div className="text-8xl font-serif-display text-primary/10 absolute -top-4 -left-4 group-hover:text-primary/20 transition-colors">4</div>
-              <div className="relative pt-12">
-                <h4 className="text-xl font-bold mb-2 font-headline">Réception</h4>
-                <p className="text-on-surface-variant text-sm">Suivez votre commande jusqu'à la livraison finale par nos partenaires logistiques.</p>
-              </div>
-            </div>
+            ))}
+          </div>
+          
+          <div className="mt-16 text-center">
+            <Link 
+              to={activeHowItWorks === 'buyers' ? '/catalog' : activeHowItWorks === 'farmers' ? '/farmers' : '/transporters'}
+              className="inline-flex items-center gap-2 px-8 py-3 bg-primary/10 text-primary font-bold rounded-xl hover:bg-primary/20 transition-all group"
+            >
+              En savoir plus sur l'espace {activeHowItWorks === 'buyers' ? 'Acheteur' : activeHowItWorks === 'farmers' ? 'Producteur' : 'Transporteur'}
+              <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </Link>
           </div>
         </div>
       </section>
@@ -252,47 +264,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="bg-[#ebffe5] dark:bg-slate-950 border-t border-[#6e7b6c]/15 dark:border-slate-800 w-full pt-12 pb-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 px-8 max-w-7xl mx-auto">
-          <div>
-            <span className="text-xl font-bold text-[#006b2c] dark:text-green-400 mb-4 block font-headline">AgroConnect BF</span>
-            <p className="text-[#0c200d]/80 dark:text-slate-400 text-sm font-newsreader leading-relaxed">
-              Faciliter les échanges agricoles pour un Burkina Faso autosuffisant et prospère.
-            </p>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4 font-label">Plateforme</h4>
-            <div className="flex flex-col space-y-2 text-sm font-newsreader">
-              <Link to="/catalog" className="text-[#0c200d]/80 dark:text-slate-400 hover:text-[#006b2c] transition-colors">Marketplace</Link>
-              <Link to="#" className="text-[#0c200d]/80 dark:text-slate-400 hover:text-[#006b2c] transition-colors">Producer Directory</Link>
-              <Link to="#" className="text-[#0c200d]/80 dark:text-slate-400 hover:text-[#006b2c] transition-colors">Logistics</Link>
-            </div>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4 font-label">Support</h4>
-            <div className="flex flex-col space-y-2 text-sm font-newsreader">
-              <Link to="#" className="text-[#0c200d]/80 dark:text-slate-400 hover:text-[#006b2c] transition-colors">Pricing</Link>
-              <Link to="#" className="text-[#0c200d]/80 dark:text-slate-400 hover:text-[#006b2c] transition-colors">Privacy Policy</Link>
-              <Link to="#" className="text-[#0c200d]/80 dark:text-slate-400 hover:text-[#006b2c] transition-colors">Terms of Service</Link>
-            </div>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4 font-label">Newsletter</h4>
-            <p className="text-sm text-on-surface-variant mb-4">Restez informé des cours du marché.</p>
-            <div className="flex gap-2">
-              <input className="bg-surface-container-low border-0 rounded-lg text-sm w-full focus:ring-2 focus:ring-[#006b2c] outline-none px-3" placeholder="Email" type="email"/>
-              <button className="bg-[#006b2c] text-white px-4 rounded-lg active:scale-95 transition-transform flex items-center justify-center">
-                <span className="material-symbols-outlined text-sm" data-icon="send">send</span>
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-8 mt-12 pt-8 border-t border-[#6e7b6c]/10 text-center">
-          <p className="text-[#0c200d]/60 dark:text-slate-500 text-xs font-newsreader">
-            © 2024 AgroConnect BF. Precision Agriculture for Burkina Faso.
-          </p>
-        </div>
-      </footer>
+      <VisitorFooter />
     </>
   );
 }
