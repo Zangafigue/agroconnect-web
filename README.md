@@ -1,4 +1,4 @@
-# 🌾 AgroConnect BF — Web Platform (React + Vite)
+# AgroConnect BF - Web Platform (React + Vite)
 
 Interface web pour les agriculteurs, acheteurs, transporteurs et administrateurs.
 
