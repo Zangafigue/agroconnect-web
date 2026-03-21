@@ -1,0 +1,64 @@
+
+> agroconnect-web@0.0.0 build
+> vite build
+
+vite v5.4.21 building for production...
+transforming...
+Found 1 warning while optimizing generated CSS:
+
+[2m│   }[22m
+[2m│ }[22m
+[2m│[22m @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@200..800&family=DM+Mono:wght@300..500&display=swap');
+[2m┆[22m        [33m[2m^--[22m @import rules must precede all rules aside from @charset and @layer statements[39m
+[2m┆[22m
+[2m│ body {[22m
+[2m│   background-color: var(--color-background);[22m
+
+✓ 145 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                    0.63 kB │ gzip:  0.40 kB
+dist/assets/index-BTpP1OBR.css                    84.33 kB │ gzip: 14.39 kB
+dist/assets/WalletPage-CGZ64MoR.js                 0.12 kB │ gzip:  0.13 kB
+dist/assets/ProfilePage-C-7nsjmA.js                0.12 kB │ gzip:  0.13 kB
+dist/assets/MessagingPage-BdmB6pzU.js              0.12 kB │ gzip:  0.13 kB
+dist/assets/SettingsPage-Xmcl1soz.js               0.12 kB │ gzip:  0.13 kB
+dist/assets/AdminStatsPage-B-HLN02f.js             0.12 kB │ gzip:  0.13 kB
+dist/assets/AdminSettingsPage-CN1VP4EI.js          0.12 kB │ gzip:  0.14 kB
+dist/assets/AdminUserDetailPage-SvhzTtSI.js        0.13 kB │ gzip:  0.14 kB
+dist/assets/AdminDisputeResolvePage-DIStMHwp.js    0.13 kB │ gzip:  0.14 kB
+dist/assets/AdminUsersPage-znLGNjSX.js             0.15 kB │ gzip:  0.15 kB
+dist/assets/MissionsPage-C6s3t4Pe.js               0.45 kB │ gzip:  0.29 kB
+dist/assets/MyOffersPage-IWtBw2Zb.js               0.45 kB │ gzip:  0.29 kB
+dist/assets/AdminDashboard-CrEEH_4M.js             0.45 kB │ gzip:  0.29 kB
+dist/assets/AdminOrdersPage-Bv1lUHyF.js            0.45 kB │ gzip:  0.29 kB
+dist/assets/MyDeliveriesPage-D8H-s1Lt.js           0.45 kB │ gzip:  0.29 kB
+dist/assets/AdminProductsPage-DTlwQ2IQ.js          0.46 kB │ gzip:  0.29 kB
+dist/assets/AdminDisputesPage-BJ3BwqjA.js          0.46 kB │ gzip:  0.29 kB
+dist/assets/AdminPaymentsPage-C97vViM-.js          0.46 kB │ gzip:  0.29 kB
+dist/assets/TransporterDashboard-D3GcKANq.js       0.46 kB │ gzip:  0.29 kB
+dist/assets/ForgotPasswordPage-Bk0odrye.js         5.85 kB │ gzip:  1.86 kB
+dist/assets/VerifyOtpPage-CTlJp8Ey.js              6.04 kB │ gzip:  2.35 kB
+dist/assets/BuyerOrdersPage-CGViLUz9.js            6.18 kB │ gzip:  1.17 kB
+dist/assets/BuyerLayout-DYS7FcDw.js                6.55 kB │ gzip:  1.61 kB
+dist/assets/FarmerProductsPage-BaqUr54L.js         6.70 kB │ gzip:  1.59 kB
+dist/assets/ResetPasswordPage-CPyZVpgt.js          7.16 kB │ gzip:  2.33 kB
+dist/assets/BuyerOffersPage-DvwqXB_8.js            8.59 kB │ gzip:  1.92 kB
+dist/assets/BuyerProfilePage-Bk04DUtf.js           8.63 kB │ gzip:  1.86 kB
+dist/assets/FarmerWalletPage-CcNg73d9.js           8.71 kB │ gzip:  1.90 kB
+dist/assets/FarmerDashboardPage-BVmOxBY3.js        9.10 kB │ gzip:  1.63 kB
+dist/assets/BuyerPaymentPage-CkEMvKNW.js           9.19 kB │ gzip:  2.69 kB
+dist/assets/ProductFormPage-JV7grOWo.js            9.39 kB │ gzip:  2.14 kB
+dist/assets/LoginPage-DVOfDPJp.js                  9.94 kB │ gzip:  2.75 kB
+dist/assets/MarketplacePage-BVW_JcGk.js           10.10 kB │ gzip:  3.85 kB
+dist/assets/FarmerProfilePage-BLKiX60E.js         10.16 kB │ gzip:  2.21 kB
+dist/assets/BuyerDashboardPage-Dkgej9Yp.js        10.75 kB │ gzip:  3.41 kB
+dist/assets/ProductDetailPage-DGGRrPjK.js         12.05 kB │ gzip:  4.91 kB
+dist/assets/FarmerOrdersPage-D6Gu3B6A.js          13.16 kB │ gzip:  2.91 kB
+dist/assets/RegisterPage-17_xyIzH.js              15.64 kB │ gzip:  3.79 kB
+dist/assets/ProductDetailPage-B1tBiI8t.js         19.02 kB │ gzip:  5.53 kB
+dist/assets/CatalogPage-Bk66YNkU.js               19.12 kB │ gzip:  3.79 kB
+dist/assets/HomePage-DiH3foZT.js                  20.90 kB │ gzip:  4.68 kB
+dist/assets/axios-BROrDCKW.js                     37.65 kB │ gzip: 15.07 kB
+dist/assets/index-FCEGZz8T.js                    228.21 kB │ gzip: 73.81 kB
+✓ built in 1.33s

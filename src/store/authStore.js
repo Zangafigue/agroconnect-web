@@ -7,7 +7,9 @@ export const useAuthStore = create(
       token: null,
       user: null,
       setAuth: (token, user) => set({ token, user }),
-      updateUser: (updates) => set((s) => ({ user: s.user ? { ...s.user, ...updates } : null })),
+      updateUser: (partialUser) => set((state) => ({
+        user: state.user ? { ...state.user, ...partialUser } : null
+      })),
       logout: () => set({ token: null, user: null }),
     }),
     { name: 'auth-storage' }
