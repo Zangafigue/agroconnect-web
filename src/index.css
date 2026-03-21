@@ -1,6 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@200..800&family=DM+Mono:wght@300..500&display=swap');
 @import 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@200..800&family=DM+Mono:wght@300..500&display=swap');
 
 @theme {
   --color-surface-container-lowest: #ffffff;
@@ -74,7 +74,7 @@ body {
 }
 
 .bg-hero-field {
-  background-image: linear-gradient(rgba(12, 32, 13, 0.4), rgba(12, 32, 13, 0.6)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuBY0P7iPyld8HqjF7x9wKPm4KFvObmSIWKRoCGvPTe1NLLJBjhDH_E-rxjNFI1gJt2pab4U601DxPp479gt6Wd66RnfP18AhlBibqQgaaq0MPxSnjlyNHEKz8ZWKydhtzEzNXRgLKDG24rWEQp0iX5_JanOuMIvMAjEwcgSitJgQYc_DSldOoMOhrJzJktFv8E40fspRqEmCMmnV9GE2VWVIbMB8pygDrChPko1hScFO9kVoMPky-plI5DFceIsIHB9Mlne5VVyqM0');
+  background-image: linear-gradient(rgba(0, 43, 18, 0.3), rgba(0, 43, 18, 0.5)), url('/home/zangafigue/.gemini/antigravity/brain/827e0c77-2634-44eb-adf7-a7c9ce45c815/burkina_farming_hero_1774107527524.png');
   background-size: cover;
   background-position: center;
 }

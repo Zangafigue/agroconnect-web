@@ -23,6 +23,11 @@ const VerifyOtpPage = lazy(() => import('../pages/auth/VerifyOtpPage'));
 const ForgotPasswordPage = lazy(() => import('../pages/auth/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('../pages/auth/ResetPasswordPage'));
 
+// New Visitor Pages
+const ProducersPage = lazy(() => import('../pages/visitor/ProducersPage'));
+const HowItWorksPage = lazy(() => import('../pages/visitor/HowItWorksPage'));
+const NewsPage = lazy(() => import('../pages/visitor/NewsPage'));
+
 // Shared
 const MessagingPage = lazy(() => import('../pages/shared/MessagingPage'));
 const WalletPage = lazy(() => import('../pages/shared/WalletPage'));
@@ -96,6 +101,9 @@ export const router = createBrowserRouter([
   { path: '/', element: suspenseWrapper(HomePage) },
   { path: '/catalog', element: suspenseWrapper(CatalogPage) },
   { path: '/catalog/:id', element: suspenseWrapper(ProductDetailPage) },
+  { path: '/producers', element: suspenseWrapper(ProducersPage) },
+  { path: '/how-it-works', element: suspenseWrapper(HowItWorksPage) },
+  { path: '/news', element: suspenseWrapper(NewsPage) },
   
   // Auth
   { path: '/login', element: suspenseWrapper(LoginPage) },
