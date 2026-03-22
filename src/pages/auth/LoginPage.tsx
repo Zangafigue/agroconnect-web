@@ -118,7 +118,7 @@ const LoginPage: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex justify-between items-end pl-1">
                   <label className="text-[10px] font-bold text-[var(--gray-501)] uppercase tracking-[0.2em]" htmlFor="password">Mot de passe</label>
-                  <Link to="/forgot-password" underline-none className="text-[10px] text-[var(--gray-501)] hover:text-[var(--gray-900)] font-bold uppercase tracking-widest transition-colors">Oublié ?</Link>
+                  <Link to="/forgot-password" className="text-[10px] text-[var(--gray-501)] hover:text-[var(--gray-900)] font-bold uppercase tracking-widest transition-colors">Oublié ?</Link>
                 </div>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-[var(--gray-400)] group-focus-within:text-[var(--gray-900)] transition-colors">
