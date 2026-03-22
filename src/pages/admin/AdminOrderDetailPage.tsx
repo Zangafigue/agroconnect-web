@@ -178,7 +178,7 @@ const AdminOrderDetailPage: React.FC = () => {
               </div>
               <div className="flex justify-between items-center pt-2">
                 <div className="flex flex-col">
-                  <span className="font-bold text-on-surface text-base uppercase tracking-tighter">Total Net</span>
+                  <span className="font-bold text-on-surface text-base uppercase tracking-tight">Total Net</span>
                   <span className="text-[10px] text-outline font-bold uppercase tracking-widest italic">A décaisser</span>
                 </div>
                 <span className="font-serif-display font-bold text-4xl text-primary animate-pulse">85 000 <span className="text-xs">F</span></span>

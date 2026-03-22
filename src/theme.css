@@ -1,0 +1,182 @@
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   PALETTE COMPLÈTE — TOUTES LES COULEURS DE L'APP
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+:root {
+  /* ── Vert (couleur de marque) ── */
+  --green-50:  #f0fdf4;
+  --green-100: #dcfce7;
+  --green-200: #bbf7d0;
+  --green-300: #86efac;
+  --green-400: #4ade80;
+  --green-500: #22c55e;
+  --green-600: #16a34a;   /* PRIMAIRE (boutons, liens actifs, prix) */
+  --green-700: #15803d;   /* hover bouton primaire */
+  --green-800: #166534;
+  --green-900: #14532d;   /* sections sombres, CTA, "Pourquoi nous" */
+  --green-950: #052e16;   /* footer, éléments très sombres */
+
+  /* ── Neutres ── */
+  --gray-50:  #f8faf8;    /* fond page light */
+  --gray-100: #f3f4f6;    /* fond sections alternées */
+  --gray-200: #e5e7eb;    /* bordures légères */
+  --gray-300: #d1d5db;    /* bordures inputs */
+  --gray-400: #9ca3af;    /* texte placeholder, muted */
+  --gray-501: #6b7280;    /* texte secondaire */
+  --gray-600: #4b5563;    /* texte corps */
+  --gray-700: #374151;    /* texte nav links */
+  --gray-800: #1f2937;    /* titres secondaires (newsletter input bg) */
+  --gray-900: #111827;    /* texte principal / fond footer */
+  --gray-950: #0f172a;    /* bleu nuit sombre (CTA final) */
+
+  /* ── Couleurs sémantiques (fixes, identiques light et dark) ── */
+  --color-success:      #16a34a;
+  --color-success-bg:   #dcfce7;
+  --color-success-text: #15803d;
+  --color-success-border:#86efac;
+
+  --color-warning:      #d97706;
+  --color-warning-bg:   #fef3c7;
+  --color-warning-text: #92400e;
+  --color-warning-border:#fcd34d;
+
+  --color-danger:       #dc2626;
+  --color-danger-bg:    #fee2e2;
+  --color-danger-text:  #dc2626;
+  --color-danger-border:#fca5a5;
+
+  --color-info:         #2563eb;
+  --color-info-bg:      #dbeafe;
+  --color-info-text:    #1d4ed8;
+  --color-info-border:  #93c5fd;
+
+  /* ── Statuts commandes (fixes, identiques light et dark) ── */
+  --status-pending-bg:      #fef3c7;
+  --status-pending-text:    #92400e;
+  --status-confirmed-bg:    #dcfce7;
+  --status-confirmed-text:  #15803d;
+  --status-transit-bg:      #dbeafe;
+  --status-transit-text:    #1d4ed8;
+  --status-delivered-bg:    #16a34a;
+  --status-delivered-text:  #ffffff;
+  --status-dispute-bg:      #fee2e2;
+  --status-dispute-text:    #dc2626;
+  --status-cancelled-bg:    #f3f4f6;
+  --status-cancelled-text:  #6b7280;
+  --status-held-bg:         #ede9fe;
+  --status-held-text:       #6d28d9;
+
+  /* ── Avatars par rôle (fixes) ── */
+  --avatar-farmer-bg:       #dcfce7;
+  --avatar-farmer-text:     #15803d;
+  --avatar-buyer-bg:        #dbeafe;
+  --avatar-buyer-text:      #1d4ed8;
+  --avatar-transporter-bg:  #fef3c7;
+  --avatar-transporter-text:#92400e;
+  --avatar-admin-bg:        #f3f4f6;
+  --avatar-admin-text:      #374151;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   THÈME LIGHT — variables sémantiques
+   (appliqué sur :root et [data-theme="light"])
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+:root,
+[data-theme="light"] {
+  /* Fonds */
+  --bg-page:        #f8faf8;
+  --bg-surface:     #ffffff;
+  --bg-muted:       #f3f4f6;
+  --bg-subtle:      #f0fdf4;
+
+  /* Textes */
+  --text-primary:   #111827;
+  --text-secondary: #6b7280;
+  --text-muted:     #9ca3af;
+  --text-accent:    #16a34a;
+  --text-inverse:   #ffffff;
+
+  /* Bordures */
+  --border-light:   #e5e7eb;
+  --border-medium:  #d1d5db;
+  --border-strong:  #9ca3af;
+  --border-accent:  #86efac;
+
+  /* Navbar */
+  --nav-bg:         #ffffff;
+  --nav-border:     #e5e7eb;
+  --nav-text:       #374151;
+  --nav-text-active:#16a34a;
+  --nav-shadow:     0 4px 24px rgba(0,0,0,0.06);
+
+  /* Sections spéciales (toujours pareilles en light) */
+  --section-why-bg:    #14532d;
+  --section-cta-bg:    #0f172a;
+  --section-footer-bg: #111827;
+  --section-hero-bg:   #4a6741;
+
+  /* Inputs Newsletter (Footer spécifique) */
+  --newsletter-input-bg: #1f2937;
+  --newsletter-input-border: #374151;
+  --newsletter-input-text: #f9fafb;
+
+  /* Inputs */
+  --input-bg:           #ffffff;
+  --input-border:       #d1d5db;
+  --input-border-focus: #16a34a;
+  --input-placeholder:  #9ca3af;
+  --input-shadow-focus: 0 0 0 3px rgba(22,163,74,0.12);
+
+  /* Prix */
+  --price-color:   #16a34a;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   THÈME DARK — variables sémantiques
+   (appliqué sur [data-theme="dark"] — connectés seulement)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+[data-theme="dark"] {
+  /* Fonds */
+  --bg-page:        #0d1f0f;
+  --bg-surface:     #162419;
+  --bg-muted:       #1a2e1f;
+  --bg-subtle:      #1f3a26;
+
+  /* Textes */
+  --text-primary:   #f0fdf4;
+  --text-secondary: #a7c4ae;
+  --text-muted:     #6b8f72;
+  --text-accent:    #4ade80;
+  --text-inverse:   #111827;
+
+  /* Bordures */
+  --border-light:   #1f3a26;
+  --border-medium:  #2d4a33;
+  --border-strong:  #3d5c43;
+  --border-accent:  #166534;
+
+  /* Navbar */
+  --nav-bg:         #0d1f0f;
+  --nav-border:     #1f3a26;
+  --nav-text:       #a7c4ae;
+  --nav-text-active:#4ade80;
+  --nav-shadow:     0 1px 3px rgba(0,0,0,0.3);
+
+  /* Sections spéciales (inchangées en dark) */
+  --section-why-bg:    #14532d;
+  --section-cta-bg:    #0a1a0c;
+  --section-footer-bg: #060e07;
+  --section-hero-bg:   #0d1f0f;
+
+  /* Inputs */
+  --input-bg:           #1a2e1f;
+  --input-border:       #2d4a33;
+  --input-border-focus: #4ade80;
+  --input-placeholder:  #6b8f72;
+  --input-shadow-focus: 0 0 0 3px rgba(74,222,128,0.12);
+
+  /* Prix */
+  --price-color:   #4ade80;
+}

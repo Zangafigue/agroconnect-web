@@ -35,14 +35,14 @@ export default function StatCard({
           <Icon className="w-6 h-6" />
         </div>
         {trend && (
-          <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${trend.isUp ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+          <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${trend.isUp ? 'bg-primary/10 text-primary' : 'bg-error/10 text-error'}`}>
             {trend.isUp ? '↑' : '↓'} {trend.value}
           </span>
         )}
       </div>
       <div>
         <h3 className="text-xs font-bold text-outline uppercase tracking-widest mb-1">{title}</h3>
-        <p className="text-2xl font-black text-on-surface font-mono tracking-tighter">{value}</p>
+        <p className="text-2xl font-black text-on-surface font-mono tracking-tight">{value}</p>
       </div>
     </div>
   );

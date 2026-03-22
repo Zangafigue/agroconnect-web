@@ -2,6 +2,14 @@ import React, { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import Layout from '../components/shared/Layout';
+import ThemeManager from '../components/shared/ThemeManager';
+
+// Root Layout to provide theme context inside the router
+const RootLayout = () => (
+  <ThemeManager>
+    <Outlet />
+  </ThemeManager>
+);
 
 // Fallback Loader Component
 const Loader = () => (
@@ -72,7 +80,7 @@ const FarmerProfilePage = lazy(() => import('../pages/farmer/FarmerProfilePage')
 // Buyer
 const BuyerDashboard = lazy(() => import('../pages/buyer/BuyerDashboard'));
 const MarketplacePage = lazy(() => import('../pages/buyer/MarketplacePage'));
-const BuyerProductDetailPage = lazy(() => import('../pages/buyer/ProductDetailPage'));
+const BuyerProductDetailPage = lazy(() => import('../pages/visitor/ProductDetailPage'));
 const BuyerOrdersPage = lazy(() => import('../pages/buyer/BuyerOrdersPage'));
 const BuyerOffersPage = lazy(() => import('../pages/buyer/BuyerOffersPage'));
 const BuyerPaymentPage = lazy(() => import('../pages/buyer/BuyerPaymentPage'));
@@ -100,6 +108,7 @@ const AdminStatsPage = lazy(() => import('../pages/admin/AdminStatsPage'));
 const AdminSettingsPage = lazy(() => import('../pages/admin/AdminSettingsPage'));
 
 export const router = createBrowserRouter([
+  { element: <RootLayout />, children: [
   // Public
   { path: '/', element: suspenseWrapper(HomePage) },
   { path: '/catalog', element: suspenseWrapper(CatalogPage) },
@@ -176,4 +185,4 @@ export const router = createBrowserRouter([
   ]},
   
   { path: '*', element: <Navigate to="/" replace /> },
-]);
+] }]);

@@ -52,7 +52,6 @@ const VerifyOtpPage: React.FC = () => {
     try {
       const response = await api.post('/auth/verify-otp', { email: user?.email, otp: code });
       setSuccess(true);
-      // Update local state isVerified
       if (user) {
         setAuth(useAuthStore.getState().token, { ...user, isVerified: true });
       }
@@ -81,54 +80,54 @@ const VerifyOtpPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-on-surface font-body flex flex-col">
-       <header className="flex flex-col items-center justify-center w-full py-10">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-             <ShieldCheck size={20} />
+    <div className="min-h-screen bg-[var(--bg-page)] font-body flex flex-col">
+       <header className="flex flex-col items-center justify-center w-full py-16">
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="w-12 h-12 bg-[var(--section-why-bg)] text-white rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+             <ShieldCheck size={24} />
           </div>
-          <span className="text-primary font-serif-display text-2xl tracking-tight">AgroConnect BF</span>
+          <span className="text-[var(--gray-900)] font-display text-3xl tracking-tight">AgroConnect BF</span>
         </Link>
       </header>
 
       <main className="flex-grow flex items-center justify-center px-6 pb-24">
-        <div className="w-full max-w-[460px]">
-          <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 border border-outline-variant/10 shadow-2xl shadow-primary/5 text-center">
+        <div className="w-full max-w-[500px]">
+          <div className="bg-white rounded-[3rem] p-10 md:p-12 shadow-2xl shadow-[var(--gray-900)]/5 border border-[var(--gray-200)] text-center relative overflow-hidden">
             {success ? (
                <div className="animate-in fade-in zoom-in duration-500">
-                  <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
-                    <CheckCircle2 size={48} />
+                  <div className="w-24 h-24 bg-[var(--green-600)]/10 text-[var(--green-600)] rounded-full flex items-center justify-center mx-auto mb-8">
+                    <CheckCircle2 size={56} />
                   </div>
-                  <h2 className="text-3xl font-serif-display text-on-surface mb-3">Compte vérifié !</h2>
-                  <p className="text-sm text-on-surface-variant mb-6">Félicitations, votre espace AgroConnect est maintenant actif.</p>
-                  <p className="text-xs text-outline italic">Redirection immédiate...</p>
+                  <h2 className="text-4xl font-display text-[var(--gray-900)] mb-4">Code vérifié.</h2>
+                  <p className="text-lg text-[var(--gray-501)] mb-10">Votre compte est désormais actif. Préparation de votre espace de travail...</p>
+                  <RefreshCw size={24} className="animate-spin text-[var(--green-600)] mx-auto" />
                </div>
             ) : (
               <>
-                <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-6">
-                   <ShieldCheck size={32} />
+                <div className="w-20 h-20 rounded-3xl bg-[var(--gray-50)] text-[var(--gray-900)] flex items-center justify-center mx-auto mb-8 border border-[var(--gray-200)]">
+                   <ShieldCheck size={36} />
                 </div>
-                <h2 className="text-3xl font-serif-display text-on-surface mb-3">Vérification</h2>
-                <p className="text-on-surface-variant text-sm leading-relaxed mb-8">
-                  Nous avons envoyé un code de sécurité à <span className="font-bold text-on-surface">{user?.email || 'votre email'}</span>.
+                <h2 className="text-4xl font-display text-[var(--gray-900)] mb-4 tracking-tight">Sécurité.</h2>
+                <p className="text-[var(--gray-501)] text-lg leading-relaxed mb-10">
+                  Nous avons envoyé un code de sécurité à <span className="font-bold text-[var(--gray-900)]">{user?.email || 'votre email'}</span>.
                 </p>
 
                 {error && (
-                  <div className="mb-8 bg-error-container text-on-error-container p-4 rounded-2xl flex items-center gap-3 text-sm text-left">
-                    <AlertCircle size={20} />
+                  <div className="mb-8 p-4 bg-red-50 text-red-700 rounded-2xl border border-red-100 flex items-center gap-3 text-sm text-left animate-in shake">
+                    <AlertCircle size={20} className="shrink-0" />
                     <span className="font-bold">{error}</span>
                   </div>
                 )}
 
-                <form onSubmit={handleVerify} className="space-y-8">
-                  <div className="flex justify-between gap-2 md:gap-3">
+                <form onSubmit={handleVerify} className="space-y-10">
+                  <div className="flex justify-between gap-3">
                     {otp.map((digit, index) => (
                       <input
                         key={index}
                         ref={(el) => (inputRefs.current[index] = el as HTMLInputElement)}
-                        className="w-full h-16 text-center text-3xl font-bold bg-surface-container-low border-2 border-transparent rounded-2xl focus:border-primary focus:bg-white focus:ring-4 focus:ring-primary/10 outline-none transition-all font-mono"
+                        className="w-full h-16 text-center text-3xl font-bold bg-[var(--gray-50)] border-2 border-transparent rounded-2xl focus:border-[var(--gray-900)] focus:bg-white focus:ring-4 focus:ring-[var(--gray-900)]/5 outline-none transition-all font-mono text-[var(--gray-900)]"
                         maxLength={1}
-                        placeholder="-"
+                        placeholder="•"
                         type="text"
                         value={digit}
                         onChange={(e) => handleChange(index, e.target.value)}
@@ -139,23 +138,27 @@ const VerifyOtpPage: React.FC = () => {
 
                   <button 
                     disabled={loading || otp.join('').length < 6}
-                    className="w-full py-4 bg-primary text-white font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-primary-container hover:text-on-primary-container shadow-lg shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed transition-all active:scale-[0.98]" 
+                    className="w-full py-5 bg-[var(--gray-900)] text-white font-bold rounded-[1.5rem] flex items-center justify-center gap-3 hover:bg-black shadow-xl shadow-[var(--gray-900)]/10 disabled:opacity-70 disabled:cursor-not-allowed transition-all active:scale-[0.98]" 
                     type="submit"
                   >
-                    {loading ? 'Vérification...' : 'Confirmer le code'}
-                    {!loading && <ArrowRight size={20} />}
+                    {loading ? 'Vérification...' : 'Confirmer l\'accès'}
+                    {!loading && <ArrowRight size={22} />}
                   </button>
                 </form>
 
-                <div className="mt-10 pt-8 border-t border-outline-variant/10">
-                   <p className="text-sm text-on-surface-variant mb-4">Vous n'avez pas reçu le code ?</p>
+                <div className="mt-12 pt-10 border-t border-[var(--gray-200)]">
+                   <p className="text-sm text-[var(--gray-501)] mb-6">Code non reçu ?</p>
                    <button 
                      onClick={handleResend}
                      disabled={resending || countdown > 0}
-                     className="flex items-center gap-2 mx-auto text-primary font-bold hover:underline disabled:text-outline disabled:no-underline transition-all"
+                     className="flex items-center gap-3 mx-auto text-[var(--gray-900)] font-black uppercase text-[10px] tracking-[0.2em] hover:text-[var(--green-600)] disabled:text-[var(--gray-400)] transition-all"
                    >
-                     {resending ? <RefreshCw size={18} className="animate-spin" /> : <RefreshCw size={18} />}
-                     {countdown > 0 ? `Renvoyer dans ${countdown}s` : 'Renvoyer un nouveau code'}
+                     {resending ? <RefreshCw size={16} className="animate-spin" /> : <RefreshCw size={16} />}
+                     {countdown > 0 ? (
+                       <span className="flex items-center gap-2">
+                         Nouveau code dans <span className="text-red-600 font-mono text-lg">{countdown}s</span>
+                       </span>
+                     ) : 'Renvoyer un code'}
                    </button>
                 </div>
               </>

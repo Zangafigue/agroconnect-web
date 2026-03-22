@@ -45,44 +45,44 @@ const ForgotPasswordPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-on-surface font-body flex flex-col">
-      <header className="flex flex-col items-center justify-center w-full py-10">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-             <Lock size={20} />
+    <div className="min-h-screen bg-[var(--bg-page)] font-body flex flex-col">
+      <header className="flex flex-col items-center justify-center w-full py-16">
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="w-12 h-12 bg-[var(--section-why-bg)] text-white rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+             <Lock size={24} />
           </div>
-          <span className="text-primary font-serif-display text-2xl tracking-tight">AgroConnect BF</span>
+          <span className="text-[var(--gray-900)] font-display text-3xl tracking-tight">AgroConnect BF</span>
         </Link>
       </header>
 
-      <main className="flex-grow flex items-center justify-center px-6 pb-20">
-        <div className="w-full max-w-[460px]">
+      <main className="flex-grow flex items-center justify-center px-6 pb-24">
+        <div className="w-full max-w-[480px]">
           {!success ? (
-            <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 border border-outline-variant/10 shadow-2xl shadow-primary/5">
-              <div className="text-center mb-10">
-                <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-6">
-                  <Lock size={32} />
+            <div className="bg-white rounded-[3rem] p-10 md:p-12 shadow-2xl shadow-[var(--gray-900)]/5 border border-[var(--gray-200)]">
+              <div className="text-center mb-12">
+                <div className="w-20 h-20 rounded-3xl bg-[var(--gray-50)] text-[var(--gray-900)] flex items-center justify-center mx-auto mb-8 border border-[var(--gray-200)]">
+                  <Lock size={36} />
                 </div>
-                <h2 className="text-3xl font-serif-display text-on-surface mb-3">Mot de passe oublié ?</h2>
-                <p className="text-on-surface-variant text-sm leading-relaxed">
-                  Pas de panique. Entrez votre email et nous vous enverrons un lien pour réinitialiser votre compte.
+                <h2 className="text-4xl font-display text-[var(--gray-900)] mb-4 tracking-tight">Accès perdu ?</h2>
+                <p className="text-[var(--gray-501)] text-lg leading-relaxed">
+                  Pas de panique. Entrez votre email pour réinitialiser votre accès sécurisé.
                 </p>
               </div>
 
               {error && (
-                <div className="mb-8 bg-error-container text-on-error-container p-4 rounded-2xl flex items-center gap-3 text-sm">
-                  <AlertCircle size={20} />
+                <div className="mb-8 p-4 bg-red-50 text-red-700 rounded-2xl border border-red-100 flex items-center gap-3 text-sm">
+                  <AlertCircle size={20} className="shrink-0" />
                   <span className="font-bold">{error}</span>
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-outline pl-1" htmlFor="email">Email de récupération</label>
+              <form onSubmit={handleSubmit} className="space-y-8 text-left">
+                <div className="space-y-2 text-left">
+                  <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--gray-501)] pl-1" htmlFor="email">E-mail de récupération</label>
                   <div className="relative group">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors" size={20} />
+                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--gray-400)] group-focus-within:text-[var(--gray-900)] transition-colors" size={20} />
                     <input 
-                      className="w-full pl-12 pr-4 py-4 bg-surface-container-low border border-transparent rounded-2xl focus:ring-2 focus:ring-primary focus:bg-white transition-all text-on-surface placeholder:text-outline-variant/50 outline-none" 
+                      className="w-full pl-14 pr-4 py-5 bg-[var(--gray-50)] border border-transparent rounded-[1.5rem] focus:ring-2 focus:ring-[var(--gray-900)] focus:bg-white transition-all text-[var(--gray-900)] placeholder:text-[var(--gray-400)] outline-none font-medium" 
                       id="email" 
                       type="email"
                       required 
@@ -94,46 +94,46 @@ const ForgotPasswordPage: React.FC = () => {
                 </div>
                 <button 
                   disabled={loading || !email} 
-                  className="w-full py-4 bg-primary text-white font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-primary-container hover:text-on-primary-container shadow-lg shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed transition-all active:scale-[0.98]" 
+                  className="w-full py-5 bg-[var(--gray-900)] text-white font-bold rounded-[1.5rem] flex items-center justify-center gap-3 hover:bg-black shadow-xl shadow-[var(--gray-900)]/10 disabled:opacity-70 disabled:cursor-not-allowed transition-all active:scale-[0.98]" 
                   type="submit"
                 >
-                  {loading ? 'Envoi...' : 'Envoyer le lien'}
+                  {loading ? 'Traitement...' : 'Réinitialiser le mot de passe'}
                   {!loading && <ArrowRight size={20} />}
                 </button>
               </form>
 
-              <div className="mt-10 pt-8 border-t border-outline-variant/10 flex justify-center">
-                <Link className="text-outline text-sm font-bold flex items-center gap-2 hover:text-primary transition-colors group" to="/login">
+              <div className="mt-12 pt-10 border-t border-[var(--gray-200)] flex justify-center">
+                <Link className="text-[var(--gray-501)] text-sm font-bold flex items-center gap-3 hover:text-[var(--gray-900)] transition-colors group" to="/login">
                   <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
                   Retour à la connexion
                 </Link>
               </div>
             </div>
           ) : (
-            <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-10 border border-outline-variant/10 shadow-2xl shadow-primary/5 text-center">
-              <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-6">
-                <CheckCircle2 size={32} />
+            <div className="bg-white rounded-[3rem] p-12 shadow-2xl shadow-[var(--gray-900)]/5 border border-[var(--gray-200)] text-center">
+              <div className="w-20 h-20 rounded-3xl bg-[var(--green-600)]/10 text-[var(--green-600)] flex items-center justify-center mx-auto mb-8 animate-in zoom-in">
+                <CheckCircle2 size={40} />
               </div>
-              <h2 className="text-3xl font-serif-display text-on-surface mb-3">Vérifiez vos emails</h2>
-              <p className="text-on-surface-variant text-sm leading-relaxed mb-8">
-                Si l'adresse correspond à un compte, vous recevrez un lien de réinitialisation dans quelques instants.
+              <h2 className="text-4xl font-display text-[var(--gray-900)] mb-4 tracking-tight">Consultez votre boîte.</h2>
+              <p className="text-[var(--gray-501)] text-lg leading-relaxed mb-10">
+                Un lien de réinitialisation a été envoyé à votre adresse e-mail.
               </p>
               
-              <div className="w-full bg-surface-container-low p-4 rounded-2xl flex items-center justify-center gap-3 mb-8">
-                <span className="text-[10px] uppercase font-bold tracking-widest text-outline">Renvoi possible dans</span>
-                <span className="font-mono text-primary font-bold">{countdown}s</span>
+              <div className="w-full bg-[var(--gray-50)] p-5 rounded-2xl flex items-center justify-between gap-4 mb-10 border border-[var(--gray-200)]">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-[var(--gray-501)]">Nouvel envoi possible</span>
+                <span className="font-mono text-[var(--gray-900)] font-black text-xl">{countdown}s</span>
               </div>
               
               <button 
                 onClick={handleResend} 
                 disabled={countdown > 0} 
-                className="text-primary disabled:text-outline text-sm font-bold hover:underline transition-all"
+                className="text-[var(--gray-900)] disabled:text-[var(--gray-400)] text-sm font-bold hover:underline underline-offset-8 transition-all"
               >
-                Renvoyer l'email de récupération
+                Renvoyer le lien de récupération
               </button>
 
-              <div className="mt-10 pt-8 border-t border-outline-variant/10 flex justify-center">
-                <Link className="text-outline text-sm font-bold flex items-center gap-2 hover:text-primary transition-colors" to="/login">
+              <div className="mt-12 pt-10 border-t border-[var(--gray-200)] flex justify-center">
+                <Link className="text-[var(--gray-501)] text-sm font-bold flex items-center gap-3 hover:text-[var(--gray-900)] transition-colors" to="/login">
                   <ArrowLeft size={18} />
                   Retour à la connexion
                 </Link>
@@ -143,10 +143,10 @@ const ForgotPasswordPage: React.FC = () => {
         </div>
       </main>
 
-      <div className="py-8 flex flex-col items-center gap-4">
-        <div className="flex items-center gap-2 text-xs text-outline font-medium">
-           <ShieldCheck size={14} className="text-primary" />
-           Sécurisé par AgroConnect BF
+      <div className="py-12 flex flex-col items-center gap-4">
+        <div className="flex items-center gap-3 text-sm text-[var(--gray-400)] font-bold uppercase tracking-widest">
+           <ShieldCheck size={16} className="text-[var(--green-600)]" />
+           Sécurité AgroConnect
         </div>
       </div>
       <VisitorFooter />

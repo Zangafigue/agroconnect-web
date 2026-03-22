@@ -1,70 +1,87 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@200..800&family=DM+Mono:wght@300..500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
 @import 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
 @import "tailwindcss";
+@import './theme.css';
 
 @theme {
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container: #dcf5d6;
-  --color-on-secondary-fixed: #00210d;
-  --color-surface-container-highest: #d0e9cb;
-  --color-on-error-container: #93000a;
-  --color-error: #ba1a1a;
-  --color-tertiary-fixed-dim: #ffb68e;
-  --color-surface-container-low: #e1fbdc;
-  --color-on-secondary: #ffffff;
-  --color-secondary-fixed: #b1f2be;
-  --color-on-secondary-fixed-variant: #12512c;
-  --color-on-background: #0c200d;
-  --color-outline-variant: #bdcaba;
-  --color-outline: #6e7b6c;
-  --color-background: #ebffe5;
-  --color-on-tertiary-fixed-variant: #763300;
-  --color-surface-dim: #c8e1c3;
-  --color-on-surface-variant: #3e4a3d;
-  --color-surface-variant: #d0e9cb;
-  --color-surface-container-high: #d6efd0;
-  --color-surface-bright: #ebffe5;
-  --color-primary-fixed-dim: #62df7d;
-  --color-on-secondary-container: #347047;
-  --color-surface: #ebffe5;
-  --color-on-primary-fixed-variant: #005320;
-  --color-secondary: #2e6a41;
-  --color-on-primary-fixed: #002109;
-  --color-inverse-surface: #213521;
-  --color-inverse-primary: #62df7d;
-  --color-tertiary: #984300;
-  --color-on-primary-container: #f7fff2;
-  --color-tertiary-container: #bb5810;
-  --color-surface-tint: #006e2d;
-  --color-tertiary-fixed: #ffdbca;
-  --color-primary: #006b2c;
-  --color-inverse-on-surface: #dff8d9;
-  --color-primary-fixed: #7ffc97;
-  --color-on-tertiary-fixed: #331200;
-  --color-on-primary: #ffffff;
-  --color-on-error: #ffffff;
-  --color-on-tertiary: #ffffff;
-  --color-error-container: #ffdad6;
-  --color-primary-container: #00873a;
-  --color-secondary-container: #b1f2be;
-  --color-on-surface: #0c200d;
-  --color-on-tertiary-container: #fffbff;
+  --font-display: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif-display: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-headline: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-newsreader: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-body: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
-  --font-headline: "Newsreader", serif;
-  --font-serif-display: "DM Serif Display", serif;
-  --font-body: "Plus Jakarta Sans", sans-serif;
-  --font-label: "Plus Jakarta Sans", sans-serif;
-  --font-mono: "DM Mono", monospace;
+  /* Fonds */
+  --color-page: var(--bg-page);
+  --color-surface: var(--bg-surface);
+  --color-muted: var(--bg-muted);
+  --color-subtle: var(--bg-subtle);
+
+  /* Textes */
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-caption: var(--text-muted); /* text-caption => var(--text-muted) */
+  --color-accent: var(--text-accent);
+  --color-inverse: var(--text-inverse);
+
+  /* Bordures */
+  --color-border-light: var(--border-light);
+  --color-border-medium: var(--border-medium);
+  --color-border-strong: var(--border-strong);
+  --color-border-accent: var(--border-accent);
+
+  /* UI Spécifiques */
+  --color-nav-bg: var(--nav-bg);
+  --color-nav-border: var(--nav-border);
+  --color-nav-text: var(--nav-text);
+  --color-nav-active: var(--nav-text-active);
+
+  --color-why-bg: var(--section-why-bg);
+  --color-cta-bg: var(--section-cta-bg);
+  --color-footer-bg: var(--section-footer-bg);
+  --color-hero-bg: var(--section-hero-bg);
+
+  --color-input-bg: var(--input-bg);
+  --color-input-border: var(--input-border);
+  --color-input-focus: var(--input-border-focus);
+  --color-input-placeholder: var(--input-placeholder);
+
+  --color-price: var(--price-color);
+
+  /* Vert de base */
+  --color-green-50: var(--green-50);
+  --color-green-100: var(--green-100);
+  --color-green-200: var(--green-200);
+  --color-green-300: var(--green-300);
+  --color-green-400: var(--green-400);
+  --color-green-500: var(--green-500);
+  --color-green-600: var(--green-600);
+  --color-green-700: var(--green-700);
+  --color-green-800: var(--green-800);
+  --color-green-900: var(--green-900);
+  --color-green-950: var(--green-950);
+
+  /* Couleurs Sémantiques */
+  --color-success: var(--color-success);
+  --color-success-bg: var(--color-success-bg);
+  --color-success-text: var(--color-success-text);
   
-  --radius-DEFAULT: 0.125rem;
-  --radius-lg: 0.25rem;
-  --radius-xl: 0.5rem;
-  --radius-full: 0.75rem;
+  --color-warning: var(--color-warning);
+  --color-warning-bg: var(--color-warning-bg);
+  --color-warning-text: var(--color-warning-text);
+  
+  --color-danger: var(--color-danger);
+  --color-danger-bg: var(--color-danger-bg);
+  --color-danger-text: var(--color-danger-text);
+  
+  --color-info: var(--color-info);
+  --color-info-bg: var(--color-info-bg);
+  --color-info-text: var(--color-info-text);
 }
 
 body {
-  background-color: var(--color-background);
-  color: var(--color-on-background);
+  background-color: var(--bg-page);
+  color: var(--text-primary);
   font-family: var(--font-body);
 }
 
@@ -74,7 +91,22 @@ body {
 }
 
 .bg-hero-field {
-  background-image: linear-gradient(rgba(0, 43, 18, 0.3), rgba(0, 43, 18, 0.5)), url('/home/zangafigue/.gemini/antigravity/brain/827e0c77-2634-44eb-adf7-a7c9ce45c815/burkina_farming_hero_1774107527524.png');
+  background-image: linear-gradient(rgba(0, 43, 18, 0.3), rgba(0, 43, 18, 0.5)), url('./assets/images/hero-bg.png');
   background-size: cover;
   background-position: center;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
 }

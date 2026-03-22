@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuthStore } from '../../store/authStore';
-import { Mail, Lock, Eye, EyeOff, AlertCircle, ArrowRight, ShieldCheck, Leaf, Tractor, Wheat } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, AlertCircle, ArrowRight, ShieldCheck, Leaf } from 'lucide-react';
 import VisitorFooter from '../../components/shared/VisitorFooter';
+import loginBg from '../../assets/images/login-bg.png';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -49,89 +50,61 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-on-surface font-body flex flex-col">
-      <main className="flex-grow flex flex-col md:flex-row">
-        {/* LEFT COLUMN - Visual/Premium */}
-        <section className="hidden md:flex md:w-[40%] bg-surface-container-low p-12 flex-col justify-between items-start sticky top-0 h-screen overflow-hidden">
-          <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-              <Leaf size={24} />
-            </div>
-            <span className="text-primary font-serif-display text-2xl tracking-tight">AgroConnect BF</span>
-          </Link>
+    <div className="min-h-screen bg-[var(--bg-page)] font-body flex flex-col">
+      <main className="flex-grow flex flex-col lg:flex-row">
+        {/* LEFT COLUMN - Background Image */}
+        <section className="hidden lg:flex lg:w-1/2 bg-[var(--gray-900)] p-12 flex-col justify-between items-start sticky top-0 h-screen overflow-hidden relative">
+          <img src={loginBg} alt="Background login" className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--gray-900)] via-[var(--gray-900)]/40 to-transparent"></div>
           
-          <div className="w-full flex flex-col gap-10 items-center relative py-20">
-            {/* Visual Cards */}
-            <div className="w-full max-w-[320px] bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-xl border border-outline-variant/20 -rotate-2 hover:rotate-0 transition-all duration-500 z-10">
-              <div className="flex justify-between items-start mb-4">
-                <div className="bg-primary/10 p-2 rounded-xl text-primary">
-                  <Wheat size={24} />
-                </div>
-                <span className="text-[10px] font-bold py-1 px-3 bg-primary text-white rounded-full">CERTIFIÉ</span>
-              </div>
-              <h4 className="font-headline text-xl font-bold mb-1">Maïs Blanc Premium</h4>
-              <p className="text-xs text-outline mb-6">Bobo-Dioulasso • 100 sacs disp.</p>
-              <div className="flex justify-between items-baseline">
-                <span className="text-primary font-bold text-2xl">18 500 <span className="text-xs uppercase">FCFA</span></span>
-                <span className="text-[10px] text-outline uppercase font-bold tracking-widest">Le sac</span>
-              </div>
+          <Link to="/" className="flex items-center gap-3 relative z-10 group">
+            <div className="w-12 h-12 bg-white text-[var(--section-why-bg)] rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+              <Leaf size={28} />
             </div>
+            <span className="text-white font-display text-3xl tracking-tight">AgroConnect <span className="text-[var(--green-600)]">BF</span></span>
+          </Link>
 
-            <div className="w-full max-w-[320px] bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-xl border border-outline-variant/20 rotate-3 translate-x-12 hover:rotate-0 transition-all duration-500">
-              <div className="flex justify-between items-start mb-4">
-                <div className="bg-primary/10 p-2 rounded-xl text-primary">
-                  <Tractor size={24} />
-                </div>
-                <span className="text-[10px] font-bold py-1 px-3 bg-secondary-container text-on-secondary-container rounded-full">EN TRANSIT</span>
-              </div>
-              <h4 className="font-headline text-xl font-bold mb-1">Logistique Sécurisée</h4>
-              <p className="text-xs text-outline mb-6">Suivi GPS • Livraison 48h</p>
-              <div className="flex -space-x-3">
-                 {[1,2,3].map(i => <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-200"></div>)}
-                 <div className="w-8 h-8 rounded-full border-2 border-white bg-primary text-[10px] flex items-center justify-center text-white font-bold">+12</div>
-              </div>
-            </div>
-          </div>
+            <div className="flex-grow"></div>
 
-          <div className="w-full">
-            <div className="flex items-center gap-3 text-primary bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm p-4 rounded-2xl border border-outline-variant/10">
-              <ShieldCheck size={20} />
-              <p className="font-medium text-sm">
-                Plus de 1 200 acteurs agricoles nous font confiance.
-              </p>
-            </div>
+          <div className="relative z-10 w-full">
+            <p className="text-white/60 text-sm font-medium flex items-center gap-2">
+              <span className="w-8 h-px bg-white/20"></span>
+              Propulsé par la vision d'un Burkina Faso prospère
+            </p>
           </div>
         </section>
 
         {/* RIGHT COLUMN - Form */}
-        <section className="flex-1 flex flex-col p-8 md:p-12 lg:p-20 justify-center relative">
-          <div className="absolute top-10 right-10 text-sm">
-            <span className="text-on-surface-variant">Pas encore inscrit ? </span>
-            <Link to="/register" className="text-primary font-bold hover:underline decoration-2 underline-offset-4">Créer un compte</Link>
+        <section className="flex-1 flex flex-col p-8 md:p-12 lg:p-24 justify-center bg-white relative">
+          <div className="absolute top-10 right-10 flex items-center gap-4 text-sm font-medium">
+            <span className="text-[var(--gray-501)]">Pas encore membre ?</span>
+            <Link to="/register" className="px-6 py-2.5 rounded-xl border border-[var(--gray-200)] text-[var(--gray-900)] hover:bg-[var(--gray-50)] transition-all font-bold">
+              Créer un compte
+            </Link>
           </div>
-          
-          <div className="max-w-[420px] w-full mx-auto">
-            <header className="mb-10 text-center md:text-left">
-              <h2 className="text-4xl font-serif-display text-on-surface mb-3">Bon retour !</h2>
-              <p className="text-on-surface-variant">Connectez-vous pour gérer vos activités sur AgroConnect BF.</p>
+
+          <div className="max-w-[440px] w-full mx-auto">
+            <header className="mb-12">
+              <h2 className="text-5xl font-display text-[var(--gray-900)] mb-4 tracking-tight">Bonjour.</h2>
+              <p className="text-[var(--gray-501)] text-lg leading-relaxed">Entrez vos identifiants pour accéder à votre espace sécurisé.</p>
             </header>
 
             {error && (
-              <div className="mb-8 bg-error-container text-on-error-container p-4 rounded-2xl flex items-center gap-3 text-sm animate-in fade-in slide-in-from-top">
-                <AlertCircle size={20} />
-                <span className="font-medium">{error}</span>
+              <div className="mb-8 p-4 bg-red-50 text-red-700 rounded-2xl border border-red-100 flex items-center gap-3 text-sm animate-in fade-in slide-in-from-top-2">
+                <AlertCircle size={20} className="shrink-0" />
+                <span className="font-semibold">{error}</span>
               </div>
             )}
 
             <form onSubmit={handleLogin} className="space-y-6">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-outline uppercase tracking-widest pl-1" htmlFor="email">Email</label>
+                <label className="text-[10px] font-bold text-[var(--gray-501)] uppercase tracking-[0.2em] pl-1" htmlFor="email">Adresse E-mail</label>
                 <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline group-focus-within:text-primary transition-colors">
+                  <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-[var(--gray-400)] group-focus-within:text-[var(--gray-900)] transition-colors">
                     <Mail size={20} />
                   </div>
                   <input 
-                    className="w-full pl-12 pr-4 py-4 bg-surface-container-low border border-transparent rounded-2xl focus:ring-2 focus:ring-primary focus:bg-white focus:border-primary/20 transition-all text-on-surface placeholder:text-outline/40 outline-none" 
+                    className="w-full pl-14 pr-4 py-5 bg-[var(--gray-50)] border border-transparent rounded-2xl focus:ring-2 focus:ring-[var(--gray-900)] focus:bg-white focus:border-[var(--gray-200)] transition-all text-[var(--gray-900)] placeholder:text-[var(--gray-400)] outline-none font-medium" 
                     id="email" 
                     type="email"
                     required
@@ -144,15 +117,15 @@ const LoginPage: React.FC = () => {
 
               <div className="space-y-2">
                 <div className="flex justify-between items-end pl-1">
-                  <label className="text-xs font-bold text-outline uppercase tracking-widest" htmlFor="password">Mot de passe</label>
-                  <Link to="/forgot-password" university-none className="text-xs text-primary hover:underline font-bold">Oublié ?</Link>
+                  <label className="text-[10px] font-bold text-[var(--gray-501)] uppercase tracking-[0.2em]" htmlFor="password">Mot de passe</label>
+                  <Link to="/forgot-password" underline-none className="text-[10px] text-[var(--gray-501)] hover:text-[var(--gray-900)] font-bold uppercase tracking-widest transition-colors">Oublié ?</Link>
                 </div>
                 <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline group-focus-within:text-primary transition-colors">
+                  <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-[var(--gray-400)] group-focus-within:text-[var(--gray-900)] transition-colors">
                     <Lock size={20} />
                   </div>
                   <input 
-                    className="w-full pl-12 pr-12 py-4 bg-surface-container-low border border-transparent rounded-2xl focus:ring-2 focus:ring-primary focus:bg-white focus:border-primary/20 transition-all text-on-surface placeholder:text-outline/40 outline-none" 
+                    className="w-full pl-14 pr-14 py-5 bg-[var(--gray-50)] border border-transparent rounded-2xl focus:ring-2 focus:ring-[var(--gray-900)] focus:bg-white focus:border-[var(--gray-200)] transition-all text-[var(--gray-900)] placeholder:text-[var(--gray-400)] outline-none font-medium" 
                     id="password" 
                     type={showPassword ? "text" : "password"}
                     required
@@ -162,7 +135,7 @@ const LoginPage: React.FC = () => {
                   />
                   <button 
                     onClick={() => setShowPassword(!showPassword)} 
-                    className="absolute inset-y-0 right-0 pr-4 flex items-center text-outline hover:text-primary transition-colors" 
+                    className="absolute inset-y-0 right-0 pr-5 flex items-center text-[var(--gray-400)] hover:text-[var(--gray-900)] transition-colors" 
                     type="button"
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
@@ -172,37 +145,29 @@ const LoginPage: React.FC = () => {
 
               <button 
                 disabled={loading} 
-                className="w-full bg-primary text-white py-4 rounded-2xl font-bold flex justify-center items-center gap-2 group hover:bg-primary-container hover:text-on-primary-container shadow-lg shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed transition-all active:scale-[0.98] mt-4" 
+                className="w-full bg-[var(--gray-900)] text-white py-5 rounded-2xl font-bold flex justify-center items-center gap-3 group hover:shadow-2xl hover:bg-black active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed transition-all mt-8 shadow-xl shadow-[var(--gray-900)]/10" 
                 type="submit"
               >
-                {loading ? 'Connexion en cours...' : 'Se connecter'}
-                {!loading && <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />}
+                {loading ? 'Vérification...' : 'Se connecter'}
+                {!loading && <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />}
               </button>
             </form>
 
-            {notVerifiedError && (
-              <div className="mt-8 p-5 bg-warning-container text-on-warning-container rounded-2xl border border-warning/20 flex flex-col gap-3">
-                <div className="flex items-center gap-2 font-bold">
-                   <AlertCircle size={20} />
-                   <span>Vérification requise</span>
-                </div>
-                <p className="text-sm opacity-90">Votre email n'est pas encore vérifié. Veuillez entrer le code reçu.</p>
-                <button onClick={() => navigate('/verify-otp')} className="w-full py-2 bg-on-warning-container text-white rounded-xl font-bold text-sm">
-                  Vérifier maintenant
-                </button>
-              </div>
-            )}
-
-            <div className="relative my-12">
-               <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-outline-variant/20"></div></div>
-               <div className="relative flex justify-center text-[10px] font-bold uppercase tracking-[0.3em] text-outline">
-                 <span className="px-4 bg-background">OU</span>
-               </div>
+            <div className="mt-16 flex items-center gap-4 text-[var(--gray-400)]">
+               <div className="flex-grow h-px bg-[var(--gray-200)]"></div>
+               <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Confiance & Sécurité</span>
+               <div className="flex-grow h-px bg-[var(--gray-200)]"></div>
             </div>
 
-            <div className="text-center text-xs text-outline font-medium flex items-center justify-center gap-2">
-               <ShieldCheck size={14} className="text-primary" />
-               Connexion 256-bit SSL sécurisée
+            <div className="mt-8 grid grid-cols-2 gap-4">
+               <div className="p-4 bg-[var(--gray-50)] rounded-2xl border border-[var(--gray-200)]/50 flex items-center gap-3">
+                  <ShieldCheck size={18} className="text-[var(--green-600)]" />
+                  <span className="text-[10px] font-bold text-[var(--gray-900)] uppercase tracking-tight">SSL 256-bit</span>
+               </div>
+               <div className="p-4 bg-[var(--gray-50)] rounded-2xl border border-[var(--gray-200)]/50 flex items-center gap-3">
+                  <Lock size={18} className="text-[var(--green-600)]" />
+                  <span className="text-[10px] font-bold text-[var(--gray-900)] uppercase tracking-tight">RGPD Burkina</span>
+               </div>
             </div>
           </div>
         </section>

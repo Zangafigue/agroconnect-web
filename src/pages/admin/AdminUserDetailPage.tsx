@@ -160,7 +160,7 @@ const AdminUserDetailPage: React.FC = () => {
               <p className="text-[10px] text-outline uppercase font-bold tracking-[0.2em] mb-3">Litiges Actifs</p>
               <div className="flex items-end justify-between">
                 <h3 className="font-serif-display text-3xl font-bold text-error">1</h3>
-                <span className="px-3 py-1 bg-error/10 text-error text-[9px] font-bold rounded-full mb-1 border border-error/10 uppercase tracking-tighter">OUVERT</span>
+                <span className="px-3 py-1 bg-error/10 text-error text-[9px] font-bold rounded-full mb-1 border border-error/10 uppercase tracking-tight">OUVERT</span>
               </div>
               <p className="text-[10px] text-outline font-medium mt-2 italic underline cursor-pointer">Voir l'incident #LTG-882</p>
             </div>

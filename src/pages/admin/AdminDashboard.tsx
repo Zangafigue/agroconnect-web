@@ -133,9 +133,9 @@ const AdminDashboard: React.FC = () => {
           <h3 className="font-serif-display text-2xl text-on-surface mb-10">Communauté</h3>
           <div className="flex-1 flex items-center justify-center relative scale-110">
             <svg className="w-48 h-48 -rotate-90">
-              <circle cx="96" cy="96" fill="transparent" r="80" stroke="#f0fdf4" strokeWidth="24"></circle>
-              <circle cx="96" cy="96" fill="transparent" r="80" stroke="#006b2c" strokeDasharray="502" strokeDashoffset="150" strokeLinecap="round" strokeWidth="24"></circle>
-              <circle cx="96" cy="96" fill="transparent" r="80" stroke="#984300" strokeDasharray="502" strokeDashoffset="400" strokeLinecap="round" strokeWidth="16"></circle>
+              <circle cx="96" cy="96" fill="transparent" r="80" stroke="var(--color-surface-container-low)" strokeWidth="24"></circle>
+              <circle cx="96" cy="96" fill="transparent" r="80" stroke="var(--color-primary)" strokeDasharray="502" strokeDashoffset="150" strokeLinecap="round" strokeWidth="24"></circle>
+              <circle cx="96" cy="96" fill="transparent" r="80" stroke="var(--color-tertiary)" strokeDasharray="502" strokeDashoffset="400" strokeLinecap="round" strokeWidth="16"></circle>
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className="text-3xl font-serif-display font-bold text-on-surface">1.1K+</span>
