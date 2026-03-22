@@ -4,15 +4,16 @@ import {
   ChevronRight, 
   CheckCircle2, 
   Star, 
-  Inventory, 
-  PersonAdd, 
+  Package, 
+  UserPlus, 
   LogIn, 
   ArrowRight, 
   Loader2,
   MapPin,
   Tag,
   Info,
-  ShoppingBag
+  ShoppingBag,
+  ShieldCheck
 } from 'lucide-react';
 import VisitorHeader from '../../components/shared/VisitorHeader';
 import VisitorFooter from '../../components/shared/VisitorFooter';
@@ -156,7 +157,7 @@ const ProductDetailPage: React.FC = () => {
                       onClick={() => navigate('/register')} 
                       className="w-full bg-primary text-white py-4.5 rounded-2xl font-bold shadow-xl shadow-primary/20 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3 text-lg"
                     >
-                      <PersonAdd size={22} /> S'inscrire
+                      <UserPlus size={22} /> S'inscrire
                     </button>
                     <button 
                       onClick={() => navigate('/login')} 
