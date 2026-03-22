@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Users, 
@@ -14,21 +14,43 @@ import {
   CheckCircle2,
   Truck
 } from 'lucide-react';
+import { useProductStore } from '../../store/productStore';
+import { useUserStore } from '../../store/userStore';
+import { useOrderStore } from '../../store/orderStore';
+import { formatFCFA } from '../../utils/currency';
 
-export default function AdminDashboard() {
+const AdminDashboard: React.FC = () => {
+  const { products, fetchProducts } = useProductStore() as any;
+  const { users, fetchUsers } = useUserStore() as any;
+  const { orders, fetchOrders } = useOrderStore() as any;
+
+  useEffect(() => {
+    fetchProducts();
+    fetchUsers();
+    fetchOrders();
+  }, [fetchProducts, fetchUsers, fetchOrders]);
+
+  const stats = [
+    { label: 'Utilisateurs', value: users.length > 0 ? users.length.toLocaleString() : '1 122', trend: '+8 ce mois', icon: Users, color: 'primary' },
+    { label: 'Produits actifs', value: products.length > 0 ? products.length.toLocaleString() : '847', icon: Package, color: 'secondary' },
+    { label: 'Commandes', value: orders.length > 0 ? orders.length.toLocaleString() : '1 204', icon: ShoppingBag, color: 'tertiary' },
+    { label: "Volume d'affaires", value: '42.5M FCFA', trend: '+12%', icon: TrendingUp, color: 'primary-container' },
+  ];
+
+  const latestOrders = orders.length > 0 ? orders.slice(0, 5) : [
+    { id: "CMD-2024-089", product: "Oignon rouge (100kg)", buyer: "S. Traoré", amount: 85000, status: "CONFIRMÉE", color: 'primary' },
+    { id: "CMD-2024-090", product: "Tomate locale (25kg)", buyer: "Hotel des Arts", amount: 12500, status: "EN TRANSIT", color: 'tertiary' },
+    { id: "CMD-2024-091", product: "Maïs blanc (500kg)", buyer: "Agro-Poul", amount: 115000, status: "LIBÉRÉ", color: 'primary' }
+  ];
+
   return (
     <div className="space-y-10 pb-12 animate-in fade-in duration-700">
       {/* KPI Row */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[
-          { label: 'Utilisateurs', value: '1 122', trend: '+8 ce mois', icon: Users, color: 'primary' },
-          { label: 'Produits actifs', value: '847', icon: Package, color: 'secondary' },
-          { label: 'Commandes', value: '1 204', icon: ShoppingBag, color: 'tertiary' },
-          { label: "Volume d'affaires", value: '42.5M FCFA', trend: '+12%', icon: TrendingUp, color: 'primary-container' },
-        ].map((kpi, idx) => (
+        {stats.map((kpi, idx) => (
           <div key={idx} className="bg-surface-container-lowest p-6 rounded-3xl border border-outline-variant/10 hover:shadow-lg transition-all group">
             <div className="flex justify-between items-start mb-4">
-              <div className={`p-3 rounded-2xl bg-${kpi.color}/10 text-${kpi.color} group-hover:bg-${kpi.color} group-hover:text-white transition-colors`}>
+              <div className={`p-3 rounded-2xl bg-surface-container-high text-${kpi.color} group-hover:bg-primary group-hover:text-white transition-colors`}>
                 <kpi.icon size={24} />
               </div>
               {kpi.trend && (
@@ -77,7 +99,7 @@ export default function AdminDashboard() {
       {/* Analytics Bento */}
       <section className="grid grid-cols-12 gap-6">
         {/* Order Chart */}
-        <div className="col-span-12 lg:col-span-8 bg-surface-container-lowest p-8 rounded-[2rem] border border-outline-variant/10">
+        <div className="col-span-12 lg:col-span-8 bg-surface-container-lowest p-8 rounded-[2.5rem] border border-outline-variant/10">
           <div className="flex justify-between items-center mb-12">
             <div>
               <h3 className="font-serif-display text-2xl text-on-surface mb-1">Commandes</h3>
@@ -107,13 +129,13 @@ export default function AdminDashboard() {
         </div>
 
         {/* Distribution Chart */}
-        <div className="col-span-12 lg:col-span-4 bg-surface-container-lowest p-8 rounded-[2rem] border border-outline-variant/10 flex flex-col">
+        <div className="col-span-12 lg:col-span-4 bg-surface-container-lowest p-8 rounded-[2.5rem] border border-outline-variant/10 flex flex-col">
           <h3 className="font-serif-display text-2xl text-on-surface mb-10">Communauté</h3>
           <div className="flex-1 flex items-center justify-center relative scale-110">
             <svg className="w-48 h-48 -rotate-90">
               <circle cx="96" cy="96" fill="transparent" r="80" stroke="#f0fdf4" strokeWidth="24"></circle>
-              <circle cx="96" cy="96" fill="transparent" r="80" stroke="#00c853" strokeDasharray="502" strokeDashoffset="150" strokeLinecap="round" strokeWidth="24"></circle>
-              <circle cx="96" cy="96" fill="transparent" r="80" stroke="#fb8c00" strokeDasharray="502" strokeDashoffset="400" strokeLinecap="round" strokeWidth="16"></circle>
+              <circle cx="96" cy="96" fill="transparent" r="80" stroke="#006b2c" strokeDasharray="502" strokeDashoffset="150" strokeLinecap="round" strokeWidth="24"></circle>
+              <circle cx="96" cy="96" fill="transparent" r="80" stroke="#984300" strokeDasharray="502" strokeDashoffset="400" strokeLinecap="round" strokeWidth="16"></circle>
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className="text-3xl font-serif-display font-bold text-on-surface">1.1K+</span>
@@ -122,8 +144,8 @@ export default function AdminDashboard() {
           </div>
           <div className="mt-10 space-y-4">
             {[
-              { label: 'Agriculteurs', value: '70%', color: 'bg-[#00c853]' },
-              { label: 'Acheteurs', value: '20%', color: 'bg-[#fb8c00]' },
+              { label: 'Agriculteurs', value: '70%', color: 'bg-primary' },
+              { label: 'Acheteurs', value: '20%', color: 'bg-tertiary' },
               { label: 'Transporteurs', value: '10%', color: 'bg-outline' },
             ].map((item) => (
               <div key={item.label} className="flex items-center justify-between p-3 rounded-2xl hover:bg-surface-container-low transition-colors">
@@ -158,20 +180,15 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody className="text-sm divide-y divide-outline-variant/5">
-              {[
-                { ref: '#CMD-2024-089', prod: 'Oignon rouge (100kg)', user: 'S. Traoré', price: '85 000 F', status: 'Confirmée', color: 'primary' },
-                { ref: '#CMD-2024-090', prod: 'Tomate locale (25kg)', user: 'Hotel des Arts', price: '12 500 F', status: 'En Transit', color: 'tertiary' },
-                { ref: '#CMD-2024-091', prod: 'Maïs blanc (500kg)', user: 'Agro-Poul', price: '115 000 F', status: 'Libéré', color: 'primary' },
-                { ref: '#CMD-2024-092', prod: 'Beurre Karité (5L)', user: 'M. Konaté', price: '25 000 F', status: 'Confirmée', color: 'primary' },
-              ].map((row, i) => (
+              {latestOrders.map((row: any, i: number) => (
                 <tr key={i} className="hover:bg-surface-container-low/30 transition-colors group">
-                  <td className="p-6 font-mono font-bold text-outline text-xs">{row.ref}</td>
-                  <td className="p-6 font-headline font-bold text-on-surface">{row.prod}</td>
-                  <td className="p-6 text-on-surface-variant font-medium">{row.user}</td>
-                  <td className="p-6 font-serif-display text-lg">{row.price}</td>
+                  <td className="p-6 font-mono font-bold text-outline text-xs">#{row.id || row.ref}</td>
+                  <td className="p-6 font-headline font-bold text-on-surface">{row.product || row.prod}</td>
+                  <td className="p-6 text-on-surface-variant font-medium">{row.buyer || row.user}</td>
+                  <td className="p-6 font-serif-display text-lg">{typeof row.amount === 'number' ? formatFCFA(row.amount) : row.price}</td>
                   <td className="p-6">
-                    <div className={`flex items-center justify-center gap-2 bg-${row.color}/10 text-${row.color} px-4 py-1.5 rounded-full text-[10px] font-bold uppercase`}>
-                      <div className={`w-1.5 h-1.5 bg-${row.color} rounded-full animate-pulse`}></div>
+                    <div className={`flex items-center justify-center gap-2 bg-${row.color || 'primary'}/10 text-${row.color || 'primary'} px-4 py-1.5 rounded-full text-[10px] font-bold uppercase`}>
+                      <div className={`w-1.5 h-1.5 bg-${row.color || 'primary'} rounded-full animate-pulse`}></div>
                       {row.status}
                     </div>
                   </td>
@@ -183,4 +200,6 @@ export default function AdminDashboard() {
       </section>
     </div>
   );
-}
+};
+
+export default AdminDashboard;

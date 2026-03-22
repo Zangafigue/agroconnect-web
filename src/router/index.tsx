@@ -13,20 +13,47 @@ const Loader = () => (
   </div>
 );
 
-// Public & Auth
+// Helper for Private Routes
+const PrivateRoute = ({ roles }: { roles?: string[] }) => {
+  const { token, user } = useAuthStore() as any;
+  
+  if (!token) return <Navigate to="/login" replace />;
+  if (roles && roles.length > 0 && !roles.includes(user?.role)) {
+    return <Navigate to="/" replace />;
+  }
+
+  return (
+    <Layout>
+      <Suspense fallback={<Loader />}>
+        <Outlet />
+      </Suspense>
+    </Layout>
+  );
+};
+
+const suspenseWrapper = (Component: React.ComponentType) => (
+  <Suspense fallback={<Loader />}>
+    <Component />
+  </Suspense>
+);
+
+// Public Pages
 const HomePage = lazy(() => import('../pages/visitor/HomePage'));
 const CatalogPage = lazy(() => import('../pages/visitor/CatalogPage'));
 const ProductDetailPage = lazy(() => import('../pages/visitor/ProductDetailPage'));
+const ProducersPage = lazy(() => import('../pages/visitor/ProducersPage'));
+const HowItWorksPage = lazy(() => import('../pages/visitor/HowItWorksPage'));
+const NewsPage = lazy(() => import('../pages/visitor/NewsPage'));
+const AboutPage = lazy(() => import('../pages/visitor/AboutPage'));
+const FarmersLandingPage = lazy(() => import('../pages/visitor/FarmersLandingPage'));
+const TransportersLandingPage = lazy(() => import('../pages/visitor/TransportersLandingPage'));
+
+// Auth Pages
 const LoginPage = lazy(() => import('../pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('../pages/auth/RegisterPage'));
 const VerifyOtpPage = lazy(() => import('../pages/auth/VerifyOtpPage'));
 const ForgotPasswordPage = lazy(() => import('../pages/auth/ForgotPasswordPage'));
 const ResetPasswordPage = lazy(() => import('../pages/auth/ResetPasswordPage'));
-
-// New Visitor Pages
-const ProducersPage = lazy(() => import('../pages/visitor/ProducersPage'));
-const HowItWorksPage = lazy(() => import('../pages/visitor/HowItWorksPage'));
-const NewsPage = lazy(() => import('../pages/visitor/NewsPage'));
 
 // Shared
 const MessagingPage = lazy(() => import('../pages/shared/MessagingPage'));
@@ -72,38 +99,17 @@ const AdminPaymentsPage = lazy(() => import('../pages/admin/AdminPaymentsPage'))
 const AdminStatsPage = lazy(() => import('../pages/admin/AdminStatsPage'));
 const AdminSettingsPage = lazy(() => import('../pages/admin/AdminSettingsPage'));
 
-// Helper for Private Routes
-const PrivateRoute = ({ roles }: { roles?: string[] }) => {
-  const { token, user } = useAuthStore() as any;
-  
-  if (!token) return <Navigate to="/login" replace />;
-  if (roles && roles.length > 0 && !roles.includes(user?.role)) {
-    return <Navigate to="/" replace />;
-  }
-
-  return (
-    <Layout>
-      <Suspense fallback={<Loader />}>
-        <Outlet />
-      </Suspense>
-    </Layout>
-  );
-};
-
-const suspenseWrapper = (Component: React.ComponentType) => (
-  <Suspense fallback={<Loader />}>
-    <Component />
-  </Suspense>
-);
-
 export const router = createBrowserRouter([
   // Public
   { path: '/', element: suspenseWrapper(HomePage) },
   { path: '/catalog', element: suspenseWrapper(CatalogPage) },
   { path: '/catalog/:id', element: suspenseWrapper(ProductDetailPage) },
   { path: '/producers', element: suspenseWrapper(ProducersPage) },
+  { path: '/farmers', element: suspenseWrapper(FarmersLandingPage) },
+  { path: '/transporters', element: suspenseWrapper(TransportersLandingPage) },
   { path: '/how-it-works', element: suspenseWrapper(HowItWorksPage) },
   { path: '/news', element: suspenseWrapper(NewsPage) },
+  { path: '/about', element: suspenseWrapper(AboutPage) },
   
   // Auth
   { path: '/login', element: suspenseWrapper(LoginPage) },

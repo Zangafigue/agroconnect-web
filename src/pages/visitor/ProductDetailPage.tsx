@@ -1,198 +1,216 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { 
-  ArrowLeft, MapPin, ShieldCheck, Truck, 
-  MessageSquare, User, Tag, Share2, Heart, 
-  Loader2, BadgeCheck 
+  ChevronRight, 
+  CheckCircle2, 
+  Star, 
+  Inventory, 
+  PersonAdd, 
+  LogIn, 
+  ArrowRight, 
+  Loader2,
+  MapPin,
+  Tag,
+  Info,
+  ShoppingBag
 } from 'lucide-react';
 import VisitorHeader from '../../components/shared/VisitorHeader';
 import VisitorFooter from '../../components/shared/VisitorFooter';
-
-interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  price: number;
-  unit: string;
-  category: string;
-  images: string[];
-  city: string;
-  address: string;
-  available: boolean;
-  seller: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    phone?: string;
-  };
-}
+import ProductCard from '../../components/shared/ProductCard';
+import { useProductStore } from '../../store/productStore';
+import { getSellerName, getSellerInitials } from '../../utils/seller';
+import { formatFCFA } from '../../utils/currency';
 
 const ProductDetailPage: React.FC = () => {
-  const { id } = useParams();
   const navigate = useNavigate();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [activeImage, setActiveImage] = useState(0);
+  const { id } = useParams<{ id: string }>();
+  const { fetchProductById, loading, products } = useProductStore() as any;
+  const [product, setProduct] = useState<any>(null);
 
   useEffect(() => {
-    fetchProduct();
-  }, [id]);
+    const loadProduct = async () => {
+      if (id) {
+        const data = await fetchProductById(id);
+        if (data) setProduct(data);
+      }
+    };
+    loadProduct();
+  }, [id, fetchProductById]);
 
-  const fetchProduct = async () => {
-    setLoading(true);
-    try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/products/${id}`);
-      setProduct(response.data);
-    } catch (error) {
-      console.error("Erreur détails produit:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const similarProducts = Array.isArray(products)
+    ? products
+        .filter((p: any) => p.category === product?.category && (p._id || p.id) !== (product?._id || product?.id))
+        .slice(0, 4)
+    : [];
 
-  if (loading) {
+  if (loading || !product) {
     return (
-      <div className="min-h-screen flex flex-col bg-background">
-        <VisitorHeader />
-        <div className="flex-grow flex items-center justify-center">
-          <Loader2 className="animate-spin text-primary" size={48} />
-        </div>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-6">
+        <Loader2 className="animate-spin text-primary" size={64} />
+        <p className="text-on-surface-variant font-bold text-xl font-headline animate-pulse">Déterrage des infos du produit...</p>
       </div>
     );
   }
-
-  if (!product) {
-    return (
-      <div className="min-h-screen flex flex-col bg-background">
-        <VisitorHeader />
-        <div className="flex-grow flex flex-col items-center justify-center gap-6 p-4">
-           <h2 className="text-2xl font-bold">Produit introuvable</h2>
-           <button onClick={() => navigate('/catalog')} className="px-6 py-3 bg-primary text-white rounded-xl font-bold">
-             Retour au catalogue
-           </button>
-        </div>
-      </div>
-    );
-  }
-
-  const defaultImage = "https://images.unsplash.com/photo-1595113316349-9fa4ee24f884?auto=format&fit=crop&q=80&w=1200";
 
   return (
-    <div className="min-h-screen bg-background text-on-surface font-body flex flex-col">
+    <div className="bg-background text-on-background font-body antialiased min-h-screen selection:bg-primary-container selection:text-on-primary-container">
       <VisitorHeader />
-      
-      <main className="flex-grow pt-24 pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Breadcrumbs / Back Button */}
-          <div className="mb-8">
-            <button 
-              onClick={() => navigate(-1)}
-              className="group flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors text-sm font-bold"
-            >
-              <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-              Retour aux résultats
-            </button>
-          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Gallery Portion */}
-            <div className="space-y-4">
-              <div className="aspect-[4/3] rounded-[2.5rem] overflow-hidden bg-surface-container-low border border-outline-variant/20 shadow-lg">
-                <img 
-                  src={product.images?.[activeImage] || defaultImage} 
-                  alt={product.name}
-                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
-                />
-              </div>
-              <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-none">
-                {product.images?.map((img, idx) => (
-                  <button 
-                    key={idx}
-                    onClick={() => setActiveImage(idx)}
-                    className={`w-24 h-24 rounded-2xl flex-shrink-0 overflow-hidden border-2 transition-all ${
-                      activeImage === idx ? 'border-primary shadow-md' : 'border-transparent hover:border-primary/30'
-                    }`}
-                  >
-                    <img src={img} alt="Miniature" className="w-full h-full object-cover" />
-                  </button>
-                ))}
+      <main className="max-w-7xl mx-auto px-6 lg:px-8 py-24">
+        {/* Breadcrumbs */}
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm text-outline mb-12 bg-surface-container-low w-fit px-4 py-2 rounded-full border border-outline-variant/10">
+          <Link className="hover:text-primary transition-colors font-bold" to="/catalog">Catalogue</Link>
+          <ChevronRight size={14} className="text-outline-variant" />
+          <span className="text-primary font-bold">{product.category}</span>
+          <ChevronRight size={14} className="text-outline-variant" />
+          <span className="text-on-background font-medium truncate max-w-[200px]">{product.name}</span>
+        </nav>
+
+        <div className="grid grid-cols-1 lg:grid-cols-[60%_40%] gap-16">
+          {/* Main Visual Sub-Page */}
+          <div className="space-y-10">
+            <div className="relative group overflow-hidden rounded-[3rem] shadow-2xl">
+              <img 
+                alt={product.name} 
+                className="w-full h-[550px] object-cover transition-transform duration-1000 group-hover:scale-110" 
+                src={product.image || product.images?.[0]}
+              />
+              <div className="absolute top-8 left-8 flex gap-3">
+                <span className="bg-white/90 backdrop-blur-md text-primary px-5 py-2 rounded-2xl text-xs font-black tracking-widest uppercase shadow-xl border border-primary/10">
+                  {product.category}
+                </span>
+                <span className="bg-green-500/90 backdrop-blur-md text-white px-5 py-2 rounded-2xl text-xs font-black tracking-widest flex items-center gap-2 shadow-xl">
+                  <CheckCircle2 size={16} /> DISPONIBLE
+                </span>
               </div>
             </div>
 
-            {/* Info Portion */}
-            <div className="flex flex-col">
-              <div className="flex items-center gap-3 mb-4">
-                 <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-[10px] font-bold uppercase tracking-widest">{product.category}</span>
-                 <div className="flex items-center gap-1 text-on-surface-variant text-xs font-medium">
-                    <MapPin size={14} className="text-primary" />
-                    <span>{product.city}, Burkina Faso</span>
-                 </div>
-              </div>
-
-              <h1 className="text-4xl md:text-5xl font-serif-display leading-tight mb-4">{product.name}</h1>
-              <div className="flex items-baseline gap-2 mb-8">
-                <span className="text-3xl font-bold text-primary">{product.price.toLocaleString()}</span>
-                <span className="text-lg font-bold text-primary uppercase">FCFA</span>
-                <span className="text-outline">/ {product.unit}</span>
-              </div>
-
-              <div className="p-6 bg-surface-container-low rounded-3xl border border-outline-variant/10 mb-8">
-                <h3 className="text-sm font-bold uppercase tracking-widest text-outline mb-4">Description</h3>
-                <p className="text-on-surface-variant leading-relaxed text-sm">
-                  {product.description}
+            <div className="bg-white p-10 rounded-[3rem] border border-outline-variant/10 shadow-sm">
+                <h2 className="text-2xl font-serif-display mb-6 flex items-center gap-3">
+                    <Info size={24} className="text-primary" /> Description détaillée
+                </h2>
+                <p className="text-on-surface-variant leading-relaxed text-lg font-body">
+                   {product.description || "Produit de qualité supérieure cultivé avec soin au Burkina Faso. Garanti frais et conforme aux standards de qualité exigeants de la plateforme AgroConnect BF. Ce lot a été vérifié par nos agents de zone pour garantir traçabilité et conformité."}
                 </p>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 mb-10">
-                 <button className="flex-1 px-8 py-5 bg-primary text-white font-bold rounded-2xl shadow-xl shadow-primary/20 hover:bg-primary-container hover:text-on-primary-container active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                   <MessageSquare size={20} />
-                   Contacter le vendeur
-                 </button>
-                 <button className="px-8 py-5 bg-white dark:bg-slate-900 border-2 border-primary text-primary font-bold rounded-2xl hover:bg-primary/5 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
-                   <Truck size={20} />
-                   Calculer livraison
-                 </button>
-              </div>
-
-              <div className="flex items-center justify-between pt-8 border-t border-outline-variant/20">
-                <div className="flex items-center gap-4">
-                   <div className="w-12 h-12 bg-surface-container-high rounded-full flex items-center justify-center text-primary">
-                      <User size={24} />
+                <div className="mt-10 grid grid-cols-2 md:grid-cols-3 gap-6">
+                   <div className="bg-surface-container-low p-6 rounded-3xl text-center border border-outline-variant/5">
+                      <p className="text-[10px] font-black text-outline uppercase tracking-wider mb-2">Origine</p>
+                      <p className="font-bold text-on-surface">{product.location || product.city}</p>
                    </div>
-                   <div>
-                      <div className="flex items-center gap-1">
-                        <p className="font-bold text-sm">{product.seller?.firstName} {product.seller?.lastName}</p>
-                        <BadgeCheck size={14} className="text-primary fill-primary/10" />
-                      </div>
-                      <p className="text-[10px] text-outline uppercase font-bold tracking-[0.1em]">Producteur Vérifié</p>
+                   <div className="bg-surface-container-low p-6 rounded-3xl text-center border border-outline-variant/5">
+                      <p className="text-[10px] font-black text-outline uppercase tracking-wider mb-2">Certifié</p>
+                      <CheckCircle2 className="mx-auto text-primary" size={24} />
+                   </div>
+                   <div className="bg-surface-container-low p-6 rounded-3xl text-center border border-outline-variant/5">
+                      <p className="text-[10px] font-black text-outline uppercase tracking-wider mb-2">Récolte</p>
+                      <p className="font-bold text-on-surface">Récente</p>
                    </div>
                 </div>
-                <div className="flex gap-2">
-                   <button className="p-3 rounded-full hover:bg-surface-container-high transition-colors text-outline">
-                      <Heart size={20} />
-                   </button>
-                   <button className="p-3 rounded-full hover:bg-surface-container-high transition-colors text-outline">
-                      <Share2 size={20} />
-                   </button>
-                </div>
-              </div>
             </div>
           </div>
+          
+          {/* Action Sidebar */}
+          <div className="flex flex-col space-y-10">
+            <div className="bg-white p-10 rounded-[3.5rem] border-2 border-primary/5 shadow-2xl relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16"></div>
+               
+               <div className="mb-8">
+                  <h1 className="text-4xl md:text-5xl font-serif-display text-on-surface mb-4 leading-tight">
+                    {product.name}
+                  </h1>
+                  <div className="flex items-baseline gap-3 mb-6">
+                    <span className="text-4xl font-mono font-black text-primary">{formatFCFA(product.price)}</span>
+                    <span className="text-outline-variant text-xl font-medium">/ {product.unit}</span>
+                  </div>
+                  <div className="flex items-center gap-3 py-3 px-5 bg-green-50 text-green-700 rounded-2xl w-fit border border-green-100 font-bold text-sm">
+                    <ShoppingBag size={18} />
+                    Stock : {product.stock || '10+'} unités
+                  </div>
+               </div>
 
-          {/* Trust Banner */}
-          <div className="mt-20 p-8 bg-surface-container-highest rounded-3xl flex flex-col md:flex-row items-center justify-between gap-8 border border-outline-variant/10">
-            <div className="flex items-center gap-4">
-               <ShieldCheck className="text-primary" size={40} />
-               <div>
-                 <h4 className="font-bold text-lg">Achat Sécurisé</h4>
-                 <p className="text-sm text-on-surface-variant">Vos fonds sont protégés par le système Escrow AgroConnect jusqu'à la livraison.</p>
+               {/* Seller Card */}
+               <div className="bg-surface-container-lowest p-6 rounded-[2rem] border border-outline-variant/20 mb-8 flex items-center gap-5 hover:bg-white hover:shadow-xl transition-all group">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black text-2xl group-hover:scale-110 transition-transform">
+                    {getSellerInitials(product.seller)}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className="font-bold text-on-surface text-lg">{getSellerName(product.seller)}</h3>
+                      <div className="flex items-center gap-1 text-sm font-black text-tertiary">
+                        <Star size={14} fill="currentColor" />
+                        4.8
+                      </div>
+                    </div>
+                    <p className="text-xs font-bold text-outline-variant uppercase tracking-widest flex items-center gap-1">
+                       <MapPin size={10} /> {product.location || product.city}
+                    </p>
+                  </div>
+               </div>
+
+               {/* CTA Card */}
+               <div className="bg-primary/5 rounded-[2.5rem] p-8 border border-primary/10">
+                  <h4 className="font-bold text-xl mb-3 text-on-surface">Intéressé ?</h4>
+                  <p className="text-on-surface-variant text-sm mb-8 leading-relaxed font-newsreader italic">"Connectez-vous pour négocier ce lot ou contacter directement le producteur certifié."</p>
+                  <div className="flex flex-col gap-4">
+                    <button 
+                      onClick={() => navigate('/register')} 
+                      className="w-full bg-primary text-white py-4.5 rounded-2xl font-bold shadow-xl shadow-primary/20 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3 text-lg"
+                    >
+                      <PersonAdd size={22} /> S'inscrire
+                    </button>
+                    <button 
+                      onClick={() => navigate('/login')} 
+                      className="w-full border-2 border-primary/20 text-primary py-4.5 rounded-2xl font-bold hover:bg-white active:scale-95 transition-all flex items-center justify-center gap-3 text-lg"
+                    >
+                      <LogIn size={22} /> Se connecter
+                    </button>
+                  </div>
                </div>
             </div>
-            <Link to="/how-it-works" className="text-primary font-bold hover:underline">En savoir plus</Link>
+            
+            <div className="bg-secondary/10 p-8 rounded-[2.5rem] border border-secondary/20">
+               <h4 className="font-bold mb-4 flex items-center gap-2 text-secondary">
+                  <ShieldCheck size={20} /> Protection AgroConnect
+               </h4>
+               <ul className="space-y-3 text-sm text-on-surface-variant font-medium">
+                  <li className="flex items-start gap-2">
+                     <CheckCircle2 size={16} className="text-secondary shrink-0 mt-0.5" />
+                     Paiement sécurisé via Escrow
+                  </li>
+                  <li className="flex items-start gap-2">
+                     <CheckCircle2 size={16} className="text-secondary shrink-0 mt-0.5" />
+                     Qualité vérifiée sur le terrain
+                  </li>
+                  <li className="flex items-start gap-2">
+                     <CheckCircle2 size={16} className="text-secondary shrink-0 mt-0.5" />
+                     Litiges gérés par nos modérateurs
+                  </li>
+               </ul>
+            </div>
           </div>
         </div>
+
+        {/* Similar Products */}
+        <section className="mt-32">
+          <div className="flex items-center justify-between mb-12">
+            <h2 className="text-3xl md:text-4xl font-serif-display text-on-surface">Produits similaires</h2>
+            <Link to="/catalog" className="text-primary font-bold hover:gap-3 transition-all flex items-center gap-2 underline underline-offset-4">
+              Tout le catalogue <ArrowRight size={18} />
+            </Link>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            {similarProducts.length > 0 ? (
+              similarProducts.map((p: any) => (
+                <ProductCard key={p._id || p.id} product={p} />
+              ))
+            ) : (
+              <div className="col-span-full py-20 text-center bg-surface-container-low rounded-[3rem] border-2 border-dashed border-outline-variant/30">
+                <p className="text-on-surface-variant font-medium">L'algorithme de recommandation n'a rien trouvé d'autre pour le moment.</p>
+              </div>
+            )}
+          </div>
+        </section>
       </main>
 
       <VisitorFooter />
