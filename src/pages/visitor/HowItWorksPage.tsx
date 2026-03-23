@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  UserPlus, 
+  PersonAdd, 
   MessageSquare, 
   Wallet, 
   Truck, 
@@ -18,7 +18,7 @@ const HowItWorksPage: React.FC = () => {
     {
       title: "Inscription & Profil",
       description: "Créez votre compte en choisissant votre rôle (Agriculteur, Acheteur ou Transporteur). Complétez votre profil pour instaurer la confiance.",
-      icon: UserPlus,
+      icon: PersonAdd,
       color: "text-primary bg-primary/10"
     },
     {

@@ -28,7 +28,7 @@ const AboutPage: React.FC = () => {
           <span className="px-5 py-2 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.3em] mb-8 inline-block rounded-full shadow-sm">
             NOTRE MISSION & VISION
           </span>
-          <h1 className="text-5xl md:text-8xl font-serif-display text-on-surface mb-10 tracking-tight leading-[0.9]">
+          <h1 className="text-5xl md:text-8xl font-serif-display text-on-surface mb-10 tracking-tighter leading-[0.9]">
             Digitaliser le terroir <br/> <span className="italic text-primary">pour tout le Burkina</span>
           </h1>
           <p className="text-2xl text-on-surface-variant max-w-4xl mx-auto font-newsreader leading-relaxed italic">
@@ -74,25 +74,25 @@ const AboutPage: React.FC = () => {
           <h2 className="text-4xl md:text-5xl font-serif-display text-on-surface mb-20">Impact & Chiffres Clés</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-16 relative z-10">
             <div className="group">
-              <p className="text-6xl font-mono font-bold text-primary mb-4 tracking-tight group-hover:scale-110 transition-transform inline-block">
+              <p className="text-6xl font-mono font-bold text-primary mb-4 tracking-tighter group-hover:scale-110 transition-transform inline-block">
                 {users.length > 0 ? users.length : "1.2K"}
               </p>
               <p className="text-[10px] font-black text-outline uppercase tracking-[0.3em]">Utilisateurs</p>
             </div>
             <div className="group">
-              <p className="text-6xl font-mono font-bold text-secondary mb-4 tracking-tight group-hover:scale-110 transition-transform inline-block">
+              <p className="text-6xl font-mono font-bold text-secondary mb-4 tracking-tighter group-hover:scale-110 transition-transform inline-block">
                 {producers.length > 0 ? producers.length : "840"}
               </p>
               <p className="text-[10px] font-black text-outline uppercase tracking-[0.3em]">Agriculteurs</p>
             </div>
             <div className="group">
-              <p className="text-6xl font-mono font-bold text-tertiary mb-4 tracking-tight group-hover:scale-110 transition-transform inline-block">
+              <p className="text-6xl font-mono font-bold text-tertiary mb-4 tracking-tighter group-hover:scale-110 transition-transform inline-block">
                 {products.length > 0 ? products.length : "2.1K"}
               </p>
               <p className="text-[10px] font-black text-outline uppercase tracking-[0.3em]">Annonces</p>
             </div>
             <div className="group">
-              <p className="text-6xl font-mono font-bold text-primary mb-4 tracking-tight group-hover:scale-110 transition-transform inline-block">
+              <p className="text-6xl font-mono font-bold text-primary mb-4 tracking-tighter group-hover:scale-110 transition-transform inline-block">
                 24/7
               </p>
               <p className="text-[10px] font-black text-outline uppercase tracking-[0.3em]">Assistance</p>
