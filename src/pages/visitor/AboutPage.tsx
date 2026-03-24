@@ -5,7 +5,8 @@ import VisitorFooter from '../../components/shared/VisitorFooter';
 import { useUserStore } from '../../store/userStore';
 import { useProductStore } from '../../store/productStore';
 import { useProducerStore } from '../../store/producerStore';
-import { Target, ShieldCheck, TrendingUp, Users, ArrowRight } from 'lucide-react';
+import { Target, RefreshCw, BarChart3, MapPin, Clock, ShieldCheck } from 'lucide-react';
+import aboutHeader from '../../assets/images/about-header.png';
 
 const AboutPage: React.FC = () => {
   const navigate = useNavigate();
@@ -24,16 +25,22 @@ const AboutPage: React.FC = () => {
       <VisitorHeader />
       
       <main className="max-w-7xl mx-auto px-6 lg:px-8 py-20">
-        <section className="text-center mb-32 animate-in fade-in slide-in-from-bottom duration-1000">
-          <span className="px-5 py-2 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.3em] mb-8 inline-block rounded-full shadow-sm">
-            NOTRE MISSION & VISION
-          </span>
-          <h1 className="text-5xl md:text-8xl font-serif-display text-on-surface mb-10 tracking-tighter leading-[0.9]">
-            Digitaliser le terroir <br/> <span className="italic text-primary">pour tout le Burkina</span>
-          </h1>
-          <p className="text-2xl text-on-surface-variant max-w-4xl mx-auto font-newsreader leading-relaxed italic">
-            "AgroConnect BF est bien plus qu'une simple plateforme commerciale. C'est un écosystème conçu pour sécuriser les transactions, garantir une juste rémunération aux agriculteurs et faciliter l'accès à des produits de qualité pour tous."
-          </p>
+        <section 
+          className="text-center mb-32 bg-cover bg-center py-32 rounded-[4rem] text-white relative overflow-hidden animate-in fade-in slide-in-from-bottom duration-1000 shadow-2xl"
+          style={{ backgroundImage: `url(${aboutHeader})` }}
+        >
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]"></div>
+          <div className="relative z-10 px-6">
+            <span className="px-5 py-2 bg-white/10 text-white text-[10px] font-black uppercase tracking-[0.3em] mb-8 inline-block rounded-full border border-white/20 backdrop-blur-md">
+              NOTRE MISSION & VISION
+            </span>
+            <h1 className="text-5xl md:text-8xl font-serif-display text-white mb-10 tracking-tighter leading-[0.9]">
+              Digitaliser le terroir <br/> <span className="italic text-green-400">pour tout le Burkina</span>
+            </h1>
+            <p className="text-2xl text-white/80 max-w-4xl mx-auto font-newsreader leading-relaxed italic">
+              "AgroConnect BF est bien plus qu'une simple plateforme commerciale. C'est un écosystème conçu pour sécuriser les transactions, garantir une juste rémunération aux agriculteurs et faciliter l'accès à des produits de qualité pour tous."
+            </p>
+          </div>
         </section>
 
         <section className="grid grid-cols-1 md:grid-cols-2 gap-24 items-center mb-40">

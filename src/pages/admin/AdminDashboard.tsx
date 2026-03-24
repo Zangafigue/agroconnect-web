@@ -1,202 +1,265 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { 
   Users, 
   Package, 
   ShoppingBag, 
   TrendingUp, 
-  AlertTriangle, 
-  ShieldCheck, 
-  Wallet,
-  ArrowUpRight,
-  MoreHorizontal,
-  Clock,
-  CheckCircle2,
-  Truck
+  ArrowRight
 } from 'lucide-react';
 import { useProductStore } from '../../store/productStore';
 import { useUserStore } from '../../store/userStore';
 import { useOrderStore } from '../../store/orderStore';
+import { useAdminStore } from '../../store/adminStore';
 import { formatFCFA } from '../../utils/currency';
+import Card from '../../components/shared/Card';
+import Button from '../../components/shared/Button';
+import StatusBadge from '../../components/shared/StatusBadge';
+import DataTable from '../../components/shared/DataTable';
 
 const AdminDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const { products, fetchProducts } = useProductStore() as any;
   const { users, fetchUsers } = useUserStore() as any;
   const { orders, fetchOrders } = useOrderStore() as any;
+  const { stats, fetchStats, loading } = useAdminStore() as any;
 
   useEffect(() => {
     fetchProducts();
     fetchUsers();
     fetchOrders();
-  }, [fetchProducts, fetchUsers, fetchOrders]);
+    fetchStats();
+  }, [fetchProducts, fetchUsers, fetchOrders, fetchStats]);
 
-  const stats = [
-    { label: 'Utilisateurs', value: users.length > 0 ? users.length.toLocaleString() : '1 122', trend: '+8 ce mois', icon: Users, color: 'primary' },
-    { label: 'Produits actifs', value: products.length > 0 ? products.length.toLocaleString() : '847', icon: Package, color: 'secondary' },
-    { label: 'Commandes', value: orders.length > 0 ? orders.length.toLocaleString() : '1 204', icon: ShoppingBag, color: 'tertiary' },
-    { label: "Volume d'affaires", value: '42.5M FCFA', trend: '+12%', icon: TrendingUp, color: 'primary-container' },
+  const openDisputesCount = stats?.openDisputes || 0;
+  const pendingKycCount = stats?.pendingKyc || users?.filter((u: any) => u.role === 'PRODUCER' && !u.isVerified).length || 0;
+  const pendingPaymentsCount = stats?.pendingWithdrawals || 0;
+
+  const kpis = [
+    { label: 'Utilisateurs', value: (stats?.totalUsers || users.length).toLocaleString(), icon: <Users size={20} />, color: 'var(--text-accent)' },
+    { label: 'Produits actifs', value: (stats?.totalProducts || products.length).toLocaleString(), icon: <Package size={20} />, color: 'var(--text-secondary)' },
+    { label: 'Commandes', value: (stats?.totalOrders || orders.length).toLocaleString(), icon: <ShoppingBag size={20} />, color: 'var(--text-accent)' },
+    { label: "Volume d'affaires", value: formatFCFA(stats?.totalVolume || 0), icon: <TrendingUp size={20} />, color: 'var(--text-accent)' },
   ];
 
-  const latestOrders = orders.length > 0 ? orders.slice(0, 5) : [
-    { id: "CMD-2024-089", product: "Oignon rouge (100kg)", buyer: "S. Traoré", amount: 85000, status: "CONFIRMÉE", color: 'primary' },
-    { id: "CMD-2024-090", product: "Tomate locale (25kg)", buyer: "Hotel des Arts", amount: 12500, status: "EN TRANSIT", color: 'tertiary' },
-    { id: "CMD-2024-091", product: "Maïs blanc (500kg)", buyer: "Agro-Poul", amount: 115000, status: "LIBÉRÉ", color: 'primary' }
+  const recentOrders = orders.slice(0, 5);
+
+  const columns = [
+    { 
+      header: 'Identifiant', 
+      accessor: (item: any) => <span className="text-[12px] font-bold">#{item._id?.slice(-8).toUpperCase()}</span>,
+      isMono: true 
+    },
+    { 
+      header: 'Produit', 
+      accessor: (item: any) => <span className="font-semibold">{item.product?.name || item.items?.[0]?.product?.name || 'Lot agro'}</span>
+    },
+    { 
+      header: 'Acheteur', 
+      accessor: (item: any) => <span>{item.buyer?.name || 'Client Externe'}</span>
+    },
+    { 
+      header: 'Montant', 
+      accessor: (item: any) => <span>{formatFCFA(item.totalAmount || 0)}</span>,
+      isMono: true
+    },
+    { 
+      header: 'Statut', 
+      accessor: (item: any) => <StatusBadge status={item.status} />,
+      className: 'text-right'
+    }
   ];
+
+  if (loading) {
+     return (
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+           <div className="w-10 h-10 border-2 border-[var(--text-accent)] border-t-transparent rounded-full animate-spin"></div>
+           <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--text-muted)]">Chargement du dashboard...</p>
+        </div>
+     );
+  }
 
   return (
-    <div className="space-y-10 pb-12 animate-in fade-in duration-700">
-      {/* KPI Row */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((kpi, idx) => (
-          <div key={idx} className="bg-surface-container-lowest p-6 rounded-3xl border border-outline-variant/10 hover:shadow-lg transition-all group">
-            <div className="flex justify-between items-start mb-4">
-              <div className={`p-3 rounded-2xl bg-surface-container-high text-${kpi.color} group-hover:bg-primary group-hover:text-white transition-colors`}>
-                <kpi.icon size={24} />
+    <div className="space-y-8 pb-12 font-body">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="font-display text-4xl text-[var(--text-primary)] tracking-tight mb-2">Centre de Commande</h1>
+          <p className="text-[14px] text-[var(--text-secondary)] max-w-lg">Surveillance en temps réel de l'écosystème AgroConnect.</p>
+        </div>
+        <div className="flex gap-2">
+          <Button 
+            variant="secondary" 
+            size="md" 
+            icon={<span className="material-symbols-outlined">download</span>}
+          >
+            Exporter Rapport
+          </Button>
+        </div>
+      </header>
+
+      {/* KPIs */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {kpis.map((kpi, idx) => (
+          <Card key={idx} hoverable className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="w-8 h-8 rounded-md bg-[var(--bg-muted)] flex items-center justify-center text-[var(--text-secondary)]">
+                {kpi.icon}
               </div>
-              {kpi.trend && (
-                <span className="text-[10px] font-bold text-primary flex items-center gap-0.5 bg-primary/5 px-2 py-1 rounded-full">
-                  <TrendingUp size={10} /> {kpi.trend}
-                </span>
-              )}
+              <span className="material-symbols-outlined text-[16px] text-[var(--text-muted)] cursor-help">info</span>
             </div>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-outline font-bold mb-1">{kpi.label}</p>
-            <h3 className="font-serif-display text-3xl text-on-surface">{kpi.value}</h3>
-          </div>
+            <div>
+              <p className="text-[12px] text-[var(--text-secondary)] font-medium mb-1 uppercase tracking-wider">{kpi.label}</p>
+              <h3 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">{kpi.value}</h3>
+            </div>
+          </Card>
         ))}
       </section>
 
-      {/* Alerts Row */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link to="/admin/disputes" className="group bg-error-container/20 p-5 rounded-3xl flex items-center gap-5 border border-error/10 hover:bg-error-container/30 transition-all">
-          <div className="w-14 h-14 rounded-2xl bg-error/10 flex items-center justify-center text-error group-hover:scale-110 transition-transform">
-            <AlertTriangle size={28} />
-          </div>
-          <div>
-            <h4 className="font-bold text-on-error-container text-base">12 litiges ouverts</h4>
-            <p className="text-xs text-on-error-container/70">Action immédiate recommandée</p>
-          </div>
-        </Link>
-        <Link to="/admin/users" className="group bg-surface-container-high p-5 rounded-3xl flex items-center gap-5 border border-outline-variant/10 hover:bg-white transition-all">
-          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-            <ShieldCheck size={28} />
-          </div>
-          <div>
-            <h4 className="font-bold text-on-surface text-base">5 comptes à vérifier</h4>
-            <p className="text-xs text-outline">Nouveaux agriculteurs inscrits</p>
-          </div>
-        </Link>
-        <Link to="/admin/payments" className="group bg-tertiary-fixed/20 p-5 rounded-3xl flex items-center gap-5 border border-tertiary/10 hover:bg-tertiary-fixed/30 transition-all">
-          <div className="w-14 h-14 rounded-2xl bg-tertiary/10 flex items-center justify-center text-tertiary group-hover:scale-110 transition-transform">
-            <Wallet size={28} />
-          </div>
-          <div>
-            <h4 className="font-bold text-on-tertiary-fixed-variant text-base">8 retraits en attente</h4>
-            <p className="text-xs text-on-tertiary-fixed-variant/70">Validation Orange Money</p>
-          </div>
-        </Link>
-      </section>
-
-      {/* Analytics Bento */}
-      <section className="grid grid-cols-12 gap-6">
-        {/* Order Chart */}
-        <div className="col-span-12 lg:col-span-8 bg-surface-container-lowest p-8 rounded-[2.5rem] border border-outline-variant/10">
-          <div className="flex justify-between items-center mb-12">
-            <div>
-              <h3 className="font-serif-display text-2xl text-on-surface mb-1">Commandes</h3>
-              <p className="text-xs text-outline">Activité des 7 derniers jours</p>
-            </div>
+      {/* Highlights / Alerts */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="border-l-4 border-l-[var(--btn-danger-text)] bg-[var(--badge-dispute-bg)]/30">
+          <Link to="/admin/disputes" className="flex items-center justify-between group">
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-xs text-outline">
-                <span className="w-2.5 h-2.5 bg-primary rounded-full"></span>
-                <span>Volume</span>
-              </div>
-              <button className="p-2 hover:bg-surface-container rounded-full transition-colors"><MoreHorizontal size={20} /></button>
+               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[var(--btn-danger-text)] shadow-sm">
+                  <span className="material-symbols-outlined">report</span>
+               </div>
+               <div>
+                  <h4 className="text-[16px] font-bold text-[var(--text-primary)]">{openDisputesCount} litiges ouverts</h4>
+                  <p className="text-[12px] text-[var(--text-secondary)]">Arbitrage prioritaire requis</p>
+               </div>
             </div>
-          </div>
-          <div className="h-64 flex items-end justify-between gap-4 px-4">
-            {[45, 60, 85, 55, 70, 95, 80].map((h, i) => (
-              <div key={i} className="flex-1 group relative flex flex-col items-center">
-                <div className={`w-full rounded-t-xl transition-all duration-500 ease-out group-hover:opacity-80 ${i === 6 ? 'bg-primary shadow-lg shadow-primary/20' : 'bg-primary/20'}`} style={{ height: `${h}%` }}></div>
-                <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-on-surface text-white text-[10px] px-2 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all pointer-events-none mb-2 font-bold whitespace-nowrap">
-                  {Math.round(h * 3.1)} CMD
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex justify-between mt-6 text-[10px] uppercase tracking-widest text-outline font-bold border-t border-outline-variant/5 pt-4">
-            {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(d => <span key={d}>{d}</span>)}
-          </div>
-        </div>
+            <span className="material-symbols-outlined text-[var(--text-muted)] group-hover:translate-x-1 transition-transform">chevron_right</span>
+          </Link>
+        </Card>
 
-        {/* Distribution Chart */}
-        <div className="col-span-12 lg:col-span-4 bg-surface-container-lowest p-8 rounded-[2.5rem] border border-outline-variant/10 flex flex-col">
-          <h3 className="font-serif-display text-2xl text-on-surface mb-10">Communauté</h3>
-          <div className="flex-1 flex items-center justify-center relative scale-110">
-            <svg className="w-48 h-48 -rotate-90">
-              <circle cx="96" cy="96" fill="transparent" r="80" stroke="var(--color-surface-container-low)" strokeWidth="24"></circle>
-              <circle cx="96" cy="96" fill="transparent" r="80" stroke="var(--color-primary)" strokeDasharray="502" strokeDashoffset="150" strokeLinecap="round" strokeWidth="24"></circle>
-              <circle cx="96" cy="96" fill="transparent" r="80" stroke="var(--color-tertiary)" strokeDasharray="502" strokeDashoffset="400" strokeLinecap="round" strokeWidth="16"></circle>
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-3xl font-serif-display font-bold text-on-surface">1.1K+</span>
-              <span className="text-[10px] text-outline uppercase tracking-widest font-bold">Acteurs</span>
+        <Card className="border-l-4 border-l-[var(--text-accent)]">
+          <Link to="/admin/users" className="flex items-center justify-between group">
+            <div className="flex items-center gap-4">
+               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[var(--text-accent)] shadow-sm">
+                  <span className="material-symbols-outlined">verified_user</span>
+               </div>
+               <div>
+                  <h4 className="text-[16px] font-bold text-[var(--text-primary)]">{pendingKycCount} dossiers KYC</h4>
+                  <p className="text-[12px] text-[var(--text-secondary)]">Vérifications en attente</p>
+               </div>
             </div>
-          </div>
-          <div className="mt-10 space-y-4">
-            {[
-              { label: 'Agriculteurs', value: '70%', color: 'bg-primary' },
-              { label: 'Acheteurs', value: '20%', color: 'bg-tertiary' },
-              { label: 'Transporteurs', value: '10%', color: 'bg-outline' },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center justify-between p-3 rounded-2xl hover:bg-surface-container-low transition-colors">
-                <div className="flex items-center gap-3">
-                  <span className={`w-3 h-3 ${item.color} rounded-full`}></span>
-                  <span className="text-sm font-medium">{item.label}</span>
-                </div>
-                <span className="font-mono font-bold text-on-surface">{item.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+            <span className="material-symbols-outlined text-[var(--text-muted)] group-hover:translate-x-1 transition-transform">chevron_right</span>
+          </Link>
+        </Card>
+
+        <Card className="border-l-4 border-l-[var(--badge-held-text)]">
+          <Link to="/admin/payments" className="flex items-center justify-between group">
+            <div className="flex items-center gap-4">
+               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[var(--badge-held-text)] shadow-sm">
+                  <span className="material-symbols-outlined">payments</span>
+               </div>
+               <div>
+                  <h4 className="text-[16px] font-bold text-[var(--text-primary)]">{pendingPaymentsCount} retraits</h4>
+                  <p className="text-[12px] text-[var(--text-secondary)]">Demandes de paiement</p>
+               </div>
+            </div>
+            <span className="material-symbols-outlined text-[var(--text-muted)] group-hover:translate-x-1 transition-transform">chevron_right</span>
+          </Link>
+        </Card>
       </section>
 
-      {/* Latest Orders */}
-      <section className="bg-surface-container-lowest rounded-[2rem] border border-outline-variant/10 overflow-hidden">
-        <div className="p-8 border-b border-outline-variant/10 flex items-center justify-between">
-          <h3 className="font-serif-display text-2xl text-on-surface">Dernières commandes</h3>
-          <Link to="/admin/orders" className="flex items-center gap-1.5 text-sm text-primary font-bold hover:gap-2 transition-all">
-            Voir tout le flux <ArrowUpRight size={16} />
+      {/* Main Grid: Flow & Stats */}
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Flow Chart Container */}
+        <Card className="lg:col-span-2">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-[18px] font-bold text-[var(--text-primary)]">Flux Opérationnel</h3>
+            <div className="flex gap-2">
+              <span className="text-[11px] font-medium text-[var(--text-secondary)] flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[var(--text-accent)]"></span> Commandes
+              </span>
+            </div>
+          </div>
+          
+          <div className="h-48 flex items-end justify-between gap-2 px-2">
+            {(() => {
+              const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+              const orderCounts = new Array(7).fill(0);
+              orders.forEach((o: any) => {
+                const day = new Date(o.createdAt).getDay();
+                const index = day === 0 ? 6 : day - 1;
+                orderCounts[index]++;
+              });
+              const maxCount = Math.max(...orderCounts, 2);
+              return days.map((d, i) => (
+                <div key={i} className="flex-1 flex flex-col items-center group gap-3 h-full justify-end">
+                  <div className="text-[10px] font-mono text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity">
+                    {orderCounts[i]}
+                  </div>
+                  <div 
+                    className={`w-full max-w-[32px] rounded-t-sm transition-all duration-500 ${orderCounts[i] > 0 ? 'bg-[var(--text-accent)]/80 hover:bg-[var(--text-accent)]' : 'bg-[var(--bg-muted)]'}`} 
+                    style={{ height: `${(orderCounts[i] / maxCount) * 100}%`, minHeight: '4px' }}
+                  ></div>
+                  <span className="text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-tighter">{d}</span>
+                </div>
+              ));
+            })()}
+          </div>
+        </Card>
+
+        {/* Sociometry / Network distribution */}
+        <Card>
+          <h3 className="text-[18px] font-bold text-[var(--text-primary)] mb-6">Réseau</h3>
+          <div className="space-y-4">
+             {(() => {
+              const rolesMap: any = { 
+                'PRODUCER': { label: 'Producteurs', icon: 'agriculture', color: 'bg-[var(--text-accent)]' }, 
+                'BUYER': { label: 'Acheteurs', icon: 'person', color: 'bg-blue-500' }, 
+                'TRANSPORTER': { label: 'Logistique', icon: 'local_shipping', color: 'bg-amber-500' } 
+              };
+              const statsArray = stats?.roleStats || [];
+              const total = statsArray.reduce((acc: number, s: any) => acc + s.count, 0) || 1;
+              
+              return ['PRODUCER', 'BUYER', 'TRANSPORTER'].map((role) => {
+                const s = statsArray.find((st: any) => st._id === role);
+                const count = s?.count || 0;
+                const percent = Math.round((count / total) * 100);
+                const info = rolesMap[role];
+                
+                return (
+                  <div key={role} className="space-y-1.5">
+                    <div className="flex justify-between items-center text-[13px]">
+                       <div className="flex items-center gap-2">
+                          <span className={`material-symbols-outlined text-[16px] ${role === 'PRODUCER' ? 'text-[var(--text-accent)]' : 'text-[var(--text-secondary)]'}`}>{info.icon}</span>
+                          <span className="font-medium text-[var(--text-secondary)]">{info.label}</span>
+                       </div>
+                       <span className="font-mono text-[var(--text-primary)]">{count}</span>
+                    </div>
+                    <div className="w-full h-1 bg-[var(--bg-muted)] rounded-full overflow-hidden">
+                       <div className={`h-full ${info.color} transition-all duration-700`} style={{ width: `${percent}%` }}></div>
+                    </div>
+                  </div>
+                );
+              });
+            })()}
+          </div>
+          <div className="mt-8 pt-4 border-t border-[var(--border-light)] flex justify-between items-center">
+             <span className="text-[12px] text-[var(--text-muted)] font-medium">Total actifs</span>
+             <span className="text-[18px] font-bold text-[var(--text-primary)]">{users.length}</span>
+          </div>
+        </Card>
+      </section>
+
+      {/* Recent Activity Table */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between px-2">
+          <h3 className="text-[18px] font-bold text-[var(--text-primary)]">Registre Global</h3>
+          <Link to="/admin/orders">
+            <Button variant="ghost" size="sm" icon={<ArrowRight size={14} />} iconPosition="right">Voir tout</Button>
           </Link>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-surface-container-low/50 text-[10px] uppercase tracking-widest text-outline">
-                <th className="p-6 font-bold">Référence</th>
-                <th className="p-6 font-bold">Produit</th>
-                <th className="p-6 font-bold">Client</th>
-                <th className="p-6 font-bold">Montant</th>
-                <th className="p-6 font-bold text-center">Statut</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm divide-y divide-outline-variant/5">
-              {latestOrders.map((row: any, i: number) => (
-                <tr key={i} className="hover:bg-surface-container-low/30 transition-colors group">
-                  <td className="p-6 font-mono font-bold text-outline text-xs">#{row.id || row.ref}</td>
-                  <td className="p-6 font-headline font-bold text-on-surface">{row.product || row.prod}</td>
-                  <td className="p-6 text-on-surface-variant font-medium">{row.buyer || row.user}</td>
-                  <td className="p-6 font-serif-display text-lg">{typeof row.amount === 'number' ? formatFCFA(row.amount) : row.price}</td>
-                  <td className="p-6">
-                    <div className={`flex items-center justify-center gap-2 bg-${row.color || 'primary'}/10 text-${row.color || 'primary'} px-4 py-1.5 rounded-full text-[10px] font-bold uppercase`}>
-                      <div className={`w-1.5 h-1.5 bg-${row.color || 'primary'} rounded-full animate-pulse`}></div>
-                      {row.status}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable 
+          columns={columns} 
+          data={recentOrders} 
+          onRowClick={(item: any) => navigate(`/admin/orders/${item._id}`)}
+          emptyMessage="Aucune transaction récente."
+        />
       </section>
     </div>
   );

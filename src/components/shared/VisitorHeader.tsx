@@ -22,33 +22,33 @@ const VisitorHeader: React.FC<VisitorHeaderProps> = ({ theme = 'light' }) => {
   }, []);
 
   const navLinks = [
+    { name: 'Accueil', path: '/' },
     { name: 'Le Marché', path: '/catalog' },
     { name: 'Producteurs', path: '/farmers' },
     { name: 'Transporteurs', path: '/transporters' },
     { name: 'Actualités', path: '/news' },
-    { name: 'Notre Vision', path: '/#vision' },
   ];
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
       isScrolled 
-      ? 'py-4 bg-white/80 backdrop-blur-xl border-b border-[var(--gray-200)] shadow-sm' 
+      ? 'py-4 bg-[var(--bg-surface)]/80 backdrop-blur-xl border-b border-[var(--border-light)] shadow-sm' 
       : 'py-8 bg-transparent'
     }`}>
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-3 group">
+        {/* Logo - Static */}
+        <div className="flex items-center gap-3 group">
           <div className="w-12 h-12 bg-[var(--section-why-bg)] text-white rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
             <Leaf size={28} />
           </div>
           <span className={`font-display text-2xl tracking-tight transition-colors ${
             isScrolled 
-            ? 'text-[var(--gray-900)]' 
-            : theme === 'dark' ? 'text-white' : 'text-[var(--gray-900)]'
+            ? 'text-[var(--text-primary)]' 
+            : theme === 'dark' ? 'text-white' : 'text-[var(--text-primary)]'
           }`}>
             AgroConnect <span className="text-[var(--green-600)]">BF</span>
           </span>
-        </Link>
+        </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-10">
@@ -58,10 +58,10 @@ const VisitorHeader: React.FC<VisitorHeaderProps> = ({ theme = 'light' }) => {
               to={link.path} 
               className={`text-sm font-bold uppercase tracking-widest transition-colors ${
                 isScrolled 
-                ? 'text-[var(--gray-501)] hover:text-[var(--gray-900)]' 
+                ? 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]' 
                 : theme === 'dark' 
                   ? 'text-white/80 hover:text-white' 
-                  : 'text-[var(--gray-501)] hover:text-[var(--gray-900)]'
+                  : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
               }`}
             >
               {link.name}
@@ -77,10 +77,10 @@ const VisitorHeader: React.FC<VisitorHeaderProps> = ({ theme = 'light' }) => {
                 to="/login" 
                 className={`hidden sm:block px-6 py-3 rounded-xl font-bold text-sm transition-all ${
                   isScrolled 
-                  ? 'text-[var(--gray-900)] hover:bg-[var(--gray-50)]' 
+                  ? 'text-[var(--text-primary)] hover:bg-[var(--bg-muted)]' 
                   : theme === 'dark'
                     ? 'text-white hover:bg-white/10'
-                    : 'text-[var(--gray-900)] hover:bg-[var(--gray-50)]'
+                    : 'text-[var(--text-primary)] hover:bg-[var(--bg-muted)]'
                 }`}
               >
                 Connexion
@@ -89,10 +89,10 @@ const VisitorHeader: React.FC<VisitorHeaderProps> = ({ theme = 'light' }) => {
                 to="/register" 
                 className={`px-8 py-4 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-xl hover:scale-105 transition-all ${
                   isScrolled
-                  ? 'bg-[var(--gray-900)] text-white hover:bg-black'
+                  ? 'bg-[var(--text-primary)] text-[var(--bg-surface)] hover:bg-[var(--text-primary)]/90'
                   : theme === 'dark'
                     ? 'bg-white text-black hover:bg-gray-100'
-                    : 'bg-[var(--gray-900)] text-white hover:bg-black'
+                    : 'bg-[var(--text-primary)] text-[var(--bg-surface)] hover:bg-[var(--text-primary)]/90'
                 }`}
               >
                 Commencer
@@ -113,10 +113,10 @@ const VisitorHeader: React.FC<VisitorHeaderProps> = ({ theme = 'light' }) => {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className={`md:hidden p-3 rounded-xl transition-all ${
               isScrolled 
-              ? 'bg-[var(--gray-50)] text-[var(--gray-900)]' 
+              ? 'bg-[var(--bg-muted)] text-[var(--text-primary)]' 
               : theme === 'dark' 
                 ? 'bg-white/10 text-white backdrop-blur-md' 
-                : 'bg-[var(--gray-50)] text-[var(--gray-900)]'
+                : 'bg-[var(--bg-muted)] text-[var(--text-primary)]'
             }`}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -126,14 +126,14 @@ const VisitorHeader: React.FC<VisitorHeaderProps> = ({ theme = 'light' }) => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-white border-b border-[var(--gray-200)] p-6 space-y-6 shadow-2xl">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-[var(--bg-surface)] border-b border-[var(--border-light)] p-6 space-y-6 shadow-2xl">
           <div className="flex flex-col gap-4">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
                 onClick={() => setIsMenuOpen(false)}
-                className="text-lg font-bold text-[var(--gray-900)] py-2 border-b border-[var(--gray-50)] last:border-0"
+                className="text-lg font-bold text-[var(--text-primary)] py-2 border-b border-[var(--bg-muted)] last:border-0"
               >
                 {link.name}
               </Link>
@@ -144,14 +144,14 @@ const VisitorHeader: React.FC<VisitorHeaderProps> = ({ theme = 'light' }) => {
               <Link 
                 to="/login" 
                 onClick={() => setIsMenuOpen(false)}
-                className="py-4 text-center font-bold text-[var(--gray-900)] bg-[var(--gray-50)] rounded-2xl"
+                className="py-4 text-center font-bold text-[var(--text-primary)] bg-[var(--bg-muted)] rounded-2xl"
               >
                 Connexion
               </Link>
               <Link 
                 to="/register" 
                 onClick={() => setIsMenuOpen(false)}
-                className="py-4 text-center font-bold text-white bg-[var(--gray-900)] rounded-2xl"
+                className="py-4 text-center font-bold text-white bg-[var(--text-primary)] rounded-2xl"
               >
                 S'inscrire
               </Link>

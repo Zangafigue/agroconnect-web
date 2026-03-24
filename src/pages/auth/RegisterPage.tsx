@@ -75,7 +75,7 @@ const RegisterPage: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--gray-900)] via-[var(--gray-900)]/40 to-transparent"></div>
           
           <Link to="/" className="flex items-center gap-3 relative z-10 group">
-             <div className="w-12 h-12 bg-white text-[var(--section-why-bg)] rounded-xl flex items-center justify-center shadow-xl group-hover:rotate-12 transition-transform">
+             <div className="w-12 h-12 bg-[var(--bg-surface)] text-[var(--section-why-bg)] rounded-xl flex items-center justify-center shadow-xl group-hover:rotate-12 transition-transform">
                 <Leaf size={28} />
              </div>
              <span className="text-white font-display text-3xl font-bold tracking-tight">AgroConnect BF</span>
@@ -92,7 +92,7 @@ const RegisterPage: React.FC = () => {
                 "Logistique certifiée et sécurisée",
                 "Paiements garantis par AgroConnect"
               ].map((text, i) => (
-                <div key={i} className="flex items-center gap-4 bg-white/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md">
+                <div key={i} className="flex items-center gap-4 bg-[var(--bg-surface)]/5 border border-white/10 p-5 rounded-2xl backdrop-blur-md">
                    <div className="w-6 h-6 rounded-full bg-[var(--green-600)] flex items-center justify-center shrink-0">
                       <CheckCircle2 className="text-white" size={14} />
                    </div>
@@ -103,7 +103,7 @@ const RegisterPage: React.FC = () => {
           </div>
           
           <div className="relative z-10">
-            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/10 shadow-2xl">
+            <div className="bg-[var(--bg-surface)]/10 backdrop-blur-md rounded-3xl p-8 border border-white/10 shadow-2xl">
               <p className="text-white/80 italic mb-6 leading-relaxed text-sm font-body">
                 "Plus qu'une plateforme, c'est l'avenir de notre souveraineté alimentaire que nous bâtissons ensemble."
               </p>
@@ -119,18 +119,18 @@ const RegisterPage: React.FC = () => {
         </section>
 
         {/* RIGHT COLUMN - Form */}
-        <section className="flex-1 p-8 md:p-12 lg:p-20 bg-white">
+        <section className="flex-1 p-8 md:p-12 lg:p-20 bg-[var(--bg-surface)]">
           <div className="flex justify-end mb-16">
-            <p className="text-sm font-medium text-[var(--gray-501)] flex items-center gap-3">
+            <p className="text-sm font-medium text-[var(--text-secondary)] flex items-center gap-3">
               Déjà membre ? 
-              <Link to="/login" className="px-6 py-2.5 rounded-xl border border-[var(--gray-200)] text-[var(--gray-900)] hover:bg-[var(--gray-50)] transition-all font-bold ml-2">Se connecter</Link>
+              <Link to="/login" className="px-6 py-2.5 rounded-xl border border-[var(--border-light)] text-[var(--text-primary)] hover:bg-[var(--gray-50)] transition-all font-bold ml-2">Se connecter</Link>
             </p>
           </div>
 
           <div className="max-w-xl mx-auto">
             <div className="mb-12">
-              <h2 className="text-5xl font-display text-[var(--gray-900)] mb-4 tracking-tight">Rejoignez-nous.</h2>
-              <p className="text-[var(--gray-501)] text-lg">Choisissez votre profil pour commencer votre aventure.</p>
+              <h2 className="text-5xl font-display text-[var(--text-primary)] mb-4 tracking-tight">Rejoignez-nous.</h2>
+              <p className="text-[var(--text-secondary)] text-lg">Choisissez votre profil pour commencer votre aventure.</p>
             </div>
 
             {error && (
@@ -150,11 +150,11 @@ const RegisterPage: React.FC = () => {
                     type="button" 
                     className={`flex flex-col items-center p-6 rounded-2xl border-2 transition-all duration-300 relative group ${
                       role === r.id 
-                      ? 'border-[var(--green-600)] bg-[var(--green-600)]/5 text-[var(--gray-900)] shadow-xl shadow-[var(--green-600)]/10' 
-                      : 'border-[var(--gray-200)] bg-white text-[var(--gray-501)] hover:border-[var(--gray-300)]'
+                      ? 'border-[var(--green-600)] bg-[var(--green-600)]/5 text-[var(--text-primary)] shadow-xl shadow-[var(--green-600)]/10' 
+                      : 'border-[var(--border-light)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:border-[var(--gray-300)]'
                     }`}
                   >
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all ${role === r.id ? 'bg-[var(--green-600)] text-white scale-110 shadow-lg' : 'bg-[var(--gray-50)] text-[var(--gray-400)] group-hover:bg-[var(--green-600)] group-hover:text-white'}`}>
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all ${role === r.id ? 'bg-[var(--green-600)] text-white scale-110 shadow-lg' : 'bg-[var(--bg-muted)] text-[var(--gray-400)] group-hover:bg-[var(--green-600)] group-hover:text-white'}`}>
                       <r.icon size={28} />
                     </div>
                     <span className="text-xs font-bold uppercase tracking-widest mb-1 text-center">{r.label}</span>
@@ -172,28 +172,28 @@ const RegisterPage: React.FC = () => {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-[var(--gray-501)] uppercase tracking-[0.2em] pl-1">Prénom</label>
+                    <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-[0.2em] pl-1">Prénom</label>
                     <div className="relative group">
-                      <User className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--gray-400)] group-focus-within:text-[var(--gray-900)] transition-colors" size={18} />
+                      <User className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--gray-400)] group-focus-within:text-[var(--text-primary)] transition-colors" size={18} />
                       <input 
                         required 
                         value={formData.firstName} 
                         onChange={(e) => setFormData({...formData, firstName: e.target.value})} 
-                        className="w-full pl-14 pr-4 py-4 bg-[var(--gray-50)] border border-transparent rounded-2xl focus:ring-2 focus:ring-[var(--gray-900)] focus:bg-white transition-all outline-none font-medium text-[var(--gray-900)]" 
+                        className="w-full pl-14 pr-4 py-4 bg-[var(--gray-50)] border border-transparent rounded-2xl focus:ring-2 focus:ring-[var(--gray-900)] focus:bg-[var(--bg-surface)] transition-all outline-none font-medium text-[var(--text-primary)]" 
                         placeholder="Jean" 
                         type="text"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-[var(--gray-501)] uppercase tracking-[0.2em] pl-1">Nom</label>
+                    <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-[0.2em] pl-1">Nom</label>
                     <div className="relative group">
-                      <User className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--gray-400)] group-focus-within:text-[var(--gray-900)] transition-colors" size={18} />
+                      <User className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--gray-400)] group-focus-within:text-[var(--text-primary)] transition-colors" size={18} />
                       <input 
                         required 
                         value={formData.lastName} 
                         onChange={(e) => setFormData({...formData, lastName: e.target.value})} 
-                        className="w-full pl-14 pr-4 py-4 bg-[var(--gray-50)] border border-transparent rounded-2xl focus:ring-2 focus:ring-[var(--gray-900)] focus:bg-white transition-all outline-none font-medium text-[var(--gray-900)]" 
+                        className="w-full pl-14 pr-4 py-4 bg-[var(--gray-50)] border border-transparent rounded-2xl focus:ring-2 focus:ring-[var(--gray-900)] focus:bg-[var(--bg-surface)] transition-all outline-none font-medium text-[var(--text-primary)]" 
                         placeholder="Ouédraogo" 
                         type="text"
                       />
@@ -202,14 +202,14 @@ const RegisterPage: React.FC = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-[var(--gray-501)] uppercase tracking-[0.2em] pl-1">Adresse e-mail</label>
+                  <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-[0.2em] pl-1">Adresse e-mail</label>
                   <div className="relative group">
-                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--gray-400)] group-focus-within:text-[var(--gray-900)] transition-colors" size={18} />
+                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--gray-400)] group-focus-within:text-[var(--text-primary)] transition-colors" size={18} />
                     <input 
                       required 
                       value={formData.email} 
                       onChange={(e) => setFormData({...formData, email: e.target.value})} 
-                      className="w-full pl-14 pr-4 py-4 bg-[var(--gray-50)] border border-transparent rounded-2xl focus:ring-2 focus:ring-[var(--gray-900)] focus:bg-white transition-all outline-none font-medium text-[var(--gray-900)]" 
+                      className="w-full pl-14 pr-4 py-4 bg-[var(--gray-50)] border border-transparent rounded-2xl focus:ring-2 focus:ring-[var(--gray-900)] focus:bg-[var(--bg-surface)] transition-all outline-none font-medium text-[var(--text-primary)]" 
                       placeholder="jean.oued@exemple.bf" 
                       type="email"
                     />
@@ -217,18 +217,18 @@ const RegisterPage: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-[var(--gray-501)] uppercase tracking-[0.2em] pl-1">Mot de passe</label>
+                  <label className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-[0.2em] pl-1">Mot de passe</label>
                   <div className="relative group">
-                    <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--gray-400)] group-focus-within:text-[var(--gray-900)] transition-colors" size={18} />
+                    <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--gray-400)] group-focus-within:text-[var(--text-primary)] transition-colors" size={18} />
                     <input 
                       required 
                       value={formData.password} 
                       onChange={(e) => setFormData({...formData, password: e.target.value})} 
-                      className="w-full pl-14 pr-14 py-4 bg-[var(--gray-50)] border border-transparent rounded-2xl focus:ring-2 focus:ring-[var(--gray-900)] focus:bg-white transition-all outline-none font-medium text-[var(--gray-900)]" 
+                      className="w-full pl-14 pr-14 py-4 bg-[var(--gray-50)] border border-transparent rounded-2xl focus:ring-2 focus:ring-[var(--gray-900)] focus:bg-[var(--bg-surface)] transition-all outline-none font-medium text-[var(--text-primary)]" 
                       placeholder="••••••••" 
                       type={showPassword ? "text" : "password"}
                     />
-                    <button onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-[var(--gray-400)] hover:text-[var(--gray-900)] transition-colors" type="button">
+                    <button onClick={() => setShowPassword(!showPassword)} className="absolute right-5 top-1/2 -translate-y-1/2 text-[var(--gray-400)] hover:text-[var(--text-primary)] transition-colors" type="button">
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
@@ -252,22 +252,22 @@ const RegisterPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-4 bg-[var(--gray-50)] p-6 rounded-2xl border border-[var(--gray-200)]/50">
+              <div className="flex items-start gap-4 bg-[var(--gray-50)] p-6 rounded-2xl border border-[var(--border-light)]/50">
                 <input 
                   checked={cguAccepted} 
                   onChange={(e) => setCguAccepted(e.target.checked)} 
-                  className="mt-1 w-5 h-5 rounded-lg border-[var(--gray-200)] text-[var(--gray-900)] focus:ring-[var(--gray-900)] transition-all cursor-pointer" 
+                  className="mt-1 w-5 h-5 rounded-lg border-[var(--border-light)] text-[var(--text-primary)] focus:ring-[var(--gray-900)] transition-all cursor-pointer" 
                   id="cgu" 
                   type="checkbox"
                 />
-                <label className="text-xs leading-relaxed text-[var(--gray-501)] cursor-pointer select-none" htmlFor="cgu">
-                  J'accepte les <Link to="#" className="text-[var(--gray-900)] font-bold underline decoration-2 underline-offset-4">Conditions Générales</Link> et la politique de confidentialité d'AgroConnect BF.
+                <label className="text-xs leading-relaxed text-[var(--text-secondary)] cursor-pointer select-none" htmlFor="cgu">
+                  J'accepte les <Link to="#" className="text-[var(--text-primary)] font-bold underline decoration-2 underline-offset-4">Conditions Générales</Link> et la politique de confidentialité d'AgroConnect BF.
                 </label>
               </div>
 
               <button 
                 disabled={loading} 
-                className="w-full bg-[var(--gray-900)] text-white py-5 rounded-2xl font-bold flex justify-center items-center gap-3 group hover:shadow-2xl hover:bg-black active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-4 shadow-xl shadow-[var(--gray-900)]/10" 
+                className="w-full bg-[var(--text-primary)] text-white py-5 rounded-2xl font-bold flex justify-center items-center gap-3 group hover:shadow-2xl hover:bg-black active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-4 shadow-xl shadow-[var(--text-primary)]/10" 
                 type="submit"
               >
                 {loading ? 'Création de votre espace...' : 'Créer mon compte'}

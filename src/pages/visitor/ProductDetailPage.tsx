@@ -4,15 +4,15 @@ import {
   ChevronRight, 
   CheckCircle2, 
   Star, 
-  Inventory, 
-  PersonAdd, 
+  UserPlus, 
   LogIn, 
   ArrowRight, 
   Loader2,
   MapPin,
   Tag,
   Info,
-  ShoppingBag
+  ShoppingBag,
+  ShieldCheck
 } from 'lucide-react';
 import VisitorHeader from '../../components/shared/VisitorHeader';
 import VisitorFooter from '../../components/shared/VisitorFooter';
@@ -79,7 +79,7 @@ const ProductDetailPage: React.FC = () => {
                 <span className="bg-white/90 backdrop-blur-md text-primary px-5 py-2 rounded-2xl text-xs font-black tracking-widest uppercase shadow-xl border border-primary/10">
                   {product.category}
                 </span>
-                <span className="bg-green-500/90 backdrop-blur-md text-white px-5 py-2 rounded-2xl text-xs font-black tracking-widest flex items-center gap-2 shadow-xl">
+                <span className="bg-primary/90 backdrop-blur-md text-white px-5 py-2 rounded-2xl text-xs font-black tracking-widest flex items-center gap-2 shadow-xl">
                   <CheckCircle2 size={16} /> DISPONIBLE
                 </span>
               </div>
@@ -122,7 +122,7 @@ const ProductDetailPage: React.FC = () => {
                     <span className="text-4xl font-mono font-black text-primary">{formatFCFA(product.price)}</span>
                     <span className="text-outline-variant text-xl font-medium">/ {product.unit}</span>
                   </div>
-                  <div className="flex items-center gap-3 py-3 px-5 bg-green-50 text-green-700 rounded-2xl w-fit border border-green-100 font-bold text-sm">
+                  <div className="flex items-center gap-3 py-3 px-5 bg-primary/5 text-primary rounded-2xl w-fit border border-primary/10 font-bold text-sm">
                     <ShoppingBag size={18} />
                     Stock : {product.stock || '10+'} unités
                   </div>
@@ -136,7 +136,7 @@ const ProductDetailPage: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
                       <h3 className="font-bold text-on-surface text-lg">{getSellerName(product.seller)}</h3>
-                      <div className="flex items-center gap-1 text-sm font-black text-tertiary">
+                      <div className="flex items-center gap-1 text-sm font-black text-secondary">
                         <Star size={14} fill="currentColor" />
                         4.8
                       </div>
@@ -156,7 +156,7 @@ const ProductDetailPage: React.FC = () => {
                       onClick={() => navigate('/register')} 
                       className="w-full bg-primary text-white py-4.5 rounded-2xl font-bold shadow-xl shadow-primary/20 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3 text-lg"
                     >
-                      <PersonAdd size={22} /> S'inscrire
+                      <UserPlus size={22} /> S'inscrire
                     </button>
                     <button 
                       onClick={() => navigate('/login')} 
@@ -168,7 +168,7 @@ const ProductDetailPage: React.FC = () => {
                </div>
             </div>
             
-            <div className="bg-secondary/10 p-8 rounded-[2.5rem] border border-secondary/20">
+            <div className="bg-secondary/5 p-8 rounded-[2.5rem] border border-secondary/10">
                <h4 className="font-bold mb-4 flex items-center gap-2 text-secondary">
                   <ShieldCheck size={20} /> Protection AgroConnect
                </h4>

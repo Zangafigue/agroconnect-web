@@ -1,142 +1,196 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
-  Clock, 
-  CheckCircle2, 
-  Truck, 
-  ShoppingBasket, 
-  MapPin, 
-  X, 
-  AlertTriangle,
-  ChevronRight,
-  ArrowRight
+  Search, 
+  ArrowRight,
+  Package,
+  TrendingUp,
+  Download,
+  Filter,
+  Users
 } from 'lucide-react';
+import { useOrderStore } from '../../store/orderStore';
 import { formatFCFA } from '../../utils/currency';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import Card from '../../components/shared/Card';
+import Button from '../../components/shared/Button';
+import Input from '../../components/shared/Input';
+import StatusBadge from '../../components/shared/StatusBadge';
+import DataTable from '../../components/shared/DataTable';
+import Avatar from '../../components/shared/Avatar';
 
 const FarmerOrdersPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('pending');
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
-  const [modalType, setModalType] = useState<'confirm' | 'reject' | null>(null);
-  const [refusalReason, setRefusalReason] = useState('');
+  const navigate = useNavigate();
+  const { orders, fetchUserOrders, loading } = useOrderStore() as any;
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState('all');
 
-  const openModal = (order: any, type: 'confirm' | 'reject') => {
-    setSelectedOrder(order);
-    setModalType(type);
-  };
+  useEffect(() => {
+    fetchUserOrders();
+  }, [fetchUserOrders]);
 
-  const closeModal = () => {
-    setSelectedOrder(null);
-    setModalType(null);
-    setRefusalReason('');
-  };
+  const filteredOrders = (orders || []).filter((o: any) => {
+    const matchesFilter = filter === 'all' || o.status === filter;
+    const matchesSearch = (o._id || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          (o.buyer?.firstName || '').toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
+  const columns = [
+    {
+      header: 'Commande',
+      accessor: (o: any) => (
+        <div className="flex flex-col">
+          <span className="font-bold text-on-surface">#{o._id?.slice(-8).toUpperCase()}</span>
+          <span className="text-[10px] text-on-surface-variant font-mono uppercase">
+            {o.createdAt ? format(new Date(o.createdAt), 'dd MMM yyyy', { locale: fr }) : '-'}
+          </span>
+        </div>
+      ),
+      isMono: true
+    },
+    {
+      header: 'Acheteur',
+      accessor: (o: any) => (
+        <div className="flex items-center gap-3">
+           <Avatar name={o.buyer?.firstName || 'P'} size="sm" role="BUYER" />
+           <span className="text-[13px] font-bold text-on-surface">{o.buyer?.firstName || 'Partenaire'}</span>
+        </div>
+      )
+    },
+    {
+      header: 'Produit(s)',
+      accessor: (o: any) => (
+        <span className="text-[12px] text-on-surface-variant font-medium truncate max-w-[180px] block">
+          {o.items?.[0]?.product?.name || 'Lot agricole'} {o.items?.length > 1 ? `(+${o.items.length - 1})` : ''}
+        </span>
+      )
+    },
+    {
+      header: 'Total Net',
+      accessor: (o: any) => (
+        <span className="font-mono font-bold text-primary">{formatFCFA(o.totalAmount || 0)}</span>
+      ),
+      isMono: true
+    },
+    {
+      header: 'État',
+      accessor: (o: any) => (
+        <StatusBadge status={o.status} />
+      )
+    },
+    {
+      header: '',
+      accessor: (o: any) => (
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          icon={<ArrowRight size={16} />}
+          onClick={(e) => { e.stopPropagation(); navigate(`/farmer/orders/${o._id}`); }}
+        />
+      ),
+      className: 'text-right'
+    }
+  ];
+
+  const pendingOrders = (orders || []).filter((o: any) => ['PENDING', 'CONFIRMED'].includes(o.status));
+  const totalVolume = (orders || []).reduce((sum: number, o: any) => sum + (o.totalAmount || 0), 0);
 
   return (
-    <div className="space-y-8 pb-32 animate-in fade-in duration-700">
-      <header className="mb-10">
-        <h1 className="text-5xl font-serif-display text-primary mb-2">Mes commandes</h1>
-        <p className="text-on-surface-variant font-medium">Gérez vos ventes et suivez l'état de vos expéditions en temps réel.</p>
+    <div className="space-y-8 pb-12 animate-in fade-in duration-700">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-serif-display text-on-surface tracking-tight mb-2">Ventes & Expéditions</h1>
+          <p className="text-sm text-on-surface-variant font-medium">Suivez l'acheminement de vos produits vers vos clients.</p>
+        </div>
+        <Button variant="secondary" size="md" icon={<Download size={18} />}>
+          Exporter XLS
+        </Button>
       </header>
 
-      {/* Tabs Navigation */}
-      <div className="flex items-center gap-8 mb-8 border-b border-outline-variant/30 overflow-x-auto whitespace-nowrap hide-scrollbar">
-        {[
-          { id: 'pending', label: 'En attente', count: 3, icon: Clock },
-          { id: 'confirmed', label: 'Confirmées', count: 2, icon: CheckCircle2 },
-          { id: 'shipping', label: 'En livraison', count: 1, icon: Truck }
-        ].map((tab) => (
-          <button 
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)} 
-            className={`pb-4 flex items-center gap-2 font-bold border-b-2 transition-all ${activeTab === tab.id ? 'text-primary border-primary' : 'text-on-surface-variant hover:text-primary border-transparent opacity-60'}`}
-          >
-            <tab.icon size={18} />
-            <span>{tab.label} ({tab.count})</span>
-          </button>
-        ))}
-      </div>
-
-      <div className="flex flex-col gap-4">
-        {/* Order 1 - Example */}
-        <article className="bg-surface-container-lowest rounded-[2rem] shadow-sm border border-outline-variant/20 border-l-[6px] border-l-tertiary overflow-hidden hover:shadow-xl transition-all group">
-          <div className="flex items-center justify-between px-8 py-5 border-b border-outline-variant/5 bg-surface-container-low/30">
-            <div className="flex items-center gap-4">
-              <span className="font-mono font-black text-primary text-lg">#045</span>
-              <div className="px-4 py-1.5 bg-tertiary-fixed/20 text-tertiary rounded-full text-[10px] font-black tracking-widest flex items-center gap-2 border border-tertiary/10">
-                <Clock size={14} /> EN ATTENTE
-              </div>
-            </div>
-            <time className="text-xs text-outline font-black uppercase tracking-widest">il y a 2h</time>
-          </div>
-          <div className="p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-              <div className="space-y-6">
-                <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 rounded-2xl bg-secondary text-white flex items-center justify-center font-black text-xl shadow-lg shadow-secondary/20">FT</div>
-                  <div>
-                    <h3 className="font-bold text-on-surface text-xl">Fatima Traoré</h3>
-                    <p className="text-xs text-secondary font-black uppercase tracking-widest opacity-70">Acheteur Certifié</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4 p-5 bg-primary/5 rounded-2xl border border-primary/10">
-                  <ShoppingBasket className="text-primary shrink-0" size={24} />
-                  <div>
-                    <p className="font-bold text-on-surface">Maïs sec · 100 sacs · 500 kg</p>
-                    <p className="text-sm text-on-surface-variant">Variété locale certifiée - Récolte 2024</p>
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-6 lg:border-l lg:border-outline-variant/10 lg:pl-12">
-                <div className="bg-surface-container-high/20 p-5 rounded-2xl border border-outline-variant/5">
-                  <p className="font-mono text-3xl font-black text-primary mb-1">{formatFCFA(500000)}</p>
-                  <p className="text-[10px] text-outline font-black uppercase tracking-widest">Net : {formatFCFA(485000)} <span className="text-tertiary">(−3% commission)</span></p>
-                </div>
-                <div className="flex items-start gap-3 text-on-surface-variant italic">
-                  <MapPin className="text-tertiary shrink-0" size={18} />
-                  <p className="text-sm font-medium">Ouagadougou, Secteur 15 (Collecte en ferme)</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="px-8 py-5 bg-surface-container-low/20 border-t border-outline-variant/10 flex flex-wrap items-center justify-end gap-5">
-            <button 
-              onClick={() => openModal({ id: '#045', buyer: 'Fatima Traoré', product: 'Maïs sec', qty: '100 sacs' }, 'reject')} 
-              className="px-8 py-3 text-error font-bold text-sm hover:bg-error/5 rounded-xl transition-all active:scale-95"
-            >
-              Refuser
-            </button>
-            <button 
-              onClick={() => openModal({ id: '#045', buyer: 'Fatima Traoré', product: 'Maïs sec', qty: '100 sacs' }, 'confirm')} 
-              className="px-10 py-3.5 bg-primary text-white rounded-2xl font-bold text-sm shadow-xl shadow-primary/20 hover:brightness-110 active:scale-95 transition-all flex items-center gap-2"
-            >
-              <CheckCircle2 size={18} /> Confirmer la commande
-            </button>
-          </div>
-        </article>
-      </div>
-
-      {/* MODALS implementation would follow - Simplified for migration check */}
-      {modalType && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-on-surface/40 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-           <div className="bg-white rounded-[2.5rem] p-12 max-w-md w-full shadow-2xl text-center border border-outline-variant/10">
-              <div className={`w-20 h-20 rounded-[2rem] mx-auto mb-8 flex items-center justify-center ${modalType === 'confirm' ? 'bg-primary/10 text-primary' : 'bg-error/10 text-error'}`}>
-                 {modalType === 'confirm' ? <CheckCircle2 size={40} /> : <AlertTriangle size={40} />}
-              </div>
-              <h2 className="text-3xl font-serif-display mb-4 text-on-surface">
-                 {modalType === 'confirm' ? 'Confirmer ?' : 'Refuser ?'}
-              </h2>
-              <p className="text-on-surface-variant mb-10 leading-relaxed font-medium">
-                 Souhaitez-vous vraiment {modalType === 'confirm' ? 'accepter' : 'décliner'} cette commande de {selectedOrder?.buyer} ?
-              </p>
-              <div className="flex flex-col gap-4">
-                 <button onClick={closeModal} className={`w-full py-4 rounded-2xl font-bold text-white shadow-xl transition-all active:scale-95 ${modalType === 'confirm' ? 'bg-primary shadow-primary/20' : 'bg-error shadow-error/20'}`}>
-                    Oui, {modalType === 'confirm' ? 'Confirmer' : 'Refuser'}
-                 </button>
-                 <button onClick={closeModal} className="w-full py-4 text-outline font-bold hover:text-on-surface transition-colors">
-                    Annuler
-                 </button>
-              </div>
+      {/* Stats Quick View */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="flex items-center gap-5 p-6 border-l-4 border-l-orange-500">
+           <div className="w-12 h-12 rounded-2xl bg-orange-500/10 text-orange-600 flex items-center justify-center shrink-0">
+              <Package size={24} />
            </div>
+           <div>
+              <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">À expédier</p>
+              <h3 className="text-xl font-bold text-on-surface">{pendingOrders.length} commandes en attente</h3>
+           </div>
+        </Card>
+        
+        <Card className="flex items-center gap-5 p-6 border-l-4 border-l-primary">
+           <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <TrendingUp size={24} />
+           </div>
+           <div>
+              <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Chiffre d'affaires</p>
+              <h3 className="text-xl font-bold text-on-surface">{formatFCFA(totalVolume)}</h3>
+           </div>
+        </Card>
+
+        <Card className="bg-surface-container-low border-dashed border-2 flex items-center gap-5 p-6">
+            <div className="flex -space-x-3">
+               {[1,2,3].map(i => (
+                 <div key={i} className="w-10 h-10 rounded-full bg-white border-2 border-surface-container flex items-center justify-center shadow-sm overflow-hidden">
+                    <Avatar name={`U${i}`} size="sm" role="BUYER" />
+                 </div>
+               ))}
+               <div className="w-10 h-10 rounded-full bg-primary text-white border-2 border-white flex items-center justify-center text-[10px] font-bold z-10 shadow-sm">
+                  +12
+               </div>
+            </div>
+            <div>
+               <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Base Clients</p>
+               <h3 className="text-sm font-bold text-on-surface">Clients récurrents</h3>
+            </div>
+        </Card>
+      </div>
+
+      {/* Filters Toolbar */}
+      <div className="flex flex-col md:flex-row gap-4 items-center">
+        <div className="flex-1 w-full">
+          <Input 
+            placeholder="Rechercher par n° de commande ou nom client..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            icon={<Search size={18} />}
+            className="bg-white border-outline-variant/20 shadow-sm"
+          />
         </div>
-      )}
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="flex items-center gap-2 px-4 py-2 bg-surface-container rounded-2xl border border-outline-variant/10 text-on-surface-variant">
+            <Filter size={14} className="opacity-50" />
+            <select 
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="bg-transparent text-sm font-bold outline-none cursor-pointer pr-4"
+            >
+              <option value="all">Tous les statuts</option>
+              <option value="PENDING">En attente</option>
+              <option value="CONFIRMED">Confirmées</option>
+              <option value="SHIPPED">Expédiées</option>
+              <option value="DELIVERED">Livrées</option>
+              <option value="CANCELLED">Annulées</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Orders Table */}
+      <div className="space-y-4">
+        <DataTable 
+          columns={columns} 
+          data={filteredOrders} 
+          isLoading={loading}
+          onRowClick={(o: any) => navigate(`/farmer/orders/${o._id}`)}
+          emptyMessage="Aucune commande trouvée dans votre historique."
+        />
+      </div>
+
     </div>
   );
 };

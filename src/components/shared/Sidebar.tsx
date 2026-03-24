@@ -1,61 +1,29 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { 
-  LayoutDashboard, 
-  ShoppingBag, 
-  ShoppingCart, 
-  MessageSquare, 
-  Wallet, 
-  User, 
-  Settings, 
-  Truck, 
-  Users, 
-  BarChart3, 
-  AlertTriangle, 
-  CreditCard 
-} from 'lucide-react';
+import { useDisputeStore } from '../../store/disputeStore';
 
 export default function Sidebar() {
   const { user } = useAuthStore();
+  const { disputes } = useDisputeStore();
   const location = useLocation();
 
   const getLinks = () => {
-    switch (user?.role) {
-      case 'FARMER':
-        return [
-          { name: 'Tableau de bord', path: '/farmer/dashboard', icon: LayoutDashboard },
-          { name: 'Mes Produits', path: '/farmer/products', icon: ShoppingBag },
-          { name: 'Mes Commandes', path: '/farmer/orders', icon: ShoppingCart, badge: 3 },
-          { name: 'Messagerie', path: '/farmer/messages', icon: MessageSquare },
-          { name: 'Portefeuille', path: '/farmer/wallet', icon: Wallet },
-          { name: 'Profil', path: '/farmer/profile', icon: User },
-        ];
-      case 'BUYER':
-        return [
-          { name: 'Tableau de bord', path: '/buyer/dashboard', icon: LayoutDashboard },
-          { name: 'Marché', path: '/buyer/marketplace', icon: ShoppingBag },
-          { name: 'Mes Achats', path: '/buyer/orders', icon: ShoppingCart },
-          { name: 'Messagerie', path: '/buyer/messages', icon: MessageSquare },
-          { name: 'Profil', path: '/buyer/profile', icon: User },
-        ];
-      case 'TRANSPORTER':
-        return [
-          { name: 'Tableau de bord', path: '/transporter/dashboard', icon: LayoutDashboard },
-          { name: 'Missions Disponibles', path: '/transporter/missions', icon: Truck },
-          { name: 'Mes Livraisons', path: '/transporter/deliveries', icon: ShoppingCart },
-          { name: 'Messagerie', path: '/transporter/messages', icon: MessageSquare },
-          { name: 'Portefeuille', path: '/transporter/wallet', icon: Wallet },
-        ];
+    const role = user?.role;
+    switch (role) {
       case 'ADMIN':
+        const openDisputes = disputes.filter((d: any) => 
+          !['RÉSOLU', 'RESOLVED', 'CLOSED', 'FERMÉ'].includes(d.status?.toUpperCase())
+        ).length;
         return [
-          { name: 'Tableau de bord', path: '/admin', icon: LayoutDashboard },
-          { name: 'Utilisateurs', path: '/admin/users', icon: Users },
-          { name: 'Produits', path: '/admin/products', icon: ShoppingBag },
-          { name: 'Commandes', path: '/admin/orders', icon: ShoppingCart },
-          { name: 'Litiges', path: '/admin/disputes', icon: AlertTriangle, badge: 2 },
-          { name: 'Paiements', path: '/admin/payments', icon: CreditCard },
-          { name: 'Statistiques', path: '/admin/stats', icon: BarChart3 },
+          { name: 'Tableau de bord', path: '/admin/dashboard', icon: 'dashboard' },
+          { name: 'Utilisateurs', path: '/admin/users', icon: 'group' },
+          { name: 'Produits', path: '/admin/products', icon: 'inventory_2' },
+          { name: 'Commandes', path: '/admin/orders', icon: 'shopping_cart' },
+          { name: 'Litiges', path: '/admin/disputes', icon: 'report', badge: openDisputes || null },
+          { name: 'Paiements', path: '/admin/payments', icon: 'payments' },
+          { name: 'Statistiques', path: '/admin/stats', icon: 'analytics' },
+          { name: 'Notifications', path: '/admin/notifications', icon: 'notifications' },
         ];
       default:
         return [];
@@ -63,44 +31,50 @@ export default function Sidebar() {
   };
 
   const links = getLinks();
+  const dashboardPath = user?.role === 'ADMIN' ? '/admin/dashboard' : `/${user?.role?.toLowerCase()}/dashboard`;
 
   return (
-    <aside className="w-72 bg-surface-container-low border-r border-outline-variant/10 flex flex-col h-screen transition-all duration-300">
-      <div className="p-8 border-b border-outline-variant/10">
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
-            <span className="text-white font-bold text-xl">A</span>
+    <aside className="w-[var(--sidebar-width)] bg-[var(--bg-sidebar,var(--bg-surface))] border-r border-[var(--border-light)] flex flex-col h-screen transition-all duration-300 z-40 font-body">
+      {/* Area Logo */}
+      <div className="px-5 py-6 border-b border-[var(--bg-muted)]">
+        <Link to={dashboardPath} className="flex items-center gap-2 group">
+          <div className="w-8 h-8 bg-[var(--text-accent)] rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform">
+            <span className="material-symbols-outlined text-white text-[20px]">eco</span>
           </div>
-          <div>
-            <span className="font-serif-display text-xl text-primary font-bold block leading-none">AgroConnect</span>
-            <span className="text-[10px] uppercase tracking-[0.2em] text-outline font-bold opacity-60">BF Marketplace</span>
+          <div className="flex flex-col">
+            <span className="font-semibold text-[14px] text-[var(--text-primary)] leading-tight">AgroConnect</span>
+            <span className="text-[10px] uppercase tracking-[0.08em] text-[var(--text-muted)] font-medium">B. FASO</span>
           </div>
         </Link>
       </div>
 
-      <nav className="flex-1 px-4 py-8 space-y-1.5 overflow-y-auto custom-scrollbar">
-        <p className="px-4 mb-4 text-[10px] font-black text-outline uppercase tracking-[0.2em] opacity-50">Navigation</p>
+      {/* Nav Links */}
+      <nav className="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto custom-scrollbar">
         {links.map((link) => {
-          const Icon = link.icon;
-          const isActive = location.pathname === link.path;
+          const isActive = location.pathname === link.path || (link.path === '/admin/dashboard' && location.pathname === '/admin');
           return (
             <Link
               key={link.path}
               to={link.path}
-              className={`flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-200 group ${
-                isActive
-                  ? 'bg-primary text-on-primary shadow-md shadow-primary/20'
-                  : 'text-on-surface-variant hover:bg-surface-container-high hover:text-primary'
-              }`}
+              className={`
+                flex items-center justify-between h-[34px] px-2.5 rounded-[var(--radius-md)] transition-all duration-150 group
+                ${isActive
+                  ? 'bg-[var(--bg-subtle)] text-[var(--text-accent)] border-l-[2px] border-[var(--text-accent)]'
+                  : 'text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]'
+                }
+              `}
+              style={isActive && document.documentElement.getAttribute('data-theme') === 'dark' ? { backgroundColor: 'rgba(22,163,74,0.10)', color: 'var(--text-accent)' } : {}}
             >
-              <div className="flex items-center gap-4">
-                <Icon className={`w-5 h-5 ${isActive ? 'text-on-primary' : 'text-on-surface-variant group-hover:text-primary'} transition-colors`} />
-                <span className={`text-sm tracking-tight ${isActive ? 'font-bold' : 'font-medium'}`}>
+              <div className="flex items-center gap-2.5">
+                <span className={`material-symbols-outlined text-[18px] transition-colors ${isActive ? 'text-[var(--text-accent)]' : 'text-[var(--text-muted)] group-hover:text-[var(--text-secondary)]'}`}>
+                  {link.icon}
+                </span>
+                <span className={`text-[13px] ${isActive ? 'font-semibold' : 'font-medium'}`}>
                   {link.name}
                 </span>
               </div>
-              {link.badge && !isActive && (
-                <span className="bg-error text-on-error text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm">
+              {link.badge && (
+                <span className={`${isActive ? 'bg-[var(--text-accent)] text-white' : 'bg-[var(--btn-danger-text)] text-white'} text-[10px] font-bold px-1.5 py-0 rounded-full`}>
                   {link.badge}
                 </span>
               )}
@@ -109,15 +83,18 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Profile Sidebar Quick Menu */}
-      <div className="p-4 mx-4 mb-8 bg-surface-variant/30 rounded-3xl border border-outline-variant/10">
-        <Link to={`/${user?.role?.toLowerCase()}/settings`} className="flex items-center gap-3 p-2 hover:bg-surface-variant/50 rounded-2xl transition-colors group">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all">
-            <Settings className="w-5 h-5" />
+      {/* Footer Sidebar */}
+      <div className="p-3 border-t border-[var(--border-light)]">
+        <Link 
+          to={`/${user?.role?.toLowerCase()}/settings`} 
+          className="flex items-center gap-3 p-2 hover:bg-[var(--bg-muted)] rounded-[var(--radius-md)] transition-all group"
+        >
+          <div className="w-8 h-8 rounded-lg bg-[var(--bg-muted)] flex items-center justify-center text-[var(--text-muted)] group-hover:text-[var(--text-accent)] transition-all">
+            <span className="material-symbols-outlined text-[18px]">settings</span>
           </div>
-          <div className="flex-1">
-            <p className="text-xs font-bold text-on-surface truncate">Paramètres</p>
-            <p className="text-[10px] text-outline truncate uppercase tracking-widest">Configuration</p>
+          <div className="flex-1 overflow-hidden">
+            <p className="text-[12px] font-semibold text-[var(--text-primary)] truncate">Paramètres</p>
+            <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider font-medium opacity-70">Système</p>
           </div>
         </Link>
       </div>

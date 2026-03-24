@@ -7,7 +7,6 @@ import {
   ShieldCheck, 
   ShoppingBag, 
   CheckCircle2, 
-  Users, 
   Handshake, 
   Wallet,
   Globe,
@@ -20,6 +19,14 @@ import VisitorFooter from '../../components/shared/VisitorFooter';
 import ProductCard from '../../components/shared/ProductCard';
 import { useProductStore } from '../../store/productStore';
 
+import cerealesImg from '../../assets/images/products/cereales.png';
+import legumesImg from '../../assets/images/products/legumes.png';
+import fruitsImg from '../../assets/images/products/fruits.png';
+import tuberculesImg from '../../assets/images/products/tubercules.png';
+
+import whyBg from '../../assets/images/why-bg.png';
+import ctaBg from '../../assets/images/cta-bg.png';
+
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const { products, loading, fetchProducts } = useProductStore() as any;
@@ -30,6 +37,13 @@ const HomePage: React.FC = () => {
   }, [fetchProducts]);
 
   const featuredProducts = Array.isArray(products) ? products.slice(0, 3) : [];
+
+  const categories = [
+    { title: 'CÉRÉALES', icon: Leaf, image: cerealesImg, desc: 'Maïs, Sorgho, Mil et Riz de qualité supérieure.', filter: 'Céréales' },
+    { title: 'MARAÎCHAGE', icon: Zap, image: legumesImg, desc: 'Produits maraîchers frais direct des périmètres irrigués.', filter: 'Légumes' },
+    { title: 'FRUITS', icon: Grape, image: fruitsImg, desc: 'Mangues, Agrumes et Papayes gorgés de soleil.', filter: 'Fruits' },
+    { title: 'TUBERCULES', icon: Sprout, image: tuberculesImg, desc: 'Igname, Manioc et Patate douce du terroir.', filter: 'Tubercules' },
+  ];
 
   const howItWorksContent = {
     buyers: [
@@ -53,35 +67,35 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background text-on-background font-body">
-      <VisitorHeader />
+    <div className="flex flex-col min-h-screen bg-background text-on-background font-body overflow-x-hidden selection:bg-primary selection:text-white">
+      <VisitorHeader theme="dark" />
 
-      <main className="flex-grow pt-16">
+      <main className="flex-grow pt-0">
         {/* Hero Section */}
-        <section className="relative h-[680px] bg-hero-field flex items-center overflow-hidden">
-          <div className="absolute inset-0 bg-black/30 z-0"></div>
+        <section className="relative h-[85vh] min-h-[700px] bg-hero-field flex items-center overflow-hidden">
+          <div className="absolute inset-0 bg-black/40 z-0"></div>
           <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full relative z-10">
-            <div className="max-w-3xl">
-              <span className="inline-block px-4 py-1.5 bg-primary/95 text-white text-[10px] font-bold tracking-[0.2em] rounded-full uppercase mb-8 shadow-xl">
+            <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-12 duration-1000">
+              <span className="inline-block px-4 py-1.5 bg-primary text-white text-[10px] font-black tracking-[0.3em] rounded-full uppercase mb-8 shadow-2xl border border-white/10">
                 L'AGRI-TECH AU BURKINA FASO
               </span>
-              <h1 className="text-5xl md:text-7xl font-serif-display text-white mb-8 leading-[1.1]">
-                L'excellence agricole burkinabè, <span className="text-primary-fixed">en direct</span>.
+              <h1 className="text-6xl md:text-8xl font-serif-display text-white mb-8 leading-[1.05] tracking-tight">
+                L'Excellence Agricole, <span className="text-[#16a34a] italic">sans filtre</span>.
               </h1>
-              <p className="text-xl text-white/95 mb-12 max-w-xl font-body leading-relaxed">
+              <p className="text-xl text-white/80 mb-12 max-w-xl font-body leading-relaxed font-medium">
                 Connectez-vous directement aux producteurs certifiés du Burkina Faso. Négociez au juste prix et sécurisez votre approvisionnement.
               </p>
               <div className="flex flex-wrap gap-6">
                 <button 
                   onClick={() => navigate('/catalog')}
-                  className="px-10 py-4.5 bg-primary text-white font-bold rounded-2xl hover:bg-white hover:text-primary shadow-2xl transition-all flex items-center gap-3 group active:scale-95"
+                  className="px-10 py-5 bg-primary text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-green-600 hover:shadow-[0_20px_40px_rgba(22,163,74,0.3)] shadow-2xl transition-all flex items-center gap-3 group active:scale-95"
                 >
                   Explorer le marché
-                  <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button 
                   onClick={() => navigate('/register')}
-                  className="px-10 py-4.5 bg-white/10 backdrop-blur-lg border-2 border-white/40 text-white font-bold rounded-2xl hover:bg-white hover:text-on-background transition-all active:scale-95"
+                  className="px-10 py-5 bg-white/10 backdrop-blur-xl border border-white/20 text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-white/20 hover:border-white/40 transition-all active:scale-95"
                 >
                   Devenir partenaire
                 </button>
@@ -90,79 +104,116 @@ const HomePage: React.FC = () => {
           </div>
         </section>
 
-        {/* Categories / Filières Section */}
-        <section className="py-32 bg-surface-container-lowest overflow-hidden">
-          <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-            <div className="mb-20">
-              <h2 className="text-4xl md:text-5xl font-serif-display text-on-surface mb-6">Nos Filières Stratégiques</h2>
-              <div className="w-24 h-2 bg-primary/20 rounded-full"></div>
+        {/* Categories / Filières Section - Marquee */}
+        <section className="py-24 bg-surface relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6 mb-16 relative z-10">
+             <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-[2px] bg-primary"></div>
+                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Nos Filières Stratégiques</span>
+             </div>
+             <h2 className="text-4xl md:text-6xl font-serif-display text-on-surface">L'Essentiel du Terroir</h2>
+          </div>
+          
+          <div className="relative group/marquee">
+            <div className="flex whitespace-nowrap animate-marquee hover:[animation-play-state:paused] gap-8 px-4">
+              {[...categories, ...categories].map((cat, i) => (
+                <div 
+                  key={i} 
+                  className="relative w-[420px] h-[600px] rounded-[3.5rem] overflow-hidden group/card shrink-0 cursor-pointer transition-all duration-700 hover:scale-[1.02] active:scale-95 shadow-xl hover:shadow-2xl border border-outline-variant/10"
+                >
+                  {/* Image Background */}
+                  <img 
+                    src={cat.image} 
+                    alt={cat.title} 
+                    className="absolute inset-0 w-full h-full object-cover grayscale-[0.2] group-hover/card:grayscale-0 group-hover/card:scale-110 transition-all duration-700"
+                  />
+                  
+                  {/* Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/10 to-black/90 group-hover/card:to-black/80 transition-all duration-500"></div>
+                  
+                  {/* Content */}
+                  <div className="absolute inset-0 p-12 flex flex-col justify-between">
+                     <div className="flex justify-between items-start translate-y-4 group-hover/card:translate-y-0 opacity-0 group-hover/card:opacity-100 transition-all duration-500">
+                        <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center text-white border border-white/20">
+                          <cat.icon size={28} />
+                        </div>
+                        <div className="p-3 bg-white text-on-surface rounded-full shadow-lg">
+                           <ArrowRight size={20} className="-rotate-45" />
+                        </div>
+                     </div>
+                     
+                     <div className="space-y-4">
+                        <h3 className="text-4xl font-serif-display text-white tracking-tight">{cat.title}</h3>
+                        <p className="text-white/70 text-sm whitespace-normal leading-relaxed font-medium">
+                           {cat.desc}
+                        </p>
+                        
+                        {/* Action Button - Shows on Hover */}
+                        <div className="pt-6 transform translate-y-8 opacity-0 group-hover/card:translate-y-0 group-hover/card:opacity-100 transition-all duration-500 delay-100">
+                           <button 
+                             onClick={(e) => {
+                               e.stopPropagation();
+                               navigate(`/catalog?category=${cat.filter}`);
+                             }}
+                             className="w-full bg-green-500 text-white py-4 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-white hover:text-green-700 transition-all flex items-center justify-center gap-3 shadow-2xl"
+                           >
+                             Découvrir cette filière
+                             <ArrowRight size={14} />
+                           </button>
+                        </div>
+                     </div>
+                  </div>
+                </div>
+              ))}
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-               {[
-                 { title: 'CÉRÉALES', icon: Leaf, desc: 'Maïs, Sorgho, Mil et Riz de qualité supérieure récoltés localement.', color: 'bg-primary', light: false },
-                 { title: 'LÉGUMES', icon: Zap, desc: 'Produits maraîchers frais direct des périmètres irrigués.', color: 'bg-white', light: true },
-                 { title: 'FRUITS', icon: Grape, desc: 'Mangues, Agrumes et Papayes gorgés de soleil du Sud-Ouest.', color: 'bg-white', light: true },
-                 { title: 'TUBERCULES', icon: Sprout, desc: 'Igname, Manioc et Patate douce du terroir burkinabè.', color: 'bg-white', light: true },
-               ].map((cat, i) => (
-                 <div key={i} className={`p-10 rounded-[2.5rem] flex flex-col justify-between group transition-all h-[320px] ${cat.light ? 'border-2 border-primary/10 hover:border-primary bg-white' : 'bg-primary text-white shadow-xl shadow-primary/10'}`}>
-                    <div className="flex justify-between items-start">
-                      <div className={`p-4 rounded-2xl ${cat.light ? 'bg-primary/10 text-primary' : 'bg-white/10 text-white'}`}>
-                        <cat.icon size={36} />
-                      </div>
-                      <ArrowRight className={`${cat.light ? 'text-outline-variant group-hover:text-primary' : 'text-white/30'} -rotate-45 group-hover:rotate-0 transition-all`} size={32} />
-                    </div>
-                    <div>
-                      <h3 className={`text-4xl font-serif-display mb-3 tracking-tight ${cat.light ? 'text-on-surface' : 'text-white'}`}>{cat.title}</h3>
-                      <p className={`text-sm leading-relaxed ${cat.light ? 'text-on-surface-variant' : 'text-white/70'}`}>{cat.desc}</p>
-                    </div>
-                 </div>
-               ))}
-            </div>
+            {/* Vignettes for marquee fade effect */}
+            <div className="absolute inset-y-0 left-0 w-40 bg-gradient-to-r from-surface to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-surface to-transparent z-10 pointer-events-none"></div>
           </div>
         </section>
 
         {/* Featured Products */}
-        <section className="py-32 bg-surface">
+        <section className="py-32 bg-[var(--bg-page)]">
           <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
             <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
               <div>
-                <h2 className="text-4xl md:text-5xl font-serif-display text-on-surface mb-3">Offres Vedettes</h2>
-                <p className="text-primary font-bold uppercase tracking-widest text-xs">Le meilleur du Burkina Faso en exclusivité</p>
+                <h2 className="text-4xl md:text-5xl font-serif-display text-on-surface mb-3 tracking-tight">Offres Vedettes</h2>
+                <p className="text-primary font-black uppercase tracking-[0.2em] text-[10px]">Le meilleur du Burkina Faso en exclusivité</p>
               </div>
               <button 
                 onClick={() => navigate('/catalog')}
-                className="flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all underline underline-offset-8"
+                className="flex items-center gap-2 text-primary font-black uppercase tracking-widest text-[10px] hover:gap-3 transition-all underline underline-offset-8"
               >
-                Tout voir sur le marché <ArrowRight size={20} />
+                Explorer tout le marché <ArrowRight size={18} />
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
               {loading ? (
-                <div className="col-span-full py-32 text-center bg-white rounded-[3rem] border border-outline-variant/10 shadow-inner">
+                <div className="col-span-full py-32 text-center bg-muted rounded-[3rem] border border-outline-variant/10 shadow-inner">
                   <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto mb-6"></div>
-                  <p className="text-on-surface-variant font-bold text-xl font-headline">Collecte des pépites du terroir...</p>
+                  <p className="text-on-surface-variant font-black uppercase tracking-widest text-xs">Collecte des pépites du terroir...</p>
                 </div>
               ) : featuredProducts.length > 0 ? (
                 <>
                   {featuredProducts.map((product: any) => (
                     <ProductCard key={product._id} product={product} />
                   ))}
-                  <div className="bg-primary/5 rounded-[2.5rem] border-2 border-dashed border-primary/20 flex flex-col items-center justify-center p-12 text-center min-h-[450px]">
-                    <div className="w-20 h-20 bg-primary text-white rounded-3xl flex items-center justify-center mb-8 shadow-xl">
+                  <div className="bg-primary/5 rounded-[3rem] border-2 border-dashed border-primary/20 flex flex-col items-center justify-center p-12 text-center min-h-[450px] group transition-all hover:bg-primary/10">
+                    <div className="w-20 h-20 bg-primary text-white rounded-3xl flex items-center justify-center mb-8 shadow-xl group-hover:scale-110 transition-transform">
                         <ShoppingBag size={40} />
                     </div>
-                    <h3 className="text-2xl font-bold mb-3 font-headline">Exposez vos récoltes</h3>
-                    <p className="text-on-surface-variant text-sm mb-8 leading-relaxed">Producteurs burkinabè, rejoignez plus de 800 vendeurs déjà actifs.</p>
-                    <button onClick={() => navigate('/register')} className="px-8 py-3 bg-white text-primary font-bold rounded-xl shadow-md border border-primary/10 flex items-center gap-2 hover:scale-105 transition-all">
-                      S'inscrire comme vendeur <ArrowRight size={18} />
+                    <h3 className="text-2xl font-bold mb-3 font-display">Exposez vos récoltes</h3>
+                    <p className="text-on-surface-variant text-sm mb-8 leading-relaxed font-medium">Rejoignez plus de 800 vendeurs déjà actifs sur la plateforme.</p>
+                    <button onClick={() => navigate('/register')} className="px-8 py-4 bg-white text-primary font-black uppercase tracking-widest text-[10px] rounded-xl shadow-md border border-primary/10 flex items-center gap-2 hover:scale-105 transition-all">
+                      S'inscrire comme vendeur <ArrowRight size={16} />
                     </button>
                   </div>
                 </>
               ) : (
-                <div className="col-span-full py-20 text-center bg-surface-container-low rounded-[2rem] border-2 border-dashed border-outline-variant/30">
-                    <p className="text-on-surface-variant font-bold">Zéro produit vedette pour le moment.</p>
+                <div className="col-span-full py-20 text-center bg-surface-container-low rounded-[3rem] border-2 border-dashed border-outline-variant/30">
+                    <p className="text-on-surface-variant font-bold">Aucun produit en vedette pour le moment.</p>
                 </div>
               )}
             </div>
@@ -170,41 +221,47 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* Trust Section */}
-        <section className="py-32 bg-primary text-white overflow-hidden relative">
-          <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-             <div className="absolute top-10 right-10 w-96 h-96 bg-white rounded-full blur-[120px]"></div>
-             <div className="absolute bottom-10 left-10 w-64 h-64 bg-primary-fixed rounded-full blur-[80px]"></div>
-          </div>
-          <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 relative z-10">
+        <section 
+          className="py-32 bg-cover bg-center text-white overflow-hidden relative"
+          style={{ backgroundImage: `url(${whyBg})` }}
+        >
+          <div className="absolute inset-0 bg-green-900/80 backdrop-blur-sm"></div>
+          <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10 text-center">
             <div className="text-center mb-24 max-w-2xl mx-auto">
-              <h2 className="text-4xl md:text-6xl font-serif-display mb-6">Pourquoi AgroConnect BF ?</h2>
+              <span className="inline-block px-4 py-1.5 bg-white/10 text-white text-[10px] font-black tracking-[0.3em] rounded-full uppercase mb-6 border border-white/20">Notre Engagement</span>
+              <h2 className="text-4xl md:text-7xl font-serif-display mb-6 tracking-tight">Pourquoi AgroConnect ?</h2>
               <p className="text-white/70 text-lg leading-relaxed italic font-newsreader">"Nous digitalisons la confiance pour bâtir une agriculture burkinabè résiliente et prospère."</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-20">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-16 lg:gap-24">
               {[
                 { title: 'Connexion Directe', desc: 'Éliminez les intermédiaires inutiles. Traitez directement avec ceux qui cultivent la terre.', icon: Handshake },
                 { title: 'Négociation Équitable', desc: 'Transparence totale sur les prix du marché pour une rémunération juste des producteurs.', icon: Wallet },
                 { title: 'Logistique Fiable', desc: 'Réseau de transporteurs certifiés pour garantir la fraîcheur et la sécurité de vos produits.', icon: Truck },
               ].map((item, idx) => (
                 <div key={idx} className="flex flex-col items-center text-center group">
-                  <div className="w-24 h-24 bg-white/10 rounded-[2rem] flex items-center justify-center mb-10 border border-white/20 group-hover:rotate-6 group-hover:bg-white group-hover:text-primary transition-all shadow-xl">
+                  <div className="w-24 h-24 bg-white rounded-[2.5rem] flex items-center justify-center mb-10 text-primary group-hover:rotate-6 group-hover:scale-110 transition-all shadow-2xl">
                     <item.icon size={44} />
                   </div>
-                  <h3 className="text-2xl font-bold mb-4 font-headline">{item.title}</h3>
-                  <p className="text-white/70 leading-relaxed text-sm">{item.desc}</p>
+                  <h3 className="text-2xl font-bold mb-4 font-display">{item.title}</h3>
+                  <p className="text-white/60 leading-relaxed text-sm font-medium">{item.desc}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* How It Works with Tabs */}
-        <section className="py-32 bg-surface-container-low">
-          <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 text-center">
-            <h2 className="text-4xl md:text-5xl font-serif-display text-on-surface mb-12">Comment ça marche ?</h2>
+        <section className="py-32 bg-[var(--bg-page)] relative overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full opacity-[0.03] pointer-events-none">
+             <div className="absolute top-20 left-10 w-96 h-96 bg-primary rounded-full blur-[120px]"></div>
+             <div className="absolute bottom-20 right-10 w-64 h-64 bg-primary rounded-full blur-[80px]"></div>
+          </div>
+          <div className="max-w-7xl mx-auto px-6 text-center relative z-10">
+            <h2 className="text-5xl md:text-8xl font-serif-display text-on-surface mb-16 tracking-tighter leading-[0.9]">
+               Comment ça <span className="text-primary italic">marche ?</span>
+            </h2>
             
-            <div className="inline-flex p-1.5 bg-surface-container-high rounded-2xl mb-16 shadow-inner">
+            <div className="inline-flex p-1.5 bg-surface rounded-2xl mb-20 shadow-xl border border-outline-variant/10">
               {[
                 { id: 'buyers', label: 'Acheteurs' },
                 { id: 'farmers', label: 'Producteurs' },
@@ -213,22 +270,32 @@ const HomePage: React.FC = () => {
                 <button 
                   key={tab.id}
                   onClick={() => setActiveHowItWorks(tab.id as any)}
-                  className={`px-8 py-3 rounded-xl transition-all text-sm font-bold ${activeHowItWorks === tab.id ? 'bg-white text-primary shadow-lg' : 'text-on-surface-variant hover:text-primary'}`}
+                  className={`px-8 py-3 rounded-xl transition-all text-sm font-black uppercase tracking-widest ${activeHowItWorks === tab.id ? 'bg-primary text-white shadow-lg scale-105' : 'text-on-surface-variant hover:text-primary'}`}
                 >
                   {tab.label}
                 </button>
               ))}
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+ 
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
               {howItWorksContent[activeHowItWorks].map((step, i) => (
-                <div key={step.id} className="relative group text-left p-8 bg-white/50 backdrop-blur-sm rounded-[2rem] border border-white/20 hover:bg-white transition-all shadow-sm hover:shadow-xl">
-                  <div className="text-7xl font-serif-display text-primary/10 absolute -top-4 -right-4 group-hover:text-primary/20 transition-colors">{i + 1}</div>
-                  <div className="w-14 h-14 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <step.icon size={28} />
+                <div 
+                  key={`${activeHowItWorks}-${step.id}`} 
+                  className="relative group text-left p-12 bg-white rounded-[4rem] border border-outline-variant/10 hover:border-primary/20 transition-all duration-500 shadow-sm hover:shadow-2xl hover:-translate-y-2 animate-in fade-in slide-in-from-bottom-8 fill-mode-both"
+                  style={{ animationDelay: `${i * 150}ms` }}
+                >
+                  <div className="text-9xl font-serif-display text-primary/5 absolute -top-10 -right-4 group-hover:text-primary/10 transition-all duration-700 pointer-events-none select-none">
+                    {i + 1}
                   </div>
-                  <h4 className="text-xl font-bold mb-3 font-headline">{step.title}</h4>
-                  <p className="text-on-surface-variant text-sm leading-relaxed">{step.desc}</p>
+                  <div className="w-20 h-20 bg-primary/5 text-primary rounded-[2rem] flex items-center justify-center mb-10 group-hover:bg-primary group-hover:text-white group-hover:rotate-6 transition-all duration-500 shadow-inner">
+                    <step.icon size={36} />
+                  </div>
+                  <h4 className="text-2xl font-bold mb-6 font-display tracking-tight text-on-surface group-hover:text-primary transition-colors">
+                    {step.title}
+                  </h4>
+                  <p className="text-on-surface-variant text-base leading-relaxed font-newsreader italic">
+                    {step.desc}
+                  </p>
                 </div>
               ))}
             </div>
@@ -238,15 +305,27 @@ const HomePage: React.FC = () => {
         {/* Call to Action */}
         <section className="py-32 px-6">
           <div className="max-w-6xl mx-auto">
-            <div className="bg-[#f0fdf4] dark:bg-slate-900 border-4 border-primary/5 rounded-[3.5rem] p-16 md:p-24 text-center shadow-2xl relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/5 rounded-full -mr-48 -mt-48 blur-3xl"></div>
-               <div className="absolute bottom-0 left-0 w-64 h-64 bg-tertiary/5 rounded-full -ml-32 -mb-32 blur-2xl"></div>
+            <div 
+              className="bg-cover bg-center rounded-[4rem] p-16 md:p-32 text-center shadow-2xl relative overflow-hidden"
+              style={{ backgroundImage: `url(${ctaBg})` }}
+            >
+               <div className="absolute inset-0 bg-green-900/60 transition-colors group-hover:bg-green-900/40"></div>
                <div className="relative z-10">
-                 <h2 className="text-4xl md:text-6xl font-serif-display text-primary mb-10 leading-tight">Rejoignez 1 200 acteurs <br/>agricoles déjà actifs</h2>
-                 <p className="text-lg md:text-xl text-on-surface-variant max-w-2xl mx-auto mb-16 leading-relaxed font-body italic">"Faites partie de la révolution agricole digitale au Burkina Faso. Créez votre compte gratuitement aujourd'hui."</p>
+                 <h2 className="text-4xl md:text-7xl font-serif-display text-white mb-10 leading-[1.1] tracking-tight">Façonnez l'Avenir Agricole <br className="hidden md:block"/> du Burkina Faso</h2>
+                 <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto mb-16 leading-relaxed font-newsreader italic">"Rejoignez plus de 1 200 acteurs déjà engagés dans la transformation digitale."</p>
                  <div className="flex flex-wrap justify-center gap-6">
-                    <button onClick={() => navigate('/register')} className="px-12 py-5 bg-primary text-white font-bold rounded-2xl shadow-xl shadow-primary/20 hover:brightness-110 active:scale-95 transition-all text-lg">S'inscrire gratuitement</button>
-                    <button onClick={() => navigate('/catalog')} className="px-12 py-5 border-2 border-primary text-primary font-bold rounded-2xl hover:bg-white active:scale-95 transition-all text-lg">Consulter le marché</button>
+                    <button 
+                      onClick={() => navigate('/register')} 
+                      className="px-12 py-5 bg-white text-primary font-black uppercase tracking-widest text-xs rounded-2xl shadow-2xl hover:bg-muted hover:scale-105 active:scale-95 transition-all"
+                    >
+                      S'inscrire gratuitement
+                    </button>
+                    <button 
+                      onClick={() => navigate('/catalog')} 
+                      className="px-12 py-5 border border-white/30 text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-white/10 active:scale-95 transition-all"
+                    >
+                      Consulter le marché
+                    </button>
                  </div>
                </div>
             </div>

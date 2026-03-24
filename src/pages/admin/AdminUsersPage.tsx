@@ -1,158 +1,277 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
+  Plus, 
   Search, 
-  Filter, 
   Download, 
-  UserPlus, 
-  MoreHorizontal, 
-  ShieldCheck, 
-  ShieldAlert, 
-  Eye, 
-  UserX,
-  ChevronLeft,
-  ChevronRight,
-  CheckCircle2,
-  XCircle
+  MoreHorizontal,
+  X
 } from 'lucide-react';
+import { useUserStore } from '../../store/userStore';
+import userService from '../../services/userService';
+import toast from 'react-hot-toast';
+import Card from '../../components/shared/Card';
+import Button from '../../components/shared/Button';
+import Input from '../../components/shared/Input';
+import StatusBadge from '../../components/shared/StatusBadge';
+import Avatar from '../../components/shared/Avatar';
+import DataTable from '../../components/shared/DataTable';
 
 const AdminUsersPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { users, fetchUsers, loading } = useUserStore() as any;
+  const [searchTerm, setSearchTerm] = useState('');
+  const [roleFilter, setRoleFilter] = useState('ALL');
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  const [isRecruitModalOpen, setIsRecruitModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [recruitForm, setRecruitForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    password: '',
+    role: 'ADMIN'
+  });
+
+  const handleRecruit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await userService.createUser(recruitForm);
+      toast.success('Administrateur recruté avec succès');
+      setIsRecruitModalOpen(false);
+      fetchUsers();
+      setRecruitForm({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        password: '',
+        role: 'ADMIN'
+      });
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Erreur lors du recrutement');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const filteredUsers = users.filter((u: any) => {
+    const name = `${u.firstName || ''} ${u.lastName || u.name || ''}`.toLowerCase();
+    const matchesSearch = name.includes(searchTerm.toLowerCase()) || 
+                          (u.email || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = roleFilter === 'ALL' || u.role === roleFilter;
+    return matchesSearch && matchesRole;
+  });
+
+  const columns = [
+    {
+      header: 'Utilisateur',
+      accessor: (user: any) => (
+        <div className="flex items-center gap-3">
+          <Avatar name={user.firstName || user.name} role={user.role} size="sm" />
+          <div className="flex flex-col">
+            <span className="font-semibold text-[var(--text-primary)]">
+              {user.firstName || user.name} {user.lastName || ''}
+            </span>
+            <span className="text-[12px] text-[var(--text-muted)] lowercase">{user.email}</span>
+          </div>
+        </div>
+      )
+    },
+    {
+      header: 'Rôle',
+      accessor: (user: any) => (
+        <StatusBadge status={user.role} />
+      )
+    },
+    {
+      header: 'Statut',
+      accessor: (user: any) => (
+        <StatusBadge status={user.isActive !== false ? 'ACTIF' : 'SUSPENDU'} />
+      )
+    },
+    {
+      header: 'Adhésion',
+      accessor: (user: any) => (
+        <span className="text-[12px]">{new Date(user.createdAt).toLocaleDateString()}</span>
+      ),
+      isMono: true
+    },
+    {
+      header: '',
+      accessor: (user: any) => (
+        <div className="flex justify-end gap-2">
+           <Button 
+            variant="ghost" 
+            size="sm" 
+            className="p-1 min-w-0"
+            onClick={(e) => { e.stopPropagation(); navigate(`/admin/users/${user._id}`); }}
+           >
+              <span className="material-symbols-outlined text-[18px]">visibility</span>
+           </Button>
+           <Button 
+            variant="ghost" 
+            size="sm" 
+            className="p-1 min-w-0 text-[var(--btn-danger-text)] hover:bg-[var(--badge-dispute-bg)]"
+            onClick={(e) => { e.stopPropagation(); /* Logic for block */ }}
+           >
+              <span className="material-symbols-outlined text-[18px]">block</span>
+           </Button>
+        </div>
+      ),
+      className: 'text-right'
+    }
+  ];
+
   return (
-    <div className="space-y-8 pb-12 animate-in fade-in duration-500">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+    <div className="space-y-6 pb-12 font-body">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 className="text-4xl font-serif-display text-on-surface mb-2">Gestion des Utilisateurs</h2>
-          <p className="text-on-surface-variant max-w-lg">
-            Administrez les comptes de la plateforme : validation des profils et gestion des accès.
+          <h1 className="font-display text-4xl text-[var(--text-primary)] tracking-tight mb-2">Annuaire des Acteurs</h1>
+          <p className="text-[14px] text-[var(--text-secondary)]">Gérez les accès et les privilèges de la communauté.</p>
+        </div>
+        <div className="flex gap-2">
+          <Button 
+            variant="secondary" 
+            size="md" 
+            icon={<Download size={16} />}
+          >
+            Exporter
+          </Button>
+          <Button 
+            variant="primary" 
+            size="md" 
+            icon={<Plus size={18} />}
+            onClick={() => setIsRecruitModalOpen(true)}
+          >
+            Recruter Admin
+          </Button>
+        </div>
+      </header>
+
+      {/* Toolbar */}
+      <Card className="flex flex-col sm:flex-row gap-4 items-center">
+        <div className="flex-1 w-full">
+          <Input 
+            placeholder="Rechercher par nom ou email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            icon={<Search size={16} />}
+          />
+        </div>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <select 
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+            className="h-[36px] px-3 bg-[var(--input-bg)] text-[var(--input-text)] border border-[var(--input-border)] rounded-[var(--radius-md)] text-[13px] outline-none focus:border-[var(--input-border-focus)] transition-all min-w-[150px]"
+          >
+            <option value="ALL">Tous les rôles</option>
+            <option value="ADMIN">Administrateurs</option>
+            <option value="FARMER">Producteurs</option>
+            <option value="BUYER">Acheteurs</option>
+            <option value="TRANSPORTER">Logistique</option>
+          </select>
+        </div>
+      </Card>
+
+      {/* Table */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between px-2">
+          <p className="text-[12px] font-medium text-[var(--text-secondary)]">
+            Total : <span className="text-[var(--text-primary)]">{filteredUsers.length} acteurs</span>
           </p>
         </div>
-        <button className="bg-primary text-white px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2 hover:bg-primary-container hover:text-on-primary-container transition-all shadow-lg shadow-primary/10">
-          <UserPlus size={18} /> Inviter un collaborateur
-        </button>
-      </div>
-
-      {/* Toolbar Section */}
-      <section className="bg-surface-container-lowest p-6 rounded-[2rem] border border-outline-variant/10 flex flex-wrap items-center gap-4">
-        <div className="flex-1 min-w-[300px]">
-          <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors" size={20} />
-            <input 
-              type="text" 
-              placeholder="Rechercher par nom, email ou téléphone..." 
-              className="w-full border border-outline-variant/30 rounded-2xl py-3 pl-12 pr-4 text-sm focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all bg-surface-container-low/30 outline-none"
-            />
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <select className="appearance-none border border-outline-variant/30 rounded-2xl text-sm py-3 pl-4 pr-10 focus:ring-4 focus:ring-primary/10 bg-surface-container-low/30 outline-none cursor-pointer">
-              <option>Tous les rôles</option>
-              <option>Acheteur</option>
-              <option>Agriculteur</option>
-              <option>Transporteur</option>
-            </select>
-            <Filter size={16} className="absolute right-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none" />
-          </div>
-          <button className="bg-surface-container-high text-on-surface px-6 py-3 rounded-2xl text-sm font-bold flex items-center gap-2 hover:bg-white transition-all border border-outline-variant/10">
-            <Download size={18} /> Exporter
-          </button>
-        </div>
+        <DataTable 
+          columns={columns} 
+          data={filteredUsers} 
+          isLoading={loading}
+          onRowClick={(user: any) => navigate(`/admin/users/${user._id}`)}
+          emptyMessage="Aucun utilisateur trouvé."
+        />
       </section>
 
-      {/* Table Section */}
-      <section className="bg-surface-container-lowest rounded-[2rem] border border-outline-variant/10 overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[900px]">
-            <thead>
-              <tr className="bg-surface-container-low/30 text-[10px] uppercase tracking-[0.15em] text-outline font-bold border-b border-outline-variant/5">
-                <th className="px-8 py-5">Utilisateur</th>
-                <th className="px-8 py-5">Rôle</th>
-                <th className="px-8 py-5 text-center">Activités</th>
-                <th className="px-8 py-5">Statut</th>
-                <th className="px-8 py-5">Inscription</th>
-                <th className="px-8 py-5 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-outline-variant/5">
-              {[
-                { name: 'Fatima Traoré', email: 'fatima.t@agro.bf', role: 'Acheteur', color: 'blue', canSell: false, canBuy: true, status: 'Actif', date: '12 oct. 2023' },
-                { name: 'Amadou Kaboré', email: 'a.kabore@farma.bf', role: 'Agriculteur', color: 'emerald', canSell: true, canBuy: true, status: 'Actif', date: '25 sept. 2023' },
-                { name: 'Koné Dramane', email: 'k.dramane@trans.bf', role: 'Transporteur', color: 'orange', canSell: false, canBuy: true, status: 'Actif', date: '02 nov. 2023' },
-                { name: 'Moussa Diallo', email: 'm.diallo@email.bf', role: 'Acheteur', color: 'slate', canSell: false, canBuy: true, status: 'Suspendu', date: '15 août 2023' },
-              ].map((user, i) => (
-                <tr key={i} className={`hover:bg-surface-container-low/20 transition-colors group ${user.status === 'Suspendu' ? 'opacity-60 bg-surface-container-highest/10' : ''}`}>
-                  <td className="px-8 py-6">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-11 h-11 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-sm font-bold shadow-inner`}>
-                        {user.name.split(' ').map(n => n[0]).join('')}
-                      </div>
-                      <div>
-                        <p className="font-headline font-bold text-on-surface">{user.name}</p>
-                        <p className="text-xs text-outline font-medium">{user.email}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <span className={`px-4 py-1.5 bg-${user.color}-500/10 text-${user.color}-600 text-[10px] font-bold rounded-full uppercase tracking-wider border border-${user.color}-500/20`}>
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="flex items-center justify-center gap-3">
-                      <div title="Ventes" className={`p-1.5 rounded-lg ${user.canSell ? 'bg-primary/10 text-primary' : 'bg-outline/5 text-outline/30'}`}>
-                        <CheckCircle2 size={16} />
-                      </div>
-                      <div title="Achats" className={`p-1.5 rounded-lg ${user.canBuy ? 'bg-primary/10 text-primary' : 'bg-outline/5 text-outline/30'}`}>
-                        <CheckCircle2 size={16} />
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className={`flex items-center gap-2 font-bold text-xs ${user.status === 'Actif' ? 'text-primary' : 'text-error'}`}>
-                      <div className={`w-1.5 h-1.5 rounded-full ${user.status === 'Actif' ? 'bg-primary animate-pulse' : 'bg-error'}`}></div>
-                      {user.status}
-                    </div>
-                  </td>
-                  <td className="px-8 py-6 text-sm font-mono text-outline">{user.date}</td>
-                  <td className="px-8 py-6 text-right">
-                     <div className="flex items-center justify-end gap-1">
-                        <Link to={`/admin/users/${i+1}`} className="p-2.5 text-outline hover:text-primary hover:bg-primary/5 rounded-xl transition-all" title="Voir détails">
-                          <Eye size={20} />
-                        </Link>
-                        <button className="p-2.5 text-outline hover:text-error hover:bg-error/5 rounded-xl transition-all" title={user.status === 'Actif' ? 'Suspendre' : 'Réactiver'}>
-                          {user.status === 'Actif' ? <UserX size={20} /> : <CheckCircle2 size={20} />}
-                        </button>
-                        <button className="p-2.5 text-outline hover:bg-surface-container rounded-xl transition-all">
-                          <MoreHorizontal size={20} />
-                        </button>
-                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        {/* Pagination */}
-        <div className="px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-outline-variant/10 bg-surface-container-lowest">
-          <p className="text-xs text-outline font-medium italic">Affichage de <span className="font-bold text-on-surface not-italic">1 - 10</span> sur <span className="font-bold text-on-surface not-italic">482</span> utilisateurs</p>
-          <div className="flex items-center gap-1.5">
-            <button className="w-10 h-10 flex items-center justify-center rounded-xl text-outline hover:bg-surface-container transition-all disabled:opacity-30" disabled>
-              <ChevronLeft size={20} />
-            </button>
-            {[1, 2, 3].map(p => (
-              <button key={p} className={`w-10 h-10 flex items-center justify-center rounded-xl text-xs font-bold transition-all ${p === 1 ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'hover:bg-surface-container text-outline'}`}>
-                {p}
+      {/* Recruitment Modal */}
+      {isRecruitModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" onClick={() => !isSubmitting && setIsRecruitModalOpen(false)}></div>
+          <Card className="relative w-full max-w-lg shadow-2xl p-0 overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-[var(--border-light)] flex items-center justify-between bg-[var(--bg-muted)]/30">
+              <h3 className="text-[18px] font-bold text-[var(--text-primary)]">Recrutement Administrateur</h3>
+              <button onClick={() => !isSubmitting && setIsRecruitModalOpen(false)} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                <X size={20} />
               </button>
-            ))}
-            <span className="px-2 text-outline font-bold">...</span>
-            <button className="w-10 h-10 flex items-center justify-center rounded-xl text-xs font-bold text-outline hover:bg-surface-container transition-all">48</button>
-            <button className="w-10 h-10 flex items-center justify-center rounded-xl text-outline hover:bg-surface-container transition-all">
-              <ChevronRight size={20} />
-            </button>
-          </div>
+            </div>
+            
+            <form onSubmit={handleRecruit} className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <Input 
+                  label="Prénom"
+                  required
+                  value={recruitForm.firstName}
+                  onChange={(e) => setRecruitForm({...recruitForm, firstName: e.target.value})}
+                  placeholder="ex: Moussa"
+                />
+                <Input 
+                  label="Nom"
+                  required
+                  value={recruitForm.lastName}
+                  onChange={(e) => setRecruitForm({...recruitForm, lastName: e.target.value})}
+                  placeholder="ex: Traoré"
+                />
+              </div>
+              <Input 
+                label="Email"
+                type="email"
+                required
+                value={recruitForm.email}
+                onChange={(e) => setRecruitForm({...recruitForm, email: e.target.value})}
+                placeholder="m.traore@agroconnect.bf"
+              />
+              <Input 
+                label="Téléphone"
+                type="tel"
+                required
+                value={recruitForm.phone}
+                onChange={(e) => setRecruitForm({...recruitForm, phone: e.target.value})}
+                placeholder="+226 XX XX XX XX"
+              />
+              <Input 
+                label="Mot de passe"
+                type="password"
+                required
+                value={recruitForm.password}
+                onChange={(e) => setRecruitForm({...recruitForm, password: e.target.value})}
+                placeholder="••••••••"
+              />
+              
+              <div className="pt-4 flex justify-end gap-3">
+                <Button 
+                  type="button" 
+                  variant="secondary" 
+                  onClick={() => setIsRecruitModalOpen(false)}
+                  disabled={isSubmitting}
+                >
+                  Annuler
+                </Button>
+                <Button 
+                  type="submit" 
+                  variant="primary" 
+                  isLoading={isSubmitting}
+                >
+                  Confirmer
+                </Button>
+              </div>
+            </form>
+          </Card>
         </div>
-      </section>
+      )}
     </div>
   );
 };

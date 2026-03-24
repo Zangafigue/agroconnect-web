@@ -13,7 +13,7 @@ const CatalogPage: React.FC = () => {
   const [selectedLocation, setSelectedLocation] = useState('Toutes');
   const [priceRange, setPriceRange] = useState(50000);
 
-  const categories = ['Toutes', 'Céréales', 'Légumes', 'Fruits', 'Élevage', 'Tubercules', 'Autres'];
+  const categories = ['Toutes', 'Céréales', 'Légumes', 'Fruits', 'Tubercules', 'Autres'];
   const locations = ['Toutes', 'Ouagadougou', 'Bobo-Dioulasso', 'Koudougou', 'Banfora', 'Ouahigouya'];
 
   useEffect(() => {
@@ -36,11 +36,11 @@ const CatalogPage: React.FC = () => {
       <main className="flex-grow pt-28 pb-20">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           {/* Hero/Search Section */}
-          <section className="bg-surface-container-high/50 p-8 md:p-12 mb-16 rounded-[3rem] border border-outline-variant/10 relative overflow-hidden">
+          <section className="bg-white p-8 md:p-12 mb-16 rounded-[4rem] border border-primary/10 relative overflow-hidden shadow-xl">
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
             <div className="relative z-10">
-              <h1 className="text-4xl md:text-5xl font-serif-display text-on-surface mb-4">Le Marché National</h1>
-              <p className="text-on-surface-variant max-w-2xl mb-10 text-lg font-newsreader italic">"Accédez aux pépites de notre terroir, directement depuis l'exploitation."</p>
+              <h1 className="text-4xl md:text-6xl font-serif-display text-on-surface mb-4 tracking-tight">Le Marché National</h1>
+              <p className="text-on-surface-variant max-w-2xl mb-10 text-xl font-newsreader italic">"Accédez aux pépites de notre terroir, directement depuis l'exploitation."</p>
               
               <div className="relative w-full max-w-3xl group">
                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-primary group-focus-within:scale-110 transition-transform" size={24} />
@@ -126,7 +126,7 @@ const CatalogPage: React.FC = () => {
                         step="500"
                         value={priceRange}
                         onChange={(e) => setPriceRange(parseInt(e.target.value))}
-                        className="w-full h-2 bg-surface-container-high rounded-full appearance-none cursor-pointer accent-primary" 
+                        className="w-full h-2 bg-gray-200 rounded-full appearance-none cursor-pointer accent-primary" 
                       />
                       <div className="flex justify-between mt-3 text-[10px] font-bold text-outline">
                         <span>500 F</span>

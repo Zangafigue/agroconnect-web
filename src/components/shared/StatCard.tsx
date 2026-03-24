@@ -29,7 +29,7 @@ export default function StatCard({
   };
 
   return (
-    <div className="bg-surface-container-lowest p-6 rounded-3xl border border-outline-variant/10 shadow-sm hover:shadow-md transition-shadow group">
+    <div className="bg-[var(--bg-surface)] p-6 rounded-3xl border border-outline-variant/10 shadow-sm hover:shadow-md transition-shadow group">
       <div className="flex justify-between items-start mb-4">
         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 ${colorClasses[color]}`}>
           <Icon className="w-6 h-6" />

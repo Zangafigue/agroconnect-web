@@ -6,129 +6,129 @@ import {
   MapPin, 
   Star, 
   Clock, 
-  Info, 
   ArrowRight, 
-  ShieldCheck, 
   Box,
-  Navigation
+  Navigation,
+  Info
 } from 'lucide-react';
 import { formatFCFA } from '../../utils/currency';
+import Card from '../../components/shared/Card';
+import Button from '../../components/shared/Button';
+import Avatar from '../../components/shared/Avatar';
 
 const BuyerOffersPage: React.FC = () => {
   const navigate = useNavigate();
 
+  const offers = [
+    { id: 1, name: 'Koné Dramane', rating: 4.8, phrase: 'Départ demain matin, trajet direct.', price: 15000, type: 'Camion 5T', time: '06:00', role: 'TRANSPORTER' },
+    { id: 2, name: 'Sana Souleymane', rating: 4.5, phrase: 'Expert trajets courts et fragiles.', price: 12500, type: 'Pick-up 2T', time: 'Flexible', role: 'TRANSPORTER', tag: 'Économique' },
+    { id: 3, name: 'Ouattara Express', rating: 4.9, phrase: 'Service express avec suivi GPS.', price: 18000, type: 'Camion Frigo 10T', time: 'Quotidien', role: 'TRANSPORTER', tag: 'Premium' }
+  ];
+
   return (
-    <div className="flex-1 p-8 md:p-16 mb-32 w-full max-w-7xl mx-auto animate-in fade-in duration-700">
+    <div className="space-y-8 pb-12 font-body">
       {/* Breadcrumb */}
-      <nav className="mb-8 text-[10px] font-black uppercase tracking-[0.2em] text-outline flex items-center gap-2">
-        <span className="hover:text-primary transition-colors cursor-pointer" onClick={() => navigate('/buyer/orders')}>Mes Commandes</span>
+      <nav className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">
+        <span className="hover:text-[var(--text-accent)] cursor-pointer transition-colors" onClick={() => navigate('/buyer/orders')}>Commandes</span>
         <ChevronRight size={12} />
-        <span className="text-primary">Offres de transport</span>
+        <span className="text-[var(--text-primary)]">Logistique</span>
       </nav>
 
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-end gap-10 mb-12">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="font-serif-display text-5xl lg:text-6xl text-on-surface leading-tight mb-4">Logistique</h1>
-          <p className="text-on-surface-variant font-medium text-lg">
-            Sélectionnez le transporteur idéal pour votre <span className="font-mono text-primary font-black">commande #CMD-043</span>
+          <h1 className="font-display text-4xl text-[var(--text-primary)] tracking-tight mb-2">Offres de Transport</h1>
+          <p className="text-[14px] text-[var(--text-secondary)]">
+            Choisissez le transporteur idéal pour votre commande <span className="font-mono font-bold text-[var(--text-accent)]">#CMD-043</span>
           </p>
         </div>
-        <div className="bg-primary/5 px-6 py-3 rounded-2xl border border-primary/10 flex items-center gap-4 shadow-sm">
-          <Truck size={20} className="text-primary" />
-          <span className="font-mono text-sm font-black text-on-surface">Bobo-Dioulasso <ArrowRight size={14} className="inline text-outline mx-2" /> Ouagadougou</span>
-        </div>
-      </div>
+        <Card className="px-4 py-2 bg-[var(--text-accent)]/5 border-none flex items-center gap-3">
+          <Truck size={18} className="text-[var(--text-accent)]" />
+          <span className="text-[12px] font-bold text-[var(--text-primary)] uppercase tracking-wide">
+            Bobo <ArrowRight size={12} className="inline mx-1" /> Ouaga
+          </span>
+        </Card>
+      </header>
 
-      {/* Map View Section */}
-      <section className="mb-16 rounded-[3rem] overflow-hidden shadow-2xl border border-outline-variant/10 relative group">
-        <div className="h-[300px] w-full bg-surface-container-high relative">
-          <img 
-            src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1200&q=80" 
-            alt="Trajet" 
-            className="w-full h-full object-cover grayscale opacity-40 group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-1000" 
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-          
-          <div className="absolute top-8 left-8 backdrop-blur-xl bg-white/80 px-6 py-3 rounded-2xl border border-white shadow-2xl flex items-center gap-3">
-             <div className="w-2 h-2 rounded-full bg-primary animate-ping"></div>
-             <span className="text-[10px] font-black uppercase tracking-widest text-on-surface">Calcul d'itinéraire optimal</span>
-          </div>
-
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="flex items-center gap-6">
-              <div className="w-6 h-6 rounded-full bg-primary border-4 border-white shadow-2xl"></div>
-              <div className="h-1.5 w-64 bg-primary/20 rounded-full overflow-hidden">
-                 <div className="h-full bg-primary w-2/3 shadow-[0_0_20px_rgba(var(--primary),0.5)]"></div>
-              </div>
-              <div className="w-6 h-6 rounded-full bg-tertiary border-4 border-white shadow-2xl"></div>
+      {/* Journey Map Preview (Minimalist) */}
+      <Card className="p-0 overflow-hidden relative group">
+         <div className="h-48 bg-[var(--bg-muted)] relative">
+            <img 
+               src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1200&q=80" 
+               alt="Carte" 
+               className="w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-1000" 
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+               <div className="flex items-center gap-4">
+                  <div className="w-3 h-3 rounded-full bg-[var(--text-accent)] shadow-[0_0_15px_rgba(var(--text-accent-rgb),0.5)]"></div>
+                  <div className="h-0.5 w-32 bg-dashed border-t border-[var(--text-accent)]/30"></div>
+                  <Navigation size={20} className="text-[var(--text-accent)] rotate-90" />
+                  <div className="h-0.5 w-32 bg-dashed border-t border-[var(--text-accent)]/30"></div>
+                  <MapPin size={20} className="text-red-500" />
+               </div>
             </div>
-          </div>
-          
-          <button className="absolute bottom-8 right-8 bg-white/90 backdrop-blur-md p-4 rounded-2xl border border-white shadow-xl hover:scale-110 transition-all text-primary">
-             <Navigation size={24} />
-          </button>
-        </div>
-      </section>
-
-      {/* Delivery Offers List */}
-      <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-outline mb-10 flex items-center gap-3">
-         <Info size={14} className="text-primary" /> 3 transporteurs disponibles
-      </h2>
-      
-      <div className="space-y-8">
-        {[
-          { id: 1, name: 'Koné Dramane', init: 'KD', rating: '4.8', phrase: 'Je pars demain matin', price: 15000, color: 'primary', meta: 'Camion 5T', time: '06:00' },
-          { id: 2, name: 'Sana Souleymane', init: 'SS', rating: '4.5', phrase: 'Expert en trajets courts', price: 12500, color: 'tertiary', meta: 'Pick-up 2T', time: 'Flexible', deal: 'Moins cher' },
-          { id: 3, name: 'Ouattara Transport', init: 'OT', rating: '4.9', phrase: 'Service Premium Garanti', price: 18000, color: 'primary', meta: 'Camion Frigo 10T', time: 'Quotidien', deal: 'Mieux noté' }
-        ].map((offer) => (
-          <article key={offer.id} className="group bg-surface-container-lowest p-8 rounded-[2.5rem] flex flex-col xl:flex-row items-center gap-10 transition-all hover:shadow-2xl hover:-translate-y-2 border border-outline-variant/10 relative overflow-hidden">
-            {offer.deal && (
-              <div className={`absolute top-0 left-10 px-4 py-1.5 rounded-b-xl text-[9px] font-black uppercase tracking-widest text-white shadow-lg ${offer.deal === 'Mieux noté' ? 'bg-primary' : 'bg-tertiary'}`}>
-                {offer.deal}
-              </div>
-            )}
-            
-            <div className="flex-shrink-0 relative">
-              <div className={`w-20 h-20 rounded-[1.5rem] bg-${offer.color}/10 text-${offer.color} flex items-center justify-center font-serif-display text-3xl shadow-inner`}>
-                {offer.init}
-              </div>
-              <div className="absolute -bottom-2 -right-2 bg-white p-1.5 rounded-xl shadow-lg border border-outline-variant/5">
-                 <div className="flex items-center gap-1 text-[10px] font-black text-tertiary">
-                   <Star size={12} className="fill-current" />
-                   {offer.rating}
-                 </div>
-              </div>
+            <div className="absolute top-4 left-4 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/50 shadow-sm flex items-center gap-2">
+               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+               <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-primary)]">Optimisation de trajet active</span>
             </div>
+         </div>
+      </Card>
 
-            <div className="flex-1 space-y-4 w-full">
-              <div>
-                <h3 className="text-2xl font-serif-display text-on-surface group-hover:text-primary transition-colors">{offer.name}</h3>
-                <p className="text-sm font-medium text-on-surface-variant italic mt-1">"{offer.phrase}"</p>
-              </div>
-              <div className="flex flex-wrap gap-6">
-                <div className="flex items-center gap-2 text-[10px] font-black text-outline uppercase tracking-widest bg-surface-container-low px-4 py-2 rounded-xl">
-                  <Clock size={14} className="text-primary" />
-                  Départ {offer.time}
-                </div>
-                <div className="flex items-center gap-2 text-[10px] font-black text-outline uppercase tracking-widest bg-surface-container-low px-4 py-2 rounded-xl">
-                  <Box size={14} className="text-primary" />
-                  {offer.meta}
-                </div>
-              </div>
-            </div>
+      {/* Offers List */}
+      <div className="space-y-4">
+         <h3 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-secondary)] flex items-center gap-2 px-2">
+            <Info size={14} className="text-[var(--text-accent)]" /> 
+            {offers.length} transporteurs disponibles
+         </h3>
+         
+         <div className="grid grid-cols-1 gap-4">
+            {offers.map((offer) => (
+               <Card key={offer.id} className="p-6 group hover:border-[var(--text-accent)] transition-all">
+                  <div className="flex flex-col md:flex-row items-center gap-8">
+                     <div className="flex-shrink-0 flex flex-col items-center">
+                        <Avatar name={offer.name} role={offer.role} size="lg" />
+                        <div className="flex items-center gap-1 mt-2 text-amber-500">
+                           <Star size={12} fill="currentColor" />
+                           <span className="text-[12px] font-bold">{offer.rating}</span>
+                        </div>
+                     </div>
 
-            <div className="text-right flex flex-col items-center xl:items-end gap-5 w-full xl:w-auto">
-              <div>
-                <span className="font-mono text-3xl font-black text-primary block">{formatFCFA(offer.price)}</span>
-                <span className="text-[9px] font-black text-outline uppercase tracking-widest">TTC • Assurance incluse</span>
-              </div>
-              <button className="w-full xl:w-auto bg-primary text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-[.2em] shadow-xl shadow-primary/20 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3">
-                Réserver ce trajet <ChevronRight size={18} />
-              </button>
-            </div>
-          </article>
-        ))}
+                     <div className="flex-1 space-y-4 text-center md:text-left">
+                        <div>
+                           {offer.tag && (
+                              <span className={`inline-block mb-2 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest ${offer.tag === 'Premium' ? 'bg-indigo-100 text-indigo-700' : 'bg-green-100 text-green-700'}`}>
+                                 {offer.tag}
+                              </span>
+                           )}
+                           <h4 className="text-xl font-bold text-[var(--text-primary)]">{offer.name}</h4>
+                           <p className="text-[13px] text-[var(--text-secondary)] italic leading-relaxed">"{offer.phrase}"</p>
+                        </div>
+                        
+                        <div className="flex flex-wrap justify-center md:justify-start gap-3">
+                           <div className="px-3 py-1.5 bg-[var(--bg-muted)] rounded-lg flex items-center gap-2 text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wide">
+                              <Clock size={14} className="text-[var(--text-accent)]" />
+                              {offer.time}
+                           </div>
+                           <div className="px-3 py-1.5 bg-[var(--bg-muted)] rounded-lg flex items-center gap-2 text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wide">
+                              <Box size={14} className="text-[var(--text-accent)]" />
+                              {offer.type}
+                           </div>
+                        </div>
+                     </div>
+
+                     <div className="flex flex-col items-center md:items-end gap-3 w-full md:w-auto md:border-l border-[var(--border-light)] md:pl-8">
+                        <div className="text-center md:text-right">
+                           <span className="font-mono text-2xl font-bold text-[var(--text-accent)] block">{formatFCFA(offer.price)}</span>
+                           <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">TTC • Assurance incluse</span>
+                        </div>
+                        <Button variant="primary" size="lg" className="w-full md:w-auto" icon={<ChevronRight size={18} />} iconPosition="right">
+                           Réserver
+                        </Button>
+                     </div>
+                  </div>
+               </Card>
+            ))}
+         </div>
       </div>
     </div>
   );

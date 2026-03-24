@@ -8,7 +8,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   return (
-    <div className="flex h-screen bg-surface overflow-hidden text-on-surface font-body">
+    <div className="flex h-screen bg-[var(--bg-page)] overflow-hidden text-[var(--text-primary)] font-body">
       {/* Vertical Sidebar */}
       <Sidebar />
 
@@ -17,11 +17,8 @@ export default function Layout({ children }: LayoutProps) {
         <Header />
 
         {/* Scrollable Content Area */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-surface p-6 md:p-10 relative">
-          {/* Subtle Background Pattern / Gradient */}
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none -z-10"></div>
-          
-          <div className="max-w-7xl mx-auto">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-[var(--bg-page)] p-6 md:p-8 relative">
+          <div className="max-w-[1400px] mx-auto">
             {children}
           </div>
         </main>

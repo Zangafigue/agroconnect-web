@@ -4,107 +4,132 @@ import {
   Clock, 
   CheckCircle2, 
   Truck, 
-  History, 
   MessageSquare, 
   XCircle, 
-  Info,
-  ChevronRight,
-  TrendingUp,
-  MapPin
+  Search,
+  ArrowRight,
+  Filter
 } from 'lucide-react';
 import { formatFCFA } from '../../utils/currency';
+import Card from '../../components/shared/Card';
+import Button from '../../components/shared/Button';
+import DataTable from '../../components/shared/DataTable';
+import StatusBadge from '../../components/shared/StatusBadge';
+import Input from '../../components/shared/Input';
 
 const BuyerOrdersPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('pending');
+  const [activeTab, setActiveTab] = useState('ALL');
+
+  const orders = [
+    { id: 'CMD-045', product: 'Maïs sec de Bobo', qty: '10 sacs (500kg)', producer: 'Amadou Kaboré', total: 50000, date: '24 Oct. 2024', status: 'PENDING' },
+    { id: 'CMD-042', product: 'Oignons Galmi', qty: '2 sacs (100kg)', producer: 'Zalissa Traoré', total: 30000, date: '20 Oct. 2024', status: 'SHIPPED' },
+    { id: 'CMD-040', product: 'Pommes de terre', qty: '50kg', producer: 'Saliou Diallo', total: 15000, date: '15 Oct. 2024', status: 'DELIVERED' }
+  ];
+
+  const columns = [
+    {
+      header: 'Référence',
+      accessor: (o: any) => (
+        <span className="font-bold text-[var(--text-primary)]">#{o.id}</span>
+      ),
+      isMono: true
+    },
+    {
+      header: 'Produit & Quantité',
+      accessor: (o: any) => (
+        <div className="flex flex-col">
+          <span className="text-[13px] font-medium text-[var(--text-primary)]">{o.product}</span>
+          <span className="text-[11px] text-[var(--text-secondary)]">{o.qty}</span>
+        </div>
+      )
+    },
+    {
+      header: 'Producteur',
+      accessor: (o: any) => <span className="text-[13px]">{o.producer}</span>
+    },
+    {
+      header: 'Total',
+      accessor: (o: any) => (
+        <span className="font-bold font-mono text-[var(--text-primary)]">{formatFCFA(o.total)}</span>
+      )
+    },
+    {
+      header: 'Date',
+      accessor: (o: any) => <span className="text-[12px] text-[var(--text-secondary)]">{o.date}</span>
+    },
+    {
+      header: 'Statut',
+      accessor: (o: any) => <StatusBadge status={o.status} />,
+      className: 'text-center'
+    },
+    {
+      header: '',
+      accessor: (o: any) => (
+        <div className="flex justify-end gap-2">
+           <Button variant="ghost" size="sm" className="p-1.5"><MessageSquare size={14} /></Button>
+           <Button variant="ghost" size="sm" className="p-1.5"><ArrowRight size={14} /></Button>
+        </div>
+      )
+    }
+  ];
+
+  const tabs = [
+    { id: 'ALL', label: 'Toutes', icon: Package },
+    { id: 'PENDING', label: 'En attente', icon: Clock },
+    { id: 'SHIPPED', label: 'En livraison', icon: Truck },
+    { id: 'DELIVERED', label: 'Livrées', icon: CheckCircle2 }
+  ];
 
   return (
-    <div className="flex-1 p-8 md:p-16 max-w-7xl mx-auto animate-in fade-in duration-700">
+    <div className="space-y-8 pb-12 font-body">
       {/* Header */}
-      <div className="mb-12">
-        <h1 className="text-6xl font-serif-display text-on-surface mb-3 leading-tight">Mes Commandes</h1>
-        <p className="text-on-surface-variant font-medium text-lg max-w-2xl">Suivez l'état de vos approvisionnements en temps réel et gérez vos réceptions.</p>
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="font-display text-4xl text-[var(--text-primary)] tracking-tight mb-2">Mes Commandes</h1>
+          <p className="text-[14px] text-[var(--text-secondary)]">Suivez l'état de vos approvisionnements et gérez vos réceptions.</p>
+        </div>
+      </header>
+
+      {/* Stats Quick View */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+         {tabs.map((tab) => (
+           <Card 
+             key={tab.id}
+             onClick={() => setActiveTab(tab.id)}
+             className={`p-4 cursor-pointer transition-all border-b-2 ${activeTab === tab.id ? 'border-b-[var(--text-accent)] bg-[var(--text-accent)]/5' : 'border-b-transparent hover:bg-[var(--bg-muted)]/50'}`}
+           >
+              <div className="flex items-center gap-3">
+                 <div className={`p-2 rounded-lg ${activeTab === tab.id ? 'bg-[var(--text-accent)] text-white' : 'bg-[var(--bg-muted)] text-[var(--text-secondary)]'}`}>
+                    <tab.icon size={16} />
+                 </div>
+                 <span className={`text-[12px] font-bold uppercase tracking-wider ${activeTab === tab.id ? 'text-[var(--text-accent)]' : 'text-[var(--text-secondary)]'}`}>
+                    {tab.label}
+                 </span>
+              </div>
+           </Card>
+         ))}
       </div>
 
-      {/* Tabs Navigation */}
-      <div className="flex overflow-x-auto items-center gap-10 mb-12 border-b border-outline-variant/20 pb-0.5 hide-scrollbar">
-        {[
-          { id: 'pending', label: 'En attente', count: 2, icon: Clock },
-          { id: 'confirmed', label: 'Confirmées', count: 0, icon: CheckCircle2 },
-          { id: 'shipping', label: 'En livraison', count: 0, icon: Truck },
-          { id: 'history', label: 'Historique', count: 0, icon: History }
-        ].map((tab) => (
-          <button 
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`pb-4 flex items-center gap-3 font-bold border-b-4 transition-all whitespace-nowrap ${activeTab === tab.id ? 'text-primary border-primary' : 'text-outline hover:text-primary border-transparent opacity-60'}`}
-          >
-            <tab.icon size={20} />
-            <span>{tab.label} {tab.count > 0 && `(${tab.count})`}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Orders Grid */}
-      <div className="space-y-8">
-        {/* Order Card 1 */}
-        <article className="bg-surface-container-lowest rounded-[2.5rem] p-10 shadow-sm border-l-[12px] border-l-tertiary shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all group relative overflow-hidden ring-1 ring-outline-variant/5">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-tertiary/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
-          
-          <div className="relative z-10 flex flex-col xl:flex-row gap-10">
-            <div className="flex-1">
-              <div className="flex justify-between items-start mb-8">
-                <div>
-                  <span className="font-mono text-[10px] font-black text-outline uppercase tracking-[0.2em]">Réf #CMD-045</span>
-                  <h3 className="text-3xl font-serif-display text-on-surface mt-2 group-hover:text-primary transition-colors">Maïs sec de Bobo</h3>
-                </div>
-                <div className="px-5 py-2 rounded-full bg-tertiary-fixed/20 text-tertiary text-[10px] font-black tracking-widest uppercase flex items-center gap-2 border border-tertiary/10">
-                  <Clock size={16} />
-                  EN ATTENTE
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8 bg-surface-container-low/30 p-6 rounded-2xl border border-outline-variant/5">
-                <div className="space-y-1">
-                  <p className="text-[10px] uppercase font-black tracking-[0.1em] text-outline">Quantité</p>
-                  <p className="font-black text-on-surface">10 sacs (500kg)</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] uppercase font-black tracking-[0.1em] text-outline">Producteur</p>
-                  <p className="font-bold text-on-surface">Amadou Kaboré</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] uppercase font-black tracking-[0.1em] text-outline">Total Net</p>
-                  <p className="font-mono font-black text-xl text-primary">{formatFCFA(50000)}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-[10px] uppercase font-black tracking-[0.1em] text-outline">Date Commande</p>
-                  <p className="font-bold text-on-surface">24 Oct. 2024</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4 p-5 bg-primary/5 rounded-2xl border border-primary/10">
-                <Info className="text-primary mt-0.5 shrink-0" size={20} />
-                <p className="text-sm font-medium text-on-surface-variant leading-relaxed italic">
-                  "Votre commande est en attente de confirmation par le producteur. Vous recevrez une notification dès qu'un transporteur sera assigné."
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex flex-row xl:flex-col justify-end gap-4 min-w-[220px]">
-              <button className="flex-1 flex items-center justify-center gap-3 px-8 py-4 rounded-2xl bg-white border-2 border-primary text-primary hover:bg-primary/5 transition-all text-sm font-black uppercase tracking-widest shadow-lg shadow-primary/5 active:scale-95">
-                <MessageSquare size={18} />
-                Contacter
-              </button>
-              <button className="flex-1 flex items-center justify-center gap-3 px-8 py-4 rounded-2xl border-2 border-error/20 text-error hover:bg-error/5 transition-all text-sm font-black uppercase tracking-widest active:scale-95">
-                <XCircle size={18} />
-                Annuler
-              </button>
-            </div>
-          </div>
-        </article>
-
-        {/* Similar cards would repeat - Simplified for migration */}
-      </div>
+      <Card className="p-0 overflow-hidden">
+        <div className="p-4 border-b border-[var(--border-light)] flex flex-col md:flex-row gap-4 items-center justify-between bg-[var(--bg-muted)]/10">
+           <div className="flex-1 w-full md:max-w-md">
+              <Input 
+                placeholder="Rechercher par référence ou produit..." 
+                icon={<Search size={16} />}
+                className="py-2"
+              />
+           </div>
+           <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" icon={<Filter size={14} />}>Filtres avancés</Button>
+           </div>
+        </div>
+        <DataTable 
+          columns={columns} 
+          data={orders} 
+          onRowClick={() => {}}
+          emptyMessage="Aucune commande correspondante."
+        />
+      </Card>
     </div>
   );
 };

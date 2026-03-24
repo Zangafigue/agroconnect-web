@@ -1,7 +1,9 @@
 import React, { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import Layout from '../components/shared/Layout';
+import AdminLayout from '../components/shared/AdminLayout';
+import UserLayout from '../components/shared/UserLayout';
+
 import ThemeManager from '../components/shared/ThemeManager';
 
 // Root Layout to provide theme context inside the router
@@ -13,10 +15,10 @@ const RootLayout = () => (
 
 // Fallback Loader Component
 const Loader = () => (
-  <div className="flex items-center justify-center h-screen bg-surface">
+  <div className="flex items-center justify-center h-screen bg-[var(--bg-page)]">
     <div className="flex flex-col items-center gap-4">
-      <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-      <p className="text-primary font-serif-display text-xl animate-pulse">AgroConnect...</p>
+      <div className="w-12 h-12 border-4 border-[var(--text-accent)]/20 border-t-[var(--text-accent)] rounded-full animate-spin"></div>
+      <p className="text-[var(--text-accent)] font-display text-2xl animate-pulse tracking-tight">AgroConnect</p>
     </div>
   </div>
 );
@@ -30,12 +32,14 @@ const PrivateRoute = ({ roles }: { roles?: string[] }) => {
     return <Navigate to="/" replace />;
   }
 
+  const LayoutComponent = user?.role === 'ADMIN' ? AdminLayout : UserLayout;
+
   return (
-    <Layout>
+    <LayoutComponent>
       <Suspense fallback={<Loader />}>
         <Outlet />
       </Suspense>
-    </Layout>
+    </LayoutComponent>
   );
 };
 
@@ -99,6 +103,7 @@ const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
 const AdminUsersPage = lazy(() => import('../pages/admin/AdminUsersPage'));
 const AdminUserDetailPage = lazy(() => import('../pages/admin/AdminUserDetailPage'));
 const AdminProductsPage = lazy(() => import('../pages/admin/AdminProductsPage'));
+const AdminProductDetailPage = lazy(() => import('../pages/admin/AdminProductDetailPage'));
 const AdminOrdersPage = lazy(() => import('../pages/admin/AdminOrdersPage'));
 const AdminOrderDetailPage = lazy(() => import('../pages/admin/AdminOrderDetailPage'));
 const AdminDisputesPage = lazy(() => import('../pages/admin/AdminDisputesPage'));
@@ -106,6 +111,8 @@ const AdminDisputeResolvePage = lazy(() => import('../pages/admin/AdminDisputeRe
 const AdminPaymentsPage = lazy(() => import('../pages/admin/AdminPaymentsPage'));
 const AdminStatsPage = lazy(() => import('../pages/admin/AdminStatsPage'));
 const AdminSettingsPage = lazy(() => import('../pages/admin/AdminSettingsPage'));
+const AdminNotificationsPage = lazy(() => import('../pages/admin/AdminNotificationsPage'));
+const AdminProfilePage = lazy(() => import('../pages/admin/AdminProfilePage'));
 
 export const router = createBrowserRouter([
   { element: <RootLayout />, children: [
@@ -174,6 +181,7 @@ export const router = createBrowserRouter([
     { path: '/admin/users', element: <AdminUsersPage /> },
     { path: '/admin/users/:id', element: <AdminUserDetailPage /> },
     { path: '/admin/products', element: <AdminProductsPage /> },
+    { path: '/admin/products/:id', element: <AdminProductDetailPage /> },
     { path: '/admin/orders', element: <AdminOrdersPage /> },
     { path: '/admin/orders/:id', element: <AdminOrderDetailPage /> },
     { path: '/admin/disputes', element: <AdminDisputesPage /> },
@@ -181,8 +189,9 @@ export const router = createBrowserRouter([
     { path: '/admin/payments', element: <AdminPaymentsPage /> },
     { path: '/admin/stats', element: <AdminStatsPage /> },
     { path: '/admin/settings', element: <AdminSettingsPage /> },
+    { path: '/admin/notifications', element: <AdminNotificationsPage /> },
+    { path: '/admin/profile', element: <AdminProfilePage /> },
     { path: '/admin', element: <Navigate to="/admin/dashboard" replace /> },
   ]},
-  
-  { path: '*', element: <Navigate to="/" replace /> },
+  { path: '*', element: <Navigate to="/" replace /> }
 ] }]);

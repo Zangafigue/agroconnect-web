@@ -1,187 +1,155 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { 
   ShieldCheck, 
   Lock, 
   CreditCard, 
   Building2, 
   ArrowLeft, 
-  CheckCircle2, 
   Info,
   Smartphone,
-  ChevronRight,
-  TrendingUp,
-  Receipt,
   Truck,
-  Leaf
+  Package
 } from 'lucide-react';
 import { formatFCFA } from '../../utils/currency';
+import Card from '../../components/shared/Card';
+import Button from '../../components/shared/Button';
+import Input from '../../components/shared/Input';
 
 const BuyerPaymentPage: React.FC = () => {
   const [selectedMethod, setSelectedMethod] = useState('orange');
   const navigate = useNavigate();
 
   return (
-    <div className="flex-1 py-16 px-6 md:px-12 max-w-7xl mx-auto w-full mb-32 animate-in fade-in duration-700">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
-        {/* Central Payment Canvas */}
-        <div className="lg:col-span-8 w-full space-y-12">
-          <div className="text-center lg:text-left">
-            <h1 className="font-serif-display text-5xl lg:text-6xl text-on-surface mb-6 leading-tight">Paiement sécurisé</h1>
-            <p className="text-on-surface-variant font-medium text-lg max-w-2xl">Finalisez votre commande via nos partenaires certifiés. Vos fonds sont protégés par séquestre jusqu'à livraison.</p>
-          </div>
+    <div className="space-y-8 pb-12 font-body max-w-5xl mx-auto">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-4">
+        <div>
+          <h1 className="font-display text-4xl text-[var(--text-primary)] tracking-tight mb-2">Paiement Sécurisé</h1>
+          <p className="text-[14px] text-[var(--text-secondary)]">
+            Vos fonds sont protégés par séquestre et libérés uniquement après confirmation de réception.
+          </p>
+        </div>
+      </header>
 
-          {/* Payment Methods Grid */}
-          <section>
-            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-outline mb-8 border-l-4 border-primary pl-6 py-1">Mode de règlement</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column: Payment Process */}
+        <div className="lg:col-span-2 space-y-8">
+          
+          <Card className="p-8 space-y-6">
+            <h2 className="text-[14px] font-bold text-[var(--text-primary)] uppercase tracking-widest border-l-4 border-[var(--text-accent)] pl-3">Mode de règlement</h2>
+            
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 { id: 'orange', label: 'Orange Money', icon: Smartphone, color: '#FF6600' },
                 { id: 'moov', label: 'Moov Money', icon: Smartphone, color: '#004A99' },
-                { id: 'card', label: 'Carte Bancaire', icon: CreditCard, color: 'primary' },
-                { id: 'bank', label: 'Virement', icon: Building2, color: 'primary' }
+                { id: 'card', label: 'Carte Bancaire', icon: CreditCard },
+                { id: 'bank', label: 'Virement', icon: Building2 }
               ].map((method) => (
                 <button 
                   key={method.id}
                   onClick={() => setSelectedMethod(method.id)}
-                  className={`flex flex-col items-center justify-center p-8 rounded-[2rem] transition-all duration-300 border-2 ${selectedMethod === method.id ? 'border-primary bg-primary/5 shadow-2xl scale-105' : 'border-transparent bg-surface-container-low hover:bg-surface-container-high'}`}
+                  className={`flex flex-col items-center justify-center p-4 rounded-xl transition-all border-2 ${selectedMethod === method.id ? 'border-[var(--text-accent)] bg-[var(--text-accent)]/5 shadow-md' : 'border-[var(--border-light)] bg-[var(--bg-surface)] hover:bg-[var(--bg-muted)]'}`}
                 >
-                  <div className={`p-4 rounded-2xl mb-4 ${selectedMethod === method.id ? 'bg-primary text-white shadow-lg' : 'bg-white text-outline shadow-sm'}`}>
-                    <method.icon size={28} />
-                  </div>
-                  <span className={`text-[10px] uppercase tracking-widest font-black text-center ${selectedMethod === method.id ? 'text-primary' : 'text-outline'}`}>{method.label}</span>
+                  <method.icon size={24} className={`mb-3 ${selectedMethod === method.id ? 'text-[var(--text-accent)]' : 'text-[var(--text-secondary)]'}`} />
+                  <span className={`text-[10px] uppercase font-bold text-center ${selectedMethod === method.id ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{method.label}</span>
                 </button>
               ))}
             </div>
-          </section>
 
-          {/* Active Payment Form */}
-          <div className="bg-surface-container-lowest rounded-[3rem] p-10 border border-outline-variant/10 shadow-sm">
-            <div className="flex items-center gap-4 mb-10">
-              <div className="w-3 h-3 rounded-full bg-primary animate-pulse"></div>
-              <h3 className="font-serif-display text-2xl text-on-surface">
-                Détails du paiement 
-              </h3>
+            <div className="pt-6 border-t border-[var(--border-light)]">
+               {['orange', 'moov'].includes(selectedMethod) ? (
+                 <div className="space-y-6 max-w-sm mx-auto md:mx-0">
+                    <Input 
+                      label="Numéro de téléphone mobile"
+                      placeholder="7x xx xx xx"
+                      className="font-mono text-lg py-3"
+                      icon={<span className="text-[var(--text-secondary)] font-bold pl-2">+226</span>}
+                    />
+                    <div className="flex items-start gap-3 p-4 bg-amber-50 rounded-xl border border-amber-100">
+                      <Info size={16} className="text-amber-500 mt-0.5 shrink-0" />
+                      <p className="text-[11px] font-medium text-amber-700 leading-relaxed">
+                        Un message USSD sera envoyé sur votre téléphone pour autoriser le prélèvement.
+                      </p>
+                    </div>
+                 </div>
+               ) : selectedMethod === 'card' ? (
+                 <div className="space-y-4 max-w-md mx-auto md:mx-0">
+                    <Input label="Numéro de carte" placeholder="0000 0000 0000 0000" icon={<CreditCard size={18} />} className="font-mono text-lg" />
+                    <div className="flex gap-4">
+                       <Input label="Expiration" placeholder="MM/AA" className="font-mono text-lg text-center" />
+                       <Input label="CVV" placeholder="123" className="font-mono text-lg text-center" />
+                    </div>
+                 </div>
+               ) : (
+                 <div className="bg-[var(--bg-muted)] p-6 rounded-xl border border-[var(--border-light)] max-w-md mx-auto md:mx-0">
+                    <p className="text-[12px] text-[var(--text-primary)] font-bold mb-4">Informations pour le virement :</p>
+                    <div className="space-y-3 font-mono text-[11px]">
+                       <div className="flex justify-between border-b border-[var(--border-light)] pb-2">
+                          <span className="text-[var(--text-secondary)]">Banque</span>
+                          <span className="font-bold">Coris Bank International</span>
+                       </div>
+                       <div className="flex justify-between border-b border-[var(--border-light)] pb-2">
+                          <span className="text-[var(--text-secondary)]">IBAN</span>
+                          <span className="font-bold text-[var(--text-accent)] select-all">BF54 0000 0000 0000 00</span>
+                       </div>
+                    </div>
+                 </div>
+               )}
             </div>
-            
-            <div className="animate-in slide-in-from-bottom-4 duration-500">
-              {['orange', 'moov'].includes(selectedMethod) ? (
-                <div className="max-w-md space-y-6">
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-outline uppercase tracking-widest px-2">Numéro de téléphone</label>
-                    <div className="relative group">
-                      <span className="absolute left-6 top-1/2 -translate-y-1/2 font-black text-outline group-focus-within:text-primary transition-colors">+226</span>
-                      <input type="text" className="w-full pl-20 pr-6 py-5 bg-surface-container-low focus:bg-white border-2 border-transparent focus:border-primary/20 rounded-2xl font-mono text-xl font-black focus:ring-0 transition-all shadow-inner" placeholder="7x xx xx xx" />
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-2xl border border-primary/10">
-                    <Info size={18} className="text-primary mt-1 shrink-0" />
-                    <p className="text-xs font-medium text-on-surface-variant italic">Un message de confirmation USSD sera envoyé sur votre mobile pour valider la transaction.</p>
-                  </div>
-                </div>
-              ) : selectedMethod === 'card' ? (
-                <div className="max-w-md space-y-6">
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-outline uppercase tracking-widest px-2">Numéro de carte</label>
-                    <div className="relative group">
-                       <input type="text" className="w-full px-6 py-5 bg-surface-container-low focus:bg-white border-2 border-transparent focus:border-primary/20 rounded-2xl font-mono text-xl font-black focus:ring-0 transition-all shadow-inner" placeholder="0000 0000 0000 0000" />
-                       <CreditCard className="absolute right-6 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors" size={20} />
-                    </div>
-                  </div>
-                  <div className="flex gap-6">
-                    <div className="flex-1 space-y-3">
-                      <label className="text-[10px] font-black text-outline uppercase tracking-widest px-2">Expiration</label>
-                      <input type="text" className="w-full px-6 py-5 bg-surface-container-low focus:bg-white border-2 border-transparent focus:border-primary/20 rounded-2xl font-mono text-lg font-black transition-all shadow-inner" placeholder="MM/AA" />
-                    </div>
-                    <div className="flex-1 space-y-3">
-                      <label className="text-[10px] font-black text-outline uppercase tracking-widest px-2">CVV</label>
-                      <input type="text" className="w-full px-6 py-5 bg-surface-container-low focus:bg-white border-2 border-transparent focus:border-primary/20 rounded-2xl font-mono text-lg font-black transition-all shadow-inner" placeholder="123" />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="max-w-lg p-8 bg-surface-container-low/50 rounded-2xl border border-outline-variant/5 border-dashed">
-                  <p className="text-sm font-medium text-on-surface-variant mb-6">Effectuez votre virement avec ces informations :</p>
-                  <div className="space-y-4 font-mono text-xs font-black uppercase tracking-widest text-on-surface">
-                    <div className="flex justify-between border-b border-outline-variant/10 pb-2">
-                       <span className="text-outline">Banque</span>
-                       <span>Coris Bank International</span>
-                    </div>
-                    <div className="flex justify-between border-b border-outline-variant/10 pb-2">
-                       <span className="text-outline">IBAN</span>
-                       <span className="text-primary select-all">BF54 0000 0000 0000 00</span>
-                    </div>
-                    <div className="flex justify-between">
-                       <span className="text-outline">Bénéficiaire</span>
-                       <span>AgroConnect BF</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+          </Card>
 
-          {/* Trust Banner */}
-          <div className="bg-primary/5 rounded-[2rem] p-8 border border-primary/10 flex items-start gap-6 group hover:bg-primary/10 transition-colors">
-            <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-primary shadow-lg group-hover:rotate-12 transition-transform">
-               <ShieldCheck size={32} />
-            </div>
-            <div className="space-y-1">
-              <h4 className="font-black text-xs uppercase tracking-[0.2em] text-on-surface">Paiement 100% Sécurisé</h4>
-              <p className="text-sm text-on-surface-variant font-medium leading-relaxed">
-                Vos données sont cryptées par SSL 256-bit. Votre paiement est conservé en séquestre et ne sera libéré au vendeur qu'après confirmation de votre réception conforme.
-              </p>
-            </div>
-          </div>
+          <Card className="bg-[var(--text-accent)]/5 border-none shadow-sm flex items-start gap-4 p-6">
+             <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-[var(--text-accent)] shrink-0">
+                <ShieldCheck size={20} />
+             </div>
+             <div>
+                <h4 className="text-[12px] font-bold text-[var(--text-primary)] uppercase tracking-wider mb-1">Garantie AgroConnect</h4>
+                <p className="text-[12px] text-[var(--text-secondary)] leading-relaxed">
+                   Vos paiements sont sécurisés via un système de séquestre (Escrow). Le producteur ne reçoit les fonds qu'une fois votre livraison conforme actée.
+                </p>
+             </div>
+          </Card>
 
-          <div className="flex flex-col items-center">
-            <button className="w-full max-w-md bg-primary text-white py-6 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-primary/30 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-4 group">
-              Valider le paiement <Lock size={20} className="group-hover:rotate-12 transition-transform" />
-            </button>
-            <button onClick={() => navigate(-1)} className="mt-8 text-outline font-black text-[10px] uppercase tracking-widest hover:text-primary transition-colors flex items-center gap-2">
-              <ArrowLeft size={14} /> Retour à la commande
-            </button>
-          </div>
         </div>
 
-        {/* Sidebar Recap */}
-        <aside className="lg:col-span-4 lg:sticky lg:top-32 space-y-8">
-           <div className="bg-white p-10 rounded-[3rem] shadow-xl border border-outline-variant/10 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+        {/* Right Column: Order Summary */}
+        <div className="space-y-6">
+           <Card className="p-8 sticky top-24">
+              <h3 className="text-[18px] font-display text-[var(--text-primary)] mb-6 pb-4 border-b border-[var(--border-light)]">Récapitulatif</h3>
               
-              <h3 className="font-serif-display text-3xl mb-10 border-b border-outline-variant/10 pb-6 relative z-10">Récapitulatif</h3>
+              <div className="space-y-4 mb-6">
+                 <div className="flex justify-between text-[13px]">
+                    <span className="text-[var(--text-secondary)]">Produits (Maïs sec)</span>
+                    <span className="font-bold font-mono">70 000 F</span>
+                 </div>
+                 <div className="flex justify-between text-[13px]">
+                    <span className="text-[var(--text-secondary)] flex items-center gap-1"><Truck size={14} /> Transport</span>
+                    <span className="font-bold font-mono">15 000 F</span>
+                 </div>
+                 <div className="flex justify-between text-[13px]">
+                    <span className="text-[var(--text-secondary)]">Frais de service (2%)</span>
+                    <span className="font-bold font-mono">1 700 F</span>
+                 </div>
+              </div>
               
-              <div className="space-y-6 mb-10 relative z-10">
-                <div className="flex justify-between items-center group">
-                  <span className="text-on-surface-variant font-bold text-sm">Produits</span>
-                  <span className="font-mono font-black text-on-surface">70 000 FCFA</span>
-                </div>
-                <div className="flex justify-between items-center group">
-                  <span className="text-on-surface-variant font-bold text-sm flex items-center gap-2">
-                    <Truck size={14} className="text-tertiary" /> Livraison
-                  </span>
-                  <span className="font-mono font-black text-on-surface">15 000 FCFA</span>
-                </div>
-                <div className="pt-8 border-t-4 border-dashed border-outline-variant/20 flex flex-col gap-2">
-                  <span className="text-[10px] font-black text-outline uppercase tracking-widest">Montant Total</span>
-                  <span className="font-mono font-black text-4xl text-primary">{formatFCFA(85000)}</span>
-                </div>
+              <div className="pt-6 border-t border-[var(--border-light)] mb-8">
+                 <div className="flex justify-between items-end">
+                    <span className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">Total net</span>
+                    <span className="text-3xl font-mono font-bold text-[var(--text-accent)]">{formatFCFA(86700)}</span>
+                 </div>
               </div>
 
-              <div className="p-6 bg-surface-container-low/50 rounded-2xl space-y-4 border border-outline-variant/5 relative z-10">
-                <h4 className="font-black text-[10px] uppercase tracking-widest text-primary mb-2">Ma commande</h4>
-                <div className="flex gap-4 items-center">
-                  <div className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                    <Leaf size={24} />
-                  </div>
-                  <div>
-                    <p className="text-xs font-black text-on-surface uppercase tracking-wider">Maïs sec local</p>
-                    <p className="text-[10px] font-bold text-outline uppercase mt-0.5">Quantité: 10 sacs</p>
-                  </div>
-                </div>
+              <div className="space-y-4">
+                 <Button variant="primary" size="lg" className="w-full justify-center" icon={<Lock size={16} />}>
+                    Payer 86 700 F
+                 </Button>
+                 <Button variant="ghost" size="sm" className="w-full justify-center text-[var(--text-secondary)]" icon={<ArrowLeft size={14} />} onClick={() => navigate(-1)}>
+                    Annuler & Retour
+                 </Button>
               </div>
-           </div>
-        </aside>
+           </Card>
+        </div>
       </div>
     </div>
   );

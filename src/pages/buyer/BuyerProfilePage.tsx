@@ -4,8 +4,6 @@ import {
   User, 
   MapPin, 
   Award, 
-  ShoppingBag, 
-  Heart, 
   Edit3, 
   Plus, 
   Home, 
@@ -17,162 +15,148 @@ import {
   Mail,
   Zap
 } from 'lucide-react';
+import Card from '../../components/shared/Card';
+import Button from '../../components/shared/Button';
+import Avatar from '../../components/shared/Avatar';
+import Input from '../../components/shared/Input';
 
 const BuyerProfilePage: React.FC = () => {
   const { user } = useAuthStore() as any;
   
   return (
-    <div className="max-w-7xl mx-auto p-8 md:p-16 mb-32 space-y-12 animate-in fade-in duration-700">
-      {/* Header Profile */}
-      <div className="bg-surface-container-lowest rounded-[3rem] p-10 shadow-sm flex flex-col md:flex-row items-center md:items-start gap-12 border border-outline-variant/10 hover:shadow-2xl transition-all relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-primary/5 rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none"></div>
+    <div className="space-y-8 pb-12 font-body">
+      {/* Profile Header Card */}
+      <Card className="p-8 border-none shadow-sm ring-1 ring-[var(--border-light)] bg-[var(--bg-surface)] relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--text-accent)]/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
         
-        <div className="relative group">
-          <div className="w-40 h-40 rounded-[2.5rem] bg-primary/10 text-primary flex items-center justify-center font-black text-6xl shadow-inner border-8 border-white">
-            {user?.name ? user.name.substring(0, 2).toUpperCase() : 'FT'}
-          </div>
-          <button className="absolute -bottom-2 -right-2 w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-xl hover:scale-110 active:scale-95 transition-all ring-4 ring-white">
-            <Edit3 size={20} />
-          </button>
+        <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+           <div className="relative group">
+              <Avatar name={user?.name || 'Fatima Traoré'} role="BUYER" size="xl" />
+              <button className="absolute -bottom-2 -right-2 w-10 h-10 bg-[var(--text-accent)] text-white rounded-xl flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all ring-4 ring-white">
+                <Edit3 size={18} />
+              </button>
+           </div>
+           
+           <div className="flex-1 text-center md:text-left space-y-3">
+              <div className="inline-flex items-center gap-2 bg-amber-50 text-amber-600 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border border-amber-100">
+                <Award size={14} /> Acheteur Premium
+              </div>
+              <h1 className="text-4xl font-display text-[var(--text-primary)] tracking-tight">{user?.name || 'Fatima Traoré'}</h1>
+              <div className="flex items-center justify-center md:justify-start gap-2 text-[var(--text-secondary)] text-[14px]">
+                <MapPin size={16} className="text-[var(--text-accent)]" />
+                <span>Ouagadougou, Burkina Faso</span>
+              </div>
+              
+              <div className="flex gap-4 mt-6 justify-center md:justify-start">
+                 <div className="bg-[var(--bg-muted)]/50 px-4 py-3 rounded-xl border border-[var(--border-light)]">
+                   <p className="text-[10px] uppercase font-bold text-[var(--text-muted)] tracking-wider">Commandes</p>
+                   <p className="text-2xl font-mono font-bold text-[var(--text-primary)]">24</p>
+                 </div>
+                 <div className="bg-[var(--bg-muted)]/50 px-4 py-3 rounded-xl border border-[var(--border-light)]">
+                   <p className="text-[10px] uppercase font-bold text-[var(--text-muted)] tracking-wider">Favoris</p>
+                   <p className="text-2xl font-mono font-bold text-[var(--text-primary)]">12</p>
+                 </div>
+              </div>
+           </div>
         </div>
-        
-        <div className="flex-1 text-center md:text-left space-y-4 pt-2">
-          <div className="inline-flex items-center gap-2 bg-tertiary-fixed/30 text-tertiary px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest uppercase mb-2 border border-tertiary/10 shadow-sm">
-            <Award size={14} />
-            Acheteur Premium
-          </div>
-          <h1 className="text-5xl font-serif-display text-on-surface leading-tight">{user?.name || 'Fatima Traoré'}</h1>
-          <div className="flex items-center justify-center md:justify-start gap-3 mt-4 text-on-surface-variant font-medium">
-            <MapPin size={18} className="text-tertiary" />
-            <span>Ouagadougou, Secteur 15</span>
-          </div>
-          <div className="flex gap-6 mt-8 justify-center md:justify-start">
-            <div className="bg-primary/5 px-6 py-4 rounded-2xl border border-primary/10 group hover:bg-primary/10 transition-colors">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-primary/70 font-black mb-1">Commandes</p>
-              <p className="font-mono text-3xl text-primary font-black">24</p>
-            </div>
-            <div className="bg-primary/5 px-6 py-4 rounded-2xl border border-primary/10 group hover:bg-primary/10 transition-colors">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-primary/70 font-black mb-1">Favoris</p>
-              <p className="font-mono text-3xl text-primary font-black">12</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-        <div className="lg:col-span-8 space-y-12">
-          {/* Informations Personnelles */}
-          <div className="bg-surface-container-lowest rounded-[2.5rem] p-10 shadow-sm border border-outline-variant/10 space-y-10">
-            <div className="flex justify-between items-center">
-              <h2 className="text-3xl font-serif-display text-on-surface flex items-center gap-4">
-                <User size={28} className="text-primary" />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column: Account Details */}
+        <div className="lg:col-span-2 space-y-8">
+          <Card className="p-8 space-y-8">
+            <div className="flex justify-between items-center px-1">
+              <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-3">
+                <User size={20} className="text-[var(--text-accent)]" />
                 Détails du compte
               </h2>
-              <button className="text-primary font-black text-xs uppercase tracking-widest hover:underline decoration-2 underline-offset-4">Modifier</button>
+              <Button variant="ghost" size="sm">Modifier</Button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {[
-                { label: 'Nom complet', val: user?.name || 'Fatima Traoré', icon: User },
-                { label: 'Email', val: user?.email || 'fatima.t@example.com', icon: Mail },
-                { label: 'Téléphone', val: '+226 70 12 34 56', icon: Phone },
-                { label: "Type d'acheteur", val: 'Grossiste Certifié', icon: Zap }
-              ].map((field) => (
-                <div key={field.label} className="space-y-3">
-                  <label className="text-[10px] font-black text-outline uppercase tracking-widest px-1">{field.label}</label>
-                  <div className="relative group">
-                    <p className="text-on-surface font-bold p-5 bg-surface-container-low/40 rounded-2xl border border-outline-variant/5 shadow-inner group-hover:bg-white transition-all">{field.val}</p>
-                    <field.icon size={16} className="absolute right-5 top-1/2 -translate-y-1/2 text-outline group-hover:text-primary transition-colors" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <Input label="Nom complet" defaultValue={user?.name || 'Fatima Traoré'} icon={<User size={16} />} />
+               <Input label="Email" defaultValue={user?.email || 'fatima.t@example.com'} icon={<Mail size={16} />} />
+               <Input label="Téléphone" defaultValue="+226 70 12 34 56" icon={<Phone size={16} />} />
+               <div className="space-y-1.5">
+                  <label className="text-[12px] font-medium text-[var(--text-secondary)]">Type d'acheteur</label>
+                  <div className="h-[42px] px-4 bg-[var(--bg-muted)] rounded-[var(--radius-md)] flex items-center justify-between text-[14px] font-medium text-[var(--text-primary)]">
+                     <span>Grossiste Certifié</span>
+                     <Zap size={16} className="text-amber-500" />
                   </div>
-                </div>
-              ))}
+               </div>
             </div>
-          </div>
+          </Card>
 
-          {/* Adresses de Livraison */}
-          <div className="bg-surface-container-lowest rounded-[3rem] p-10 shadow-sm border border-outline-variant/10">
-            <div className="flex justify-between items-center mb-10">
-              <h2 className="text-3xl font-serif-display text-on-surface flex items-center gap-4">
-                <Zap size={28} className="text-tertiary" />
-                Adresses de Livraison
+          <Card className="p-8 space-y-6">
+            <div className="flex justify-between items-center px-1">
+              <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-3">
+                 <MapPin size={20} className="text-[var(--text-accent)]" />
+                 Adresses de Livraison
               </h2>
-              <button className="flex items-center gap-2 bg-primary/5 text-primary px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-all active:scale-95 shadow-lg shadow-primary/5">
-                <Plus size={16} /> Ajouter
-              </button>
+              <Button variant="secondary" size="sm" icon={<Plus size={14} />}>Ajouter</Button>
             </div>
             
-            <div className="space-y-6">
-              <div className="p-8 rounded-[2rem] border-2 border-primary bg-primary/5 flex justify-between items-center shadow-xl shadow-primary/5 relative group">
-                <div className="flex gap-6 items-center">
-                  <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-primary shadow-lg group-hover:scale-110 transition-transform">
-                    <Home size={28} />
+            <div className="p-6 rounded-2xl border-2 border-[var(--text-accent)] bg-[var(--text-accent)]/5 flex justify-between items-center group">
+               <div className="flex gap-4 items-center">
+                  <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-[var(--text-accent)] shadow-sm">
+                     <Home size={24} />
                   </div>
                   <div>
-                    <div className="flex items-center gap-3">
-                      <h3 className="font-black text-on-surface text-lg">Dépôt Principal</h3>
-                      <span className="bg-primary text-white text-[9px] px-3 py-1 rounded-full font-black uppercase tracking-widest">Défaut</span>
-                    </div>
-                    <p className="text-on-surface-variant text-sm font-medium mt-1">Ouagadougou, Secteur 15</p>
-                    <p className="text-outline text-xs mt-1 font-medium">Près du grand marché de Pissy</p>
+                     <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-[var(--text-primary)] text-[15px]">Dépôt Principal</h3>
+                        <span className="bg-[var(--text-accent)] text-white text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Défaut</span>
+                     </div>
+                     <p className="text-[13px] text-[var(--text-secondary)]">Secteur 15, Ouagadougou</p>
                   </div>
-                </div>
-                <button className="p-3 text-outline hover:text-primary rounded-xl transition-all">
-                  <Edit3 size={20} />
-                </button>
-              </div>
+               </div>
+               <button className="p-2 text-[var(--text-muted)] hover:text-[var(--text-accent)] transition-colors">
+                  <Edit3 size={18} />
+               </button>
             </div>
-          </div>
+          </Card>
         </div>
 
-        {/* SIDEBAR: SECURITE & PREFERENCES */}
-        <div className="lg:col-span-4 space-y-12">
-          <div className="bg-error-container/20 rounded-[3rem] p-10 shadow-sm border border-error/10 overflow-hidden relative group">
-             <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:rotate-12 group-hover:scale-125 transition-transform duration-1000">
-                <ShieldCheck size={100} className="text-error" />
-             </div>
-            <h2 className="text-2xl font-serif-display text-on-surface flex items-center gap-3 mb-10 relative z-10">
-              <Lock size={24} className="text-error" />
-              Sécurité
-            </h2>
-            <div className="space-y-8 relative z-10">
-              <button className="w-full flex items-center justify-between p-6 rounded-[1.5rem] bg-white hover:shadow-xl border border-error/5 group transition-all active:scale-95">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-error/10 text-error flex items-center justify-center">
-                    <Lock size={20} />
-                  </div>
-                  <div className="text-left">
-                    <p className="font-black text-on-surface text-sm">Mot de passe</p>
-                    <p className="text-[10px] text-outline font-medium uppercase tracking-widest mt-1">Modifié il y a 2 mois</p>
-                  </div>
-                </div>
-                <ChevronRight size={18} className="text-outline group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-          </div>
+        {/* Right Column: Security & Preferences */}
+        <div className="space-y-8">
+           <Card className="p-8 bg-red-50/30 border-dashed border-red-200">
+              <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-3 mb-6">
+                <Lock size={20} className="text-red-500" />
+                Sécurité
+              </h2>
+              <Button variant="ghost" size="md" className="w-full justify-between bg-white shadow-sm hover:shadow-md ring-1 ring-red-100" icon={<ChevronRight size={16} />} iconPosition="right">
+                 <div className="flex items-center gap-3">
+                    <ShieldCheck size={18} className="text-red-500" />
+                    <div className="text-left">
+                       <p className="text-[13px] font-bold">Mot de passe</p>
+                       <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">Dernier changement: 2 mois</p>
+                    </div>
+                 </div>
+              </Button>
+           </Card>
 
-          <div className="bg-surface-container-low rounded-[3rem] p-10 shadow-sm border border-outline-variant/10">
-            <h2 className="text-2xl font-serif-display text-on-surface flex items-center gap-3 mb-10">
-              <Bell size={24} className="text-primary" />
-              Préférences
-            </h2>
-            <div className="space-y-10">
-              {[
-                { label: 'Email', sub: 'Reçus de commandes et promos', active: true },
-                { label: 'SMS / GSM', sub: 'Alertes livraisons urgentes', active: true },
-              ].map((pref, i) => (
-                <div key={i} className="flex items-center justify-between group">
-                  <div className="space-y-1">
-                    <p className="font-black text-on-surface text-sm group-hover:text-primary transition-colors">{pref.label}</p>
-                    <p className="text-[10px] text-outline font-black uppercase tracking-widest">{pref.sub}</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer scale-110">
-                    <input type="checkbox" className="sr-only peer" defaultChecked={pref.active} />
-                    <div className="w-11 h-6 bg-outline-variant/30 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary shadow-inner"></div>
-                  </label>
-                </div>
-              ))}
-            </div>
-          </div>
+           <Card className="p-8 space-y-8">
+              <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-3">
+                <Bell size={20} className="text-[var(--text-accent)]" />
+                Notifications
+              </h2>
+              <div className="space-y-6">
+                 {[
+                   { label: 'Alertes Email', sub: 'Reçus et promos', active: true },
+                   { label: 'Alertes SMS', sub: 'Suivi de livraison', active: true }
+                 ].map((pref, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                       <div>
+                          <p className="text-[13px] font-bold text-[var(--text-primary)]">{pref.label}</p>
+                          <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest">{pref.sub}</p>
+                       </div>
+                       <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" className="sr-only peer" defaultChecked={pref.active} />
+                          <div className="w-9 h-5 bg-[var(--border-light)] rounded-full peer peer-checked:bg-[var(--text-accent)] transition-all after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                       </label>
+                    </div>
+                 ))}
+              </div>
+           </Card>
         </div>
       </div>
     </div>

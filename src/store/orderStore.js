@@ -15,13 +15,25 @@ export const useOrderStore = create((set) => ({
       set({ error: error.message, loading: false });
     }
   },
+  fetchOrderById: async (id) => {
+    set({ loading: true });
+    try {
+      const data = await orderService.getOrderById(id);
+      set({ selectedOrder: data, loading: false });
+      return data;
+    } catch (error) {
+      set({ error: error.message, loading: false });
+      return null;
+    }
+  },
   updateStatus: async (id, status) => {
     try {
       await orderService.updateOrderStatus(id, status);
       set((state) => ({
         orders: state.orders.map((order) =>
-          order.id === id ? { ...order, status } : order
+          order._id === id ? { ...order, status } : order
         ),
+        selectedOrder: state.selectedOrder?._id === id ? { ...state.selectedOrder, status } : state.selectedOrder
       }));
     } catch (error) {
       set({ error: error.message });

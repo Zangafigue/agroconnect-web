@@ -4,137 +4,148 @@ import {
   ArrowUpRight, 
   Lock, 
   CheckCircle2, 
-  Clock, 
-  ArrowDownLeft, 
-  CreditCard, 
-  Smartphone, 
   History,
-  TrendingUp,
   ShieldCheck,
-  ChevronRight,
-  User
+  User,
+  Download
 } from 'lucide-react';
 import { formatFCFA } from '../../utils/currency';
+import Card from '../../components/shared/Card';
+import Button from '../../components/shared/Button';
+import DataTable from '../../components/shared/DataTable';
 
 const TransporterWalletPage: React.FC = () => {
-  return (
-    <div className="pt-12 px-8 md:px-16 pb-32 w-full max-w-7xl mx-auto min-h-screen animate-in fade-in duration-700">
-      {/* Header Section */}
-      <div className="flex flex-col gap-3 mb-12">
-        <h1 className="text-5xl lg:text-7xl font-serif-display text-on-surface flex items-center gap-6">
-          <Wallet size={50} className="text-primary" />
-          Finance
-        </h1>
-        <p className="text-on-surface-variant font-medium text-lg max-w-2xl">
-          Gérez vos revenus de transport, suivez vos commissions et effectuez vos retraits en toute sécurité.
-        </p>
-      </div>
-
-      {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
-        {/* Available Balance */}
-        <div className="bg-surface-container-lowest border-l-[12px] border-primary p-10 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all duration-500 group relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-700">
-            <Wallet size={150} className="text-primary" />
-          </div>
-          <div className="relative z-10 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-primary/10 rounded-xl text-primary">
-                 <CheckCircle2 size={18} />
-              </div>
-              <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em]">Solde disponible</span>
+  const transactionColumns = [
+    {
+      header: 'Transaction',
+      accessor: (row: any) => (
+         <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-[var(--bg-muted)] flex items-center justify-center text-[var(--text-secondary)]">
+               <CheckCircle2 size={18} className="text-green-500" />
             </div>
-            <div className="space-y-1">
-              <p className="text-6xl font-mono font-black text-primary tracking-tight">{formatFCFA(25000)}</p>
-              <p className="text-xs font-bold text-outline uppercase tracking-widest mt-4">Prêt pour le retrait immediat</p>
+            <div>
+               <p className="font-bold text-[var(--text-primary)] text-[14px]">
+                  Paiement mission {row.id}
+               </p>
+               <p className="text-[11px] font-bold text-[var(--text-secondary)] flex items-center gap-1 mt-0.5">
+                  <User size={12} /> Acheteur: {row.buyer}
+               </p>
             </div>
-          </div>
-        </div>
-
-        {/* Pending Balance */}
-        <div className="bg-surface-container-lowest border-l-[12px] border-tertiary p-10 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all duration-500 group relative overflow-hidden grayscale hover:grayscale-0">
-          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-700">
-            <Lock size={150} className="text-tertiary" />
-          </div>
-          <div className="relative z-10 space-y-6">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-tertiary/10 rounded-xl text-tertiary">
-                 <Clock size={18} />
-              </div>
-              <span className="text-[10px] font-black text-tertiary uppercase tracking-[0.2em]">En attente de libération</span>
-            </div>
-            <div className="space-y-4">
-              <p className="text-5xl font-mono font-black text-on-surface tracking-tight opacity-80">{formatFCFA(37500)}</p>
-              <div className="px-6 py-3 bg-tertiary/5 rounded-2xl border border-tertiary/10 inline-flex items-center gap-3">
-                 <ShieldCheck size={16} className="text-tertiary" />
-                 <span className="text-[10px] font-black text-tertiary uppercase tracking-widest">Fonds sécurisés par escrow</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Action M3 */}
-      <div className="bg-surface-container-low rounded-[3rem] p-12 mb-20 flex flex-col md:flex-row items-center justify-between gap-10 border border-outline-variant/5 shadow-inner">
-         <div className="space-y-2 text-center md:text-left">
-            <h3 className="text-2xl font-serif-display text-on-surface">Transférer mes fonds</h3>
-            <p className="text-sm font-medium text-on-surface-variant max-w-sm">Choisissez votre mode de retrait préféré (Orange Money, Moov, ou Virement).</p>
          </div>
-         <button className="w-full md:w-auto px-16 py-6 bg-primary text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-primary/30 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-4 group">
-           Retirer les fonds <ArrowUpRight size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-         </button>
+      )
+    },
+    {
+      header: 'Méthode',
+      accessor: (row: any) => (
+         <span className="px-2 py-1 bg-[var(--bg-muted)] text-[var(--text-secondary)] text-[10px] font-bold uppercase tracking-widest rounded">
+            {row.method}
+         </span>
+      )
+    },
+    {
+      header: 'Date',
+      accessor: (row: any) => (
+         <span className="text-[12px] text-[var(--text-secondary)] uppercase tracking-wider">{row.date}</span>
+      )
+    },
+    {
+      header: 'Montant',
+      accessor: (row: any) => (
+         <span className="font-mono font-bold text-[16px] text-[var(--text-primary)]">+{formatFCFA(row.amount)}</span>
+      ),
+      className: 'text-right'
+    }
+  ];
+
+  const transactionData = [
+    { id: '#TR-041', buyer: 'Fatima T.', amount: 10000, date: 'Hier, 14:30', method: 'Orange Money' },
+    { id: '#TR-039', buyer: 'Moussa B.', amount: 7500, date: '12 Oct 2024', method: 'Solde Balance' },
+    { id: '#TR-038', buyer: "Société Graine d'Or", amount: 15000, date: '10 Oct 2024', method: 'Virement' }
+  ];
+
+  return (
+    <div className="space-y-8 pb-12 font-body max-w-7xl mx-auto">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-4">
+        <div>
+          <h1 className="font-display text-4xl text-[var(--text-primary)] tracking-tight mb-2">Finance</h1>
+          <p className="text-[14px] text-[var(--text-secondary)]">Gérez vos revenus de transport, suivez vos commissions et effectuez vos retraits.</p>
+        </div>
+      </header>
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <Card className="p-8 border-t-4 border-[var(--text-accent)] overflow-hidden relative group">
+           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-700">
+             <Wallet size={120} className="text-[var(--text-accent)]" />
+           </div>
+           
+           <div className="relative z-10 flex items-center gap-2 mb-6">
+              <div className="p-1.5 bg-[var(--text-accent)]/10 rounded-lg text-[var(--text-accent)]">
+                 <CheckCircle2 size={16} />
+              </div>
+              <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">Solde disponible</span>
+           </div>
+           
+           <div className="relative z-10 space-y-2">
+             <p className="text-5xl font-mono font-bold text-[var(--text-accent)] tracking-tight">{formatFCFA(25000)}</p>
+             <p className="text-[12px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Prêt pour le retrait</p>
+           </div>
+        </Card>
+
+        <Card className="p-8 border-t-4 border-[var(--border-light)] overflow-hidden relative group">
+           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-700">
+             <Lock size={120} className="text-[var(--text-secondary)]" />
+           </div>
+           
+           <div className="relative z-10 flex items-center gap-2 mb-6">
+              <div className="p-1.5 bg-[var(--bg-muted)] rounded-lg text-[var(--text-secondary)]">
+                 <ShieldCheck size={16} />
+              </div>
+              <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">En attente de libération</span>
+           </div>
+           
+           <div className="relative z-10 space-y-4">
+             <p className="text-4xl font-mono font-bold text-[var(--text-primary)] opacity-80 tracking-tight">{formatFCFA(37500)}</p>
+             <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-[var(--bg-muted)]/50 rounded-lg border border-[var(--border-light)]">
+                <ShieldCheck size={14} className="text-[var(--text-secondary)]" />
+                <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">Fonds sécurisés par escrow</span>
+             </div>
+           </div>
+        </Card>
       </div>
 
-      {/* Transactions History */}
-      <section>
-        <div className="flex items-center gap-6 mb-12">
-          <h2 className="text-3xl font-serif-display text-on-surface flex items-center gap-4">
-             <History size={32} className="text-primary" /> Historique récent
-          </h2>
-          <div className="h-px flex-1 bg-outline-variant/20"></div>
-          <button className="text-[10px] font-black text-primary uppercase tracking-[0.2em] hover:underline underline-offset-4">Voir Tout</button>
-        </div>
+      {/* Main Action */}
+      <Card className="p-8 bg-[var(--bg-muted)]/30 border border-[var(--border-light)] flex flex-col md:flex-row items-center justify-between gap-6">
+         <div className="space-y-1 text-center md:text-left">
+            <h3 className="text-xl font-display font-bold text-[var(--text-primary)]">Transférer mes fonds</h3>
+            <p className="text-[14px] text-[var(--text-secondary)]">Choisissez votre mode de retrait (Mobile Money ou Virement).</p>
+         </div>
+         <Button variant="primary" size="lg" className="w-full md:w-auto px-10" icon={<ArrowUpRight size={18} />} iconPosition="right">
+           Retirer les fonds
+         </Button>
+      </Card>
 
-        <div className="space-y-6">
-          {[
-            { id: '#041', buyer: 'Fatima T.', amount: 10000, date: 'Hier, 14:30', method: 'Orange Money' },
-            { id: '#039', buyer: 'Moussa B.', amount: 7500, date: '12 Oct 2023', method: 'Solde Balance' },
-            { id: '#038', buyer: "Société Graine d'Or", amount: 15000, date: '10 Oct 2023', method: 'Virement' }
-          ].map((tx, idx) => (
-            <div key={idx} className="bg-surface-container-lowest rounded-[2rem] p-8 flex flex-col md:flex-row items-center gap-8 border border-outline-variant/10 hover:shadow-xl transition-all group overflow-hidden relative">
-              <div className="absolute top-0 right-0 w-32 h-full bg-primary/5 -skew-x-12 translate-x-16 group-hover:translate-x-12 transition-transform"></div>
-              
-              <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner shrink-0 group-hover:scale-110 transition-transform">
-                <CheckCircle2 size={24} />
-              </div>
-              
-              <div className="flex-1 space-y-1 text-center md:text-left">
-                <h4 className="text-lg font-black text-on-surface flex items-center justify-center md:justify-start gap-3">
-                  Paiement mission {tx.id}
-                  <span className="text-[8px] font-black bg-surface-container-low px-3 py-1 rounded-full text-outline tracking-tight">{tx.method}</span>
-                </h4>
-                <div className="flex items-center justify-center md:justify-start gap-2 text-xs font-bold text-on-surface-variant italic opacity-80">
-                   <User size={14} className="text-outline" /> Acheteur: {tx.buyer}
-                </div>
-              </div>
-
-              <div className="text-center md:text-right space-y-1 relative z-10 shrink-0">
-                <p className="text-2xl font-mono font-black text-primary">{formatFCFA(tx.amount)}</p>
-                <p className="text-[10px] font-black text-outline uppercase tracking-widest">{tx.date}</p>
-              </div>
+      {/* Historique */}
+      <div className="pt-8">
+         <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-display font-bold text-[var(--text-primary)] flex items-center gap-3">
+               <History size={24} className="text-[var(--text-accent)]" /> Historique récent
+            </h2>
+            <Button variant="ghost" size="sm" icon={<Download size={14} />}>Télécharger (PDF)</Button>
+         </div>
+         
+         <Card className="p-0 overflow-hidden">
+            <DataTable 
+               columns={transactionColumns}
+               data={transactionData}
+               emptyMessage="Aucune transaction."
+            />
+            <div className="p-4 bg-[var(--bg-muted)]/30 text-center border-t border-[var(--border-light)]">
+               <Button variant="ghost" size="sm">Voir tout l'historique</Button>
             </div>
-          ))}
-        </div>
-
-        <div className="mt-16 p-10 bg-surface-container-low/20 rounded-[3rem] border border-outline-variant/10 flex flex-col items-center gap-4 border-dashed">
-           <p className="text-xs font-black text-outline uppercase tracking-[0.2em] text-center">
-              Relevé financier généré automatiquement
-           </p>
-           <button className="px-8 py-3 bg-white text-primary rounded-xl text-[10px] font-black uppercase tracking-widest border border-primary/10 hover:bg-primary/5 transition-colors shadow-sm">
-              Télécharger mon rapport annuel (PDF)
-           </button>
-        </div>
-      </section>
+         </Card>
+      </div>
     </div>
   );
 };

@@ -1,76 +1,90 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useThemeStore } from '../../store/themeStore';
-import { LogOut, Bell, Search, Command, Sun, Moon } from 'lucide-react';
+import Avatar from './Avatar';
+import Button from './Button';
 
 export default function Header() {
-  const { user, logout } = useAuthStore();
+  const { user, logout } = useAuthStore() as any;
   const { theme, toggleTheme } = useThemeStore();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
-    <header className="bg-[var(--bg-surface)] h-20 flex items-center justify-between px-8 z-30 border-b border-[var(--border-light)]">
-      {/* Search Bar / Console Indicator */}
+    <header className="bg-[var(--bg-surface)] h-[64px] flex items-center justify-between px-6 z-30 border-b border-[var(--border-light)] sticky top-0 font-body">
+      {/* Search Bar */}
       <div className="flex items-center gap-4">
-        <div className="hidden md:flex items-center bg-[var(--bg-muted)] px-4 py-2 rounded-2xl border border-[var(--border-light)] group focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-          <Search className="w-4 h-4 text-[var(--text-muted)] opacity-50 group-hover:opacity-100 transition-opacity" />
+        <div className="hidden md:flex items-center bg-[var(--bg-muted)] px-3 py-1.5 rounded-[var(--radius-md)] border border-[var(--border-light)] group focus-within:border-[var(--input-border-focus)] transition-all">
+          <span className="material-symbols-outlined text-[18px] text-[var(--text-muted)] group-focus-within:text-[var(--text-accent)]">search</span>
           <input 
             type="text" 
             placeholder="Rechercher..." 
-            className="bg-transparent border-none outline-none px-3 text-sm text-[var(--text-[var(--text-accent)])] placeholder:text-[var(--text-muted)]/50 w-64 font-medium"
+            className="bg-transparent border-none outline-none px-2 text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-muted)] w-48 font-medium"
           />
-          <kbd className="hidden sm:inline-flex h-5 select-none items-center gap-1 rounded bg-border/50 px-1.5 font-mono text-[10px] font-black text-[var(--text-muted)]">
-            <Command className="w-3 h-3" /> K
+          <kbd className="hidden sm:inline-flex h-4 items-center gap-1 rounded bg-[var(--border-light)] px-1 font-mono text-[9px] font-bold text-[var(--text-muted)]">
+            <span className="text-[10px]">⌘</span> K
           </kbd>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-subtle)] rounded-2xl border border-primary/10">
-          <div className="w-2 h-2 rounded-full bg-[var(--green-600)] animate-pulse"></div>
-          <span className="text-[10px] font-bold text-[var(--text-accent)] uppercase tracking-widest">
-            {user?.role || 'Session'} Active
+        <div className="flex items-center gap-2 px-3 py-1 bg-[var(--bg-subtle)] rounded-full border border-[var(--text-accent)]/10">
+          <div className="w-1.5 h-1.5 rounded-full bg-[var(--text-accent)] shadow-[0_0_4px_var(--text-accent)]"></div>
+          <span className="text-[10px] font-bold text-[var(--text-accent)] uppercase tracking-wider">
+            ADMIN PANEL
           </span>
         </div>
       </div>
 
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center gap-3">
         {/* Theme Toggle */}
         <button 
           onClick={toggleTheme}
-          className="w-12 h-12 bg-[var(--bg-muted)] hover:bg-[var(--bg-subtle)] transition-colors flex items-center justify-center rounded-2xl border border-[var(--border-light)] text-[var(--text-muted)] hover:text-[var(--text-accent)]"
-          title={theme === 'light' ? 'Passer au mode sombre' : 'Passer au mode clair'}
+          className="w-9 h-9 flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-light)] text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-all"
+          title={theme === 'light' ? 'Mode Sombre' : 'Mode Clair'}
         >
-          {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+          <span className="material-symbols-outlined text-[18px]">
+            {theme === 'light' ? 'dark_mode' : 'light_mode'}
+          </span>
         </button>
 
         {/* Notifications */}
-        <button className="relative w-12 h-12 bg-[var(--bg-muted)] hover:bg-[var(--bg-subtle)] transition-colors flex items-center justify-center rounded-2xl border border-[var(--border-light)] text-[var(--text-muted)] hover:text-[var(--text-accent)]">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-3.5 right-3.5 w-2 h-2 bg-red-500 rounded-full border-2 border-surface shadow-sm"></span>
+        <button 
+          onClick={() => navigate('/admin/notifications')}
+          className="relative w-9 h-9 flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-light)] text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-all"
+        >
+          <span className="material-symbols-outlined text-[18px]">notifications</span>
+          <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-[var(--btn-danger-text)] rounded-full border border-[var(--bg-surface)]"></span>
         </button>
 
         {/* User Profile */}
-        <div className="flex items-center gap-4 border-l border-[var(--border-light)] pl-6 group">
+        <div className="flex items-center gap-3 border-l border-[var(--border-light)] pl-4 ml-1 group cursor-pointer" onClick={() => navigate(`/admin/profile`)}>
           <div className="text-right hidden sm:block">
-            <p className="text-sm font-black text-[var(--text-[var(--text-accent)])] group-hover:text-[var(--text-accent)] transition-colors leading-none mb-1 uppercase tracking-tight">
-              {user?.name || 'Utilisateur'}
+            <p className="text-[13px] font-semibold text-[var(--text-primary)] leading-tight">
+              {user?.firstName || user?.name || 'Admin'}
             </p>
-            <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest opacity-60">
-              {user?.role}
+            <p className="text-[10px] text-[var(--text-muted)] font-mono opacity-80 uppercase tracking-tighter">
+              SYS-#{user?._id?.slice(-4).toUpperCase() || 'ROOT'}
             </p>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-[var(--bg-subtle)] p-1 border border-primary/20 transition-all duration-300 group-hover:rotate-6 group-hover:scale-110">
-             <div className="w-full h-full rounded-xl overflow-hidden bg-[var(--green-600)] flex items-center justify-center text-[var(--text-inverse)] font-black text-xs">
-               {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
-             </div>
-          </div>
+          <Avatar 
+            name={user?.firstName || user?.name} 
+            role="ADMIN" 
+            size="sm" 
+            className="group-hover:scale-105 transition-transform"
+          />
         </div>
 
         {/* Logout */}
-        <button
-          onClick={logout}
-          className="w-12 h-12 bg-error/5 hover:bg-error/10 text-error flex items-center justify-center rounded-2xl transition-all hover:scale-105 border border-error/10"
-          title="Déconnexion"
-        >
-          <LogOut className="w-5 h-5" />
-        </button>
+        <Button
+          variant="danger"
+          size="sm"
+          onClick={handleLogout}
+          icon={<span className="material-symbols-outlined">logout</span>}
+          className="ml-2"
+        />
       </div>
     </header>
   );

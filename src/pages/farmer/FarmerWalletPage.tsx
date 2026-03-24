@@ -1,169 +1,232 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Wallet, 
   TrendingUp, 
   Clock, 
-  History, 
   ArrowUpRight, 
-  ArrowDownLeft, 
-  CheckCircle2, 
-  AlertCircle,
-  Phone,
-  ArrowRight
+  ShieldCheck,
+  Zap,
+  Download,
+  Smartphone,
+  Plus,
+  ArrowRight,
+  ChevronRight
 } from 'lucide-react';
+import { useOrderStore } from '../../store/orderStore';
 import { formatFCFA } from '../../utils/currency';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import Card from '../../components/shared/Card';
+import Button from '../../components/shared/Button';
+import Input from '../../components/shared/Input';
+import StatusBadge from '../../components/shared/StatusBadge';
+import DataTable from '../../components/shared/DataTable';
+import toast from 'react-hot-toast';
 
 const FarmerWalletPage: React.FC = () => {
+  const { orders, fetchUserOrders, loading } = useOrderStore() as any;
+  const [withdrawalAmount, setWithdrawalAmount] = useState('');
+  const [selectedMethod, setSelectedMethod] = useState('OM');
+
+  useEffect(() => {
+    fetchUserOrders();
+  }, [fetchUserOrders]);
+
+  // Financial calculations
+  const availableBalance = (orders || [])
+    .filter((o: any) => o.status === 'DELIVERED')
+    .reduce((sum: number, o: any) => sum + (o.totalAmount || 0) * 0.97, 0);
+
+  const escrowBalance = (orders || [])
+    .filter((o: any) => ['CONFIRMED', 'SHIPPED'].includes(o.status))
+    .reduce((sum: number, o: any) => sum + (o.totalAmount || 0) * 0.97, 0);
+
+  const transactions = (orders || [])
+    .filter((o: any) => ['CONFIRMED', 'SHIPPED', 'DELIVERED'].includes(o.status))
+    .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+  const handleWithdraw = () => {
+    if (!withdrawalAmount || parseFloat(withdrawalAmount) <= 0) {
+       toast.error('Veuillez saisir un montant valide.');
+       return;
+    }
+    if (parseFloat(withdrawalAmount) > availableBalance) {
+       toast.error('Solde insuffisant.');
+       return;
+    }
+    toast.success(`Demande de retrait de ${formatFCFA(parseFloat(withdrawalAmount))} envoyée.`);
+    setWithdrawalAmount('');
+  };
+
+  const columns = [
+    {
+      header: 'Référence',
+      accessor: (tx: any) => (
+        <div className="flex items-center gap-3">
+          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${tx.status === 'DELIVERED' ? 'bg-primary/10 text-primary' : 'bg-surface-container text-on-surface-variant'}`}>
+            <Plus size={14} />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold text-on-surface">#{tx._id?.slice(-8).toUpperCase()}</span>
+            <span className="text-[10px] text-on-surface-variant font-mono uppercase">Vente de stock</span>
+          </div>
+        </div>
+      )
+    },
+    {
+      header: 'Date',
+      accessor: (tx: any) => (
+        <span className="text-sm font-medium text-on-surface-variant">
+          {format(new Date(tx.createdAt), 'dd MMM yyyy', { locale: fr })}
+        </span>
+      )
+    },
+    {
+      header: 'Montant Net',
+      accessor: (tx: any) => (
+        <span className="font-mono font-bold text-on-surface">
+          {formatFCFA(tx.totalAmount * 0.97)}
+        </span>
+      ),
+      isMono: true
+    },
+    {
+      header: 'Statut',
+      accessor: (tx: any) => (
+        <StatusBadge status={tx.status === 'DELIVERED' ? 'COMPLÉTÉ' : 'SÉQUESTRE'} />
+      )
+    }
+  ];
+
   return (
-    <div className="space-y-12 pb-32 animate-in fade-in duration-700">
-      
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-12">
-        <div className="space-y-2">
-          <h1 className="text-5xl font-serif-display text-on-surface tracking-tight">💰 Mon Portefeuille</h1>
-          <p className="text-on-surface-variant font-medium">Gérez vos revenus et vos retraits en toute sécurité.</p>
+    <div className="space-y-8 pb-12 animate-in fade-in duration-700">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-serif-display text-on-surface tracking-tight mb-2">Mon Trésor Agricole</h1>
+          <p className="text-sm text-on-surface-variant font-medium">Suivez vos revenus en temps réel et gérez vos extractions de fonds.</p>
         </div>
-      </div>
-
-      {/* KPI Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-        
-        {/* Card Disponible */}
-        <div className="bg-surface-container-lowest p-10 rounded-[2.5rem] border-l-[12px] border-l-primary shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all group overflow-hidden relative">
-           <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
-          <div className="flex justify-between items-start mb-6 relative z-10">
-            <span className="text-on-surface-variant font-black uppercase tracking-[0.2em] text-[10px]">Solde Disponible</span>
-            <div className="bg-primary/10 p-4 rounded-2xl text-primary group-hover:bg-primary group-hover:text-white transition-all">
-              <Wallet size={24} />
-            </div>
-          </div>
-          <div className="flex items-baseline gap-3 relative z-10">
-            <span className="text-5xl font-mono font-black text-on-surface">185 000</span>
-            <span className="text-2xl font-black text-primary">FCFA</span>
-          </div>
-          <div className="mt-6 flex items-center gap-2 text-primary text-sm font-black relative z-10">
-            <TrendingUp size={16} />
-            <span>+12% vs mois dernier</span>
-          </div>
+        <div className="flex items-center gap-3 px-4 py-2 bg-on-surface text-surface rounded-2xl border border-outline-variant/10 shadow-xl">
+           <ShieldCheck size={18} className="text-primary" />
+           <span className="text-[10px] font-black uppercase tracking-[0.2em]">Fonds Sécurisés</span>
         </div>
+      </header>
 
-        {/* Card En Attente */}
-        <div className="bg-surface-container-lowest p-10 rounded-[2.5rem] border-l-[12px] border-l-tertiary shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all group overflow-hidden relative">
-           <div className="absolute top-0 right-0 w-40 h-40 bg-tertiary/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
-          <div className="flex justify-between items-start mb-6 relative z-10">
-            <span className="text-on-surface-variant font-black uppercase tracking-[0.2em] text-[10px]">En attente de libération</span>
-            <div className="bg-tertiary/10 p-4 rounded-2xl text-tertiary group-hover:bg-tertiary group-hover:text-white transition-all">
-              <Clock size={24} />
-            </div>
-          </div>
-          <div className="flex items-baseline gap-3 relative z-10">
-            <span className="text-5xl font-mono font-black text-on-surface">37 500</span>
-            <span className="text-2xl font-black text-tertiary">FCFA</span>
-          </div>
-          <div className="mt-6 flex items-center gap-3 text-on-surface-variant text-xs font-medium italic relative z-10">
-            <AlertCircle size={14} className="text-tertiary" />
-            <span>Libération sous 48h après livraison.</span>
-          </div>
-        </div>
-
-      </div>
-
-      {/* Main Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-        
-        {/* Transactions Section */}
-        <div className="lg:col-span-7 space-y-8">
-          <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-serif-display text-on-surface">Historique</h2>
-            <button className="text-primary font-black text-xs uppercase tracking-widest hover:underline flex items-center gap-2">Voir tout <ArrowRight size={14} /></button>
-          </div>
-          <div className="space-y-5">
-            {[
-              { label: 'Livraison #035', sub: 'Fatima T. • Hier, 14:20', val: '+242 500', status: 'CONFIRMÉE', color: 'primary', initials: 'FT' },
-              { label: 'Livraison #041', sub: 'Coopérative Nord • 12 Oct', val: '+67 900', status: 'EN ATTENTE', color: 'tertiary', initials: 'CN' },
-              { label: 'Retrait fonds', sub: 'Orange Money • 10 Oct', val: '-150 000', status: 'TERMINÉ', color: 'outline', initials: 'OM', isNeg: true }
-            ].map((tx, i) => (
-              <div key={i} className="bg-surface-container-low/40 p-6 rounded-[2rem] flex items-center justify-between hover:bg-white hover:shadow-xl transition-all border border-outline-variant/10 group cursor-pointer">
-                <div className="flex items-center gap-5">
-                  <div className={`w-14 h-14 rounded-2xl ${tx.color === 'primary' ? 'bg-primary' : tx.color === 'tertiary' ? 'bg-tertiary' : 'bg-outline'} flex items-center justify-center text-white font-black text-lg shadow-lg group-hover:scale-110 transition-transform`}>
-                    {tx.initials}
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-on-surface group-hover:text-primary transition-colors">{tx.label}</h4>
-                    <p className="text-xs text-outline font-medium">{tx.sub}</p>
-                  </div>
+      {/* Main Balances */}
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card className="p-8 bg-on-surface text-surface border-none relative overflow-hidden group col-span-1 md:col-span-2">
+           <div className="relative z-10 space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="p-3 bg-white/10 rounded-2xl">
+                   <Wallet size={24} className="text-primary" />
                 </div>
-                <div className="text-right">
-                  <span className={`font-mono font-black text-xl ${tx.isNeg ? 'text-on-surface' : tx.color === 'primary' ? 'text-primary' : 'text-tertiary'}`}>{tx.val} FCFA</span>
-                  <div className={`block text-[8px] font-black uppercase tracking-widest mt-2 px-3 py-1 rounded-full text-center ${tx.color === 'primary' ? 'bg-primary/10 text-primary' : tx.color === 'tertiary' ? 'bg-tertiary/10 text-tertiary' : 'bg-outline/10 text-outline'}`}>
-                    {tx.status}
-                  </div>
-                </div>
+                <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Solde Dispo</span>
               </div>
-            ))}
+              <div className="space-y-1">
+                <h3 className="text-5xl font-mono font-bold tracking-tighter">{formatFCFA(availableBalance)}</h3>
+                <p className="text-[10px] font-bold text-green-400 flex items-center gap-1.5">
+                   <Zap size={12} className="fill-current" />
+                   RÉACTIF POUR TRANSFERT IMMÉDIAT
+                </p>
+              </div>
+           </div>
+           <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-primary/20 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-1000"></div>
+        </Card>
+
+        <Card className="p-8 bg-surface-container border-outline-variant/5 flex flex-col justify-between">
+           <div className="flex items-center justify-between opacity-60">
+             <div className="p-3 bg-on-surface/5 rounded-2xl">
+                <Clock size={24} className="text-on-surface" />
+             </div>
+             <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">En Séquestre</span>
+           </div>
+           <div className="space-y-1">
+             <h3 className="text-3xl font-mono font-bold text-on-surface/60">{formatFCFA(escrowBalance)}</h3>
+             <p className="text-[10px] font-bold text-on-surface-variant italic opacity-60">Libéré après validation client</p>
+           </div>
+        </Card>
+      </section>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Ledger Section */}
+        <div className="lg:col-span-12 xl:col-span-7 space-y-6">
+          <div className="flex items-center justify-between px-2">
+            <h2 className="text-lg font-serif-display font-bold text-on-surface">Registre de Trésorerie</h2>
+            <Button variant="ghost" size="sm" className="font-bold text-primary flex gap-2">
+               <Download size={16} /> Exporter XLS
+            </Button>
           </div>
+          <Card className="p-0 overflow-hidden">
+            <DataTable 
+              columns={columns} 
+              data={transactions} 
+              isLoading={loading}
+              emptyMessage="Aucun mouvement financier répertorié."
+            />
+          </Card>
         </div>
 
-        {/* Retirer Widget */}
-        <div className="lg:col-span-5 relative">
-          <div className="bg-surface-container-low rounded-[3rem] shadow-2xl border border-outline-variant/10 p-10 lg:sticky lg:top-32">
-            <h3 className="text-2xl font-serif-display text-on-surface mb-10">Retrait de fonds</h3>
-            
-            <div className="mb-10 p-6 bg-white rounded-3xl border border-primary/10 flex items-center justify-between shadow-inner">
-              <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Disponible</span>
-              <span className="font-mono font-black text-primary text-2xl">{formatFCFA(185000)}</span>
-            </div>
-            
-            <div className="space-y-8">
-              <div>
-                <label className="block text-[10px] font-black text-outline uppercase tracking-widest mb-4 px-2">Montant à retirer</label>
-                <div className="relative group">
-                  <input 
-                    className="w-full bg-white border-2 border-transparent focus:border-primary/20 rounded-2xl p-5 font-mono text-2xl font-black text-on-surface focus:ring-0 transition-all shadow-sm" 
-                    placeholder="0.00" 
-                    type="number" 
-                  />
-                  <span className="absolute right-6 top-1/2 -translate-y-1/2 font-black text-outline group-focus-within:text-primary transition-colors">FCFA</span>
-                </div>
-              </div>
-              
-              <div className="space-y-4">
-                <label className="block text-[10px] font-black text-outline uppercase tracking-widest px-2">Méthode de réception</label>
-                <div className="grid grid-cols-1 gap-4">
-                  {/* Option OM */}
-                  <label className="relative flex items-center p-5 rounded-[1.5rem] border-2 border-primary bg-primary/5 cursor-pointer hover:shadow-lg transition-all active:scale-95 group">
-                    <input type="radio" name="method" className="sr-only" defaultChecked />
-                    <div className="flex items-center gap-5">
-                      <div className="w-12 h-12 rounded-xl bg-[#FF6600] flex items-center justify-center text-white font-black text-xs shadow-lg">OM</div>
-                      <div>
-                        <p className="font-bold text-on-surface">Orange Money</p>
-                        <p className="text-[10px] font-medium text-outline">+226 76 XX XX 89</p>
-                      </div>
+        {/* Withdrawal Widget */}
+        <div className="lg:col-span-12 xl:col-span-5">
+           <Card className="p-8 bg-surface-container border-none shadow-xl xl:sticky xl:top-8">
+              <div className="space-y-8">
+                 <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
+                       <ArrowUpRight size={20} />
                     </div>
-                    <CheckCircle2 className="ml-auto text-primary" size={20} />
-                  </label>
-                  
-                  {/* Option MOOV */}
-                  <label className="relative flex items-center p-5 rounded-[1.5rem] border-2 border-transparent bg-white cursor-pointer hover:border-outline-variant/30 transition-all active:scale-95">
-                    <input type="radio" name="method" className="sr-only" />
-                    <div className="flex items-center gap-5">
-                      <div className="w-12 h-12 rounded-xl bg-[#004A99] flex items-center justify-center text-white font-black text-xs shadow-lg opacity-50">MOOV</div>
-                      <div>
-                        <p className="font-bold text-on-surface opacity-50">Moov Money</p>
-                        <p className="text-[10px] font-medium text-outline">Non configuré</p>
-                      </div>
+                    <div>
+                       <h3 className="text-lg font-serif-display font-bold">Transfert Express</h3>
+                       <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest opacity-60">Vers votre numéro lié</p>
                     </div>
-                  </label>
-                </div>
+                 </div>
+
+                 <div className="space-y-6">
+                    <Input 
+                      label="Montant à transférer"
+                      type="number"
+                      value={withdrawalAmount}
+                      onChange={(e) => setWithdrawalAmount(e.target.value)}
+                      placeholder="50 000"
+                      className="text-2xl font-mono font-bold"
+                    />
+
+                    <div className="space-y-3">
+                       <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest ml-1">Opérateur de réception</p>
+                       <div className="grid grid-cols-2 gap-3">
+                          <button 
+                            onClick={() => setSelectedMethod('OM')}
+                            className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-3 ${selectedMethod === 'OM' ? 'border-primary bg-primary/5' : 'border-outline-variant/10 bg-surface hover:border-primary/30'}`}
+                          >
+                             <div className="w-10 h-10 bg-[#FF6600] rounded-xl flex items-center justify-center font-black text-white text-xs shadow-md shadow-orange-500/20">OM</div>
+                             <span className="text-[10px] font-black uppercase text-on-surface tracking-widest">Orange</span>
+                          </button>
+                          <button 
+                            onClick={() => setSelectedMethod('MOOV')}
+                            className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-3 ${selectedMethod === 'MOOV' ? 'border-primary bg-primary/5' : 'border-outline-variant/10 bg-surface hover:border-primary/30'}`}
+                          >
+                             <div className="w-10 h-10 bg-[#004A99] rounded-xl flex items-center justify-center font-black text-white text-xs shadow-md shadow-blue-500/20">MOOV</div>
+                             <span className="text-[10px] font-black uppercase text-on-surface tracking-widest">Moov</span>
+                          </button>
+                       </div>
+                    </div>
+
+                    <Button 
+                      variant="primary" 
+                      size="lg" 
+                      className="w-full font-bold shadow-2xl shadow-primary/20 flex justify-between py-6"
+                      onClick={handleWithdraw}
+                    >
+                      <span>Initier le transfert</span>
+                      <ArrowRight size={20} />
+                    </Button>
+                    <div className="flex items-center justify-center gap-2 opacity-40">
+                       <ShieldCheck size={12} />
+                       <span className="text-[10px] font-bold italic">Transaction cryptée et sécurisée</span>
+                    </div>
+                 </div>
               </div>
-
-              <button className="w-full bg-primary text-white py-5 rounded-[2rem] font-black text-lg shadow-2xl shadow-primary/20 hover:brightness-110 active:scale-95 transition-all mt-4 flex items-center justify-center gap-3">
-                <ArrowUpRight size={20} /> Confirmer le retrait
-              </button>
-            </div>
-          </div>
+           </Card>
         </div>
-
       </div>
     </div>
   );

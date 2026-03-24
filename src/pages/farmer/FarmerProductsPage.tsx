@@ -1,114 +1,206 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
-  Package, 
-  PlusCircle, 
-  CheckCircle2, 
-  AlertCircle, 
-  MapPin, 
+  Search, 
+  Plus, 
   Eye, 
   Edit3, 
-  Trash2, 
-  RefreshCw,
-  ShoppingBasket
+  Trash2,
+  Package,
+  Filter,
+  MoreVertical
 } from 'lucide-react';
+import { useProductStore } from '../../store/productStore';
+import { formatFCFA } from '../../utils/currency';
+import Card from '../../components/shared/Card';
+import Button from '../../components/shared/Button';
+import Input from '../../components/shared/Input';
+import StatusBadge from '../../components/shared/StatusBadge';
+import DataTable from '../../components/shared/DataTable';
+import toast from 'react-hot-toast';
 
 const FarmerProductsPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { products, fetchUserProducts, deleteProduct, loading } = useProductStore() as any;
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState('all');
+
+  useEffect(() => {
+    fetchUserProducts();
+  }, [fetchUserProducts]);
+
+  const filteredProducts = (products || []).filter((p: any) => {
+    const matchesFilter = filter === 'all' || p.status === filter;
+    const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Voulez-vous vraiment retirer ce produit de la vente ?')) {
+      try {
+        await deleteProduct(id);
+        toast.success('Produit retiré avec succès');
+      } catch (error) {
+        toast.error('Erreur lors du retrait du produit');
+      }
+    }
+  };
+
+  const columns = [
+    {
+      header: 'Produit',
+      accessor: (p: any) => (
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-surface-container overflow-hidden border border-outline-variant/10 shadow-sm">
+            <img 
+              className="w-full h-full object-cover transition-transform group-hover:scale-110" 
+              src={p.images?.[0] || 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=200&q=80'} 
+              alt={p.name} 
+            />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold text-on-surface line-clamp-1">{p.name}</span>
+            <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">{p.category || 'Céréales'}</span>
+          </div>
+        </div>
+      )
+    },
+    {
+      header: 'Prix (P.U)',
+      accessor: (p: any) => (
+        <span className="font-mono font-bold text-on-surface">{formatFCFA(p.price)}</span>
+      ),
+      isMono: true
+    },
+    {
+      header: 'Stock Restant',
+      accessor: (p: any) => (
+        <div className="flex flex-col">
+          <span className="font-mono font-bold text-on-surface text-sm">
+            {p.stock} <span className="text-[10px] text-on-surface-variant font-medium">{p.unit || 'Kg'}</span>
+          </span>
+          {p.stock <= 10 && p.stock > 0 && (
+            <span className="text-[9px] font-black text-orange-600 uppercase tracking-tighter mt-0.5">Stock Critique</span>
+          )}
+        </div>
+      )
+    },
+    {
+      header: 'Visibilité',
+      accessor: (p: any) => (
+        <StatusBadge status={p.status === 'active' ? 'PUBLIÉ' : p.status === 'out_of_stock' ? 'RUPTURE' : 'ARCHIVÉ'} />
+      )
+    },
+    {
+      header: '',
+      accessor: (p: any) => (
+        <div className="flex justify-end gap-1">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            icon={<Eye size={16} />}
+            onClick={(e) => { e.stopPropagation(); navigate(`/catalog/${p._id}`); }}
+            title="Voir"
+          />
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            icon={<Edit3 size={16} />}
+            onClick={(e) => { e.stopPropagation(); navigate(`/farmer/products/${p._id}/edit`); }}
+            title="Modifier"
+          />
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            icon={<Trash2 size={16} />}
+            className="text-error hover:bg-error/5"
+            onClick={(e) => { e.stopPropagation(); handleDelete(p._id); }}
+            title="Supprimer"
+          />
+        </div>
+      ),
+      className: 'text-right'
+    }
+  ];
+
   return (
-    <div className="space-y-8 pb-32 animate-in fade-in duration-700">
-      {/* PAGE HEADER */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <div className="space-y-8 pb-12 animate-in fade-in duration-700">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="font-serif-display text-[2.5rem] leading-tight text-on-background">📦 Mes produits</h1>
-          <p className="text-outline font-medium mt-2">Gérez votre catalogue de récoltes et surveillez vos stocks en temps réel.</p>
+          <h1 className="text-3xl md:text-4xl font-serif-display text-on-surface tracking-tight mb-2">Mon Catalogue</h1>
+          <p className="text-sm text-on-surface-variant font-medium">Gérez vos stocks et maintenez votre inventaire à jour.</p>
+        </div>
+        <Button 
+          variant="primary" 
+          size="md" 
+          icon={<Plus size={18} />}
+          onClick={() => navigate('/farmer/products/new')}
+        >
+          Référencer un produit
+        </Button>
+      </header>
+
+      {/* Toolbar */}
+      <div className="flex flex-col md:flex-row gap-4 items-center">
+        <div className="flex-1 w-full">
+          <Input 
+            placeholder="Rechercher une variété, un lot..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            icon={<Search size={18} />}
+            className="bg-white border-outline-variant/20 shadow-sm"
+          />
+        </div>
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="flex items-center gap-2 px-4 py-2 bg-surface-container rounded-2xl border border-outline-variant/10 text-on-surface-variant">
+            <Filter size={14} className="opacity-50" />
+            <select 
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              className="bg-transparent text-sm font-bold outline-none cursor-pointer pr-4"
+            >
+              <option value="all">Tous les produits</option>
+              <option value="active">En ligne</option>
+              <option value="inactive">Hors-ligne</option>
+              <option value="out_of_stock">Rupture</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* ACTION BAR */}
-      <div className="flex flex-wrap items-center justify-between gap-6">
-        <div className="flex bg-surface-container-low p-1.5 rounded-2xl overflow-hidden shadow-inner">
-          <button className="px-6 py-2 rounded-xl bg-primary text-white text-sm font-bold shadow-lg shadow-primary/10 transition-all">Tous (8)</button>
-          <button className="px-6 py-2 rounded-xl text-on-surface-variant text-sm font-bold hover:bg-surface-container-high transition-all">Disponibles (6)</button>
-          <button className="px-6 py-2 rounded-xl text-on-surface-variant text-sm font-bold hover:bg-surface-container-high transition-all">Indisponibles (1)</button>
-          <button className="px-6 py-2 rounded-xl text-on-surface-variant text-sm font-bold hover:bg-surface-container-high transition-all">Rupture (1)</button>
+      {/* Table Section */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between px-2">
+          <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-[.2em]">
+            Total : <span className="text-primary">{(filteredProducts || []).length} lots identifiés</span>
+          </p>
         </div>
-        <Link to="/farmer/products/new" className="bg-primary hover:brightness-110 text-white px-8 py-3.5 rounded-2xl flex items-center gap-3 font-bold transition-all shadow-xl shadow-primary/20 active:scale-95">
-          <PlusCircle size={20} />
-          <span>Ajouter un produit</span>
-        </Link>
-      </div>
+        <DataTable 
+          columns={columns} 
+          data={filteredProducts} 
+          isLoading={loading}
+          onRowClick={(p: any) => navigate(`/farmer/products/${p._id}/edit`)}
+          emptyMessage="Votre catalogue est vide. Commencez par ajouter votre première récolte."
+        />
+      </section>
 
-      {/* PRODUCTS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        
-        {/* VARIANTE 1: DISPONIBLE */}
-        <article className="bg-surface-container-lowest rounded-[2.5rem] shadow-sm border border-outline-variant/10 group hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden">
-          <div className="relative h-[220px] overflow-hidden">
-            <img alt="Maïs sec" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" src="https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=600&q=80" />
-            <div className="absolute top-4 left-4 flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/90 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest shadow-xl">
-              <CheckCircle2 size={14} />
-              <span>Disponible</span>
-            </div>
-          </div>
-          <div className="p-8 space-y-5">
-            <div>
-              <h3 className="font-bold text-xl text-on-surface group-hover:text-primary transition-colors">Maïs sec (Gros grains)</h3>
-              <span className="inline-block mt-2 px-3 py-1 rounded-lg bg-tertiary/10 text-tertiary text-[10px] font-black uppercase tracking-widest">Céréales</span>
-            </div>
-            <div className="flex items-baseline gap-1">
-              <span className="font-mono font-black text-2xl text-primary">5 000 FCFA</span>
-              <span className="text-outline text-sm font-bold">/ sac</span>
-            </div>
-            <div className="space-y-3 pt-2">
-              <div className="flex items-center gap-3 text-on-surface-variant text-sm font-bold">
-                <Package className="text-primary-container" size={18} />
-                <span>Stock : <strong className="text-on-surface font-black">500 kg · 50 sacs</strong></span>
-              </div>
-              <div className="flex items-center gap-3 text-on-surface-variant text-sm font-medium">
-                <MapPin className="text-tertiary" size={18} />
-                <span>Bobo-Dioulasso</span>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center justify-between px-6 py-4 border-t border-outline-variant/5 bg-surface-container-low/20">
-            <button className="p-3 text-primary hover:bg-primary/10 rounded-xl transition-all"><Eye size={20} /></button>
-            <Link to={`/farmer/products/1/edit`} className="p-3 text-on-surface-variant hover:bg-white rounded-xl transition-all shadow-sm"><Edit3 size={20} /></Link>
-            <button className="p-3 text-error hover:bg-error/10 rounded-xl transition-all"><Trash2 size={20} /></button>
-          </div>
-        </article>
-
-        {/* VARIANTE 2: RUPTURE */}
-        <article className="bg-surface-container-lowest rounded-[2.5rem] shadow-sm border border-outline-variant/10 group hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden">
-          <div className="relative h-[220px] overflow-hidden grayscale">
-            <img alt="Sorgho" className="w-full h-full object-cover" src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600&q=80" />
-            <div className="absolute top-4 left-4 flex items-center gap-2 px-4 py-1.5 rounded-full bg-error/90 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest shadow-xl">
-              <AlertCircle size={14} />
-              <span>Rupture de stock</span>
-            </div>
-          </div>
-          <div className="p-8 space-y-5">
-            <div>
-              <h3 className="font-bold text-xl text-on-surface">Sorgho blanc</h3>
-              <span className="inline-block mt-2 px-3 py-1 rounded-lg bg-tertiary/10 text-tertiary text-[10px] font-black uppercase tracking-widest">Céréales</span>
-            </div>
-            <div className="flex items-baseline gap-1 opacity-50">
-              <span className="font-mono font-black text-2xl text-primary">6 500 FCFA</span>
-              <span className="text-outline text-sm font-bold">/ sac</span>
-            </div>
-            <div className="space-y-4 pt-2">
-              <div className="flex items-center gap-3 text-error text-sm font-black uppercase tracking-tight">
-                <Package size={18} />
-                <span>Stock épuisé : 0 kg</span>
-              </div>
-              <button className="w-full py-4 rounded-2xl border-2 border-primary text-primary font-black text-sm flex items-center justify-center gap-3 hover:bg-primary hover:text-white transition-all active:scale-95">
-                <RefreshCw size={18} />
-                Réapprovisionner
-              </button>
-            </div>
-          </div>
-        </article>
-      </div>
-
+      {/* Bento Insight Card */}
+      <Card className="bg-surface-container-low border-dashed border-2 flex flex-col md:flex-row items-center gap-8 p-10 group overflow-hidden relative">
+         <div className="w-16 h-16 rounded-[2rem] bg-primary/10 flex items-center justify-center text-primary shrink-0 transition-transform group-hover:rotate-12 duration-500">
+            <Package size={32} />
+         </div>
+         <div className="flex-1 text-center md:text-left relative z-10">
+            <h4 className="text-lg font-serif-display font-bold text-on-surface mb-2">Opportunité de vente</h4>
+            <p className="text-sm text-on-surface-variant max-w-2xl leading-relaxed italic font-newsreader">
+              "Votre **Maïs Jaune** génère un fort intérêt cette semaine avec plus de 150 consultations. Envisagez une légère augmentation de prix ou un lot groupé pour maximiser vos revenus."
+            </p>
+         </div>
+         <Button variant="secondary" size="md" className="relative z-10 font-bold">
+            Optimiser mes prix
+         </Button>
+         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+      </Card>
     </div>
   );
 };
