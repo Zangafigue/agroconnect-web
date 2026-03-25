@@ -4,6 +4,7 @@ import { useAuthStore } from '../store/authStore';
 import AdminLayout from '../components/shared/AdminLayout';
 import UserLayout from '../components/shared/UserLayout';
 
+import { getUserRole, getRoleSlug, normalizeRole } from '../utils/auth';
 import ThemeManager from '../components/shared/ThemeManager';
 
 // Root Layout to provide theme context inside the router
@@ -26,13 +27,22 @@ const Loader = () => (
 // Helper for Private Routes
 const PrivateRoute = ({ roles }: { roles?: string[] }) => {
   const { token, user } = useAuthStore() as any;
-  
+
   if (!token) return <Navigate to="/login" replace />;
-  if (roles && roles.length > 0 && !roles.includes(user?.role)) {
-    return <Navigate to="/" replace />;
+  if (!user)  return <Loader />;
+
+  // Resolve effective role via capability flags (backend uses role:'USER' + canSell/canBuy/canDeliver)
+  const userRole = getUserRole(user);
+
+  if (roles && roles.length > 0) {
+    // Normalize target roles for comparison (FARMER, BUYER, TRANSPORTER, ADMIN)
+    const allowed = roles.map(r => normalizeRole(r));
+    if (!allowed.includes(userRole)) {
+      return <Navigate to="/" replace />;
+    }
   }
 
-  const LayoutComponent = user?.role === 'ADMIN' ? AdminLayout : UserLayout;
+  const LayoutComponent = userRole === 'ADMIN' ? AdminLayout : UserLayout;
 
   return (
     <LayoutComponent>
@@ -41,6 +51,16 @@ const PrivateRoute = ({ roles }: { roles?: string[] }) => {
       </Suspense>
     </LayoutComponent>
   );
+};
+
+const FallbackRoute = () => {
+  const { token, user } = useAuthStore() as any;
+  if (token && user) {
+    let slug = getRoleSlug(getUserRole(user));
+    if (slug === 'visitor') slug = 'farmer'; // default to farmer if no capability
+    return <Navigate to={`/${slug}/dashboard`} replace />;
+  }
+  return <Navigate to="/" replace />;
 };
 
 const suspenseWrapper = (Component: React.ComponentType) => (
@@ -135,7 +155,7 @@ export const router = createBrowserRouter([
   { path: '/reset-password', element: suspenseWrapper(ResetPasswordPage) },
 
   // Farmer
-  { element: <PrivateRoute roles={['FARMER']} />, children: [
+  { element: <PrivateRoute roles={['FARMER', 'PRODUCER']} />, children: [
     { path: '/farmer/dashboard', element: <FarmerDashboard /> },
     { path: '/farmer/products', element: <FarmerProductsPage /> },
     { path: '/farmer/products/new', element: <ProductFormPage /> },
@@ -149,7 +169,7 @@ export const router = createBrowserRouter([
   ]},
 
   // Buyer
-  { element: <PrivateRoute roles={['BUYER']} />, children: [
+  { element: <PrivateRoute roles={['BUYER', 'CLIENT', 'CUSTOMER']} />, children: [
     { path: '/buyer/dashboard', element: <BuyerDashboard /> },
     { path: '/buyer/marketplace', element: <MarketplacePage /> },
     { path: '/buyer/marketplace/product/:id', element: <BuyerProductDetailPage /> },
@@ -163,7 +183,7 @@ export const router = createBrowserRouter([
   ]},
 
   // Transporter
-  { element: <PrivateRoute roles={['TRANSPORTER']} />, children: [
+  { element: <PrivateRoute roles={['TRANSPORTER', 'LOGISTICS', 'DELIVERY', 'DRIVER']} />, children: [
     { path: '/transporter/dashboard', element: <TransporterDashboard /> },
     { path: '/transporter/missions', element: <MissionsPage /> },
     { path: '/transporter/offers', element: <MyOffersPage /> },
@@ -193,5 +213,5 @@ export const router = createBrowserRouter([
     { path: '/admin/profile', element: <AdminProfilePage /> },
     { path: '/admin', element: <Navigate to="/admin/dashboard" replace /> },
   ]},
-  { path: '*', element: <Navigate to="/" replace /> }
+  { path: '*', element: <FallbackRoute /> }
 ] }]);

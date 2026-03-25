@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Package, 
   Clock, 
   CheckCircle2, 
   Truck, 
   MessageSquare, 
-  XCircle, 
   Search,
   ArrowRight,
   Filter
 } from 'lucide-react';
+import { useBuyerStore } from '../../store/buyerStore';
 import { formatFCFA } from '../../utils/currency';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
 import Card from '../../components/shared/Card';
 import Button from '../../components/shared/Button';
 import DataTable from '../../components/shared/DataTable';
@@ -19,18 +21,22 @@ import Input from '../../components/shared/Input';
 
 const BuyerOrdersPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('ALL');
+  const { activeOrders, fetchDashboardData, loading } = useBuyerStore() as any;
 
-  const orders = [
-    { id: 'CMD-045', product: 'Maïs sec de Bobo', qty: '10 sacs (500kg)', producer: 'Amadou Kaboré', total: 50000, date: '24 Oct. 2024', status: 'PENDING' },
-    { id: 'CMD-042', product: 'Oignons Galmi', qty: '2 sacs (100kg)', producer: 'Zalissa Traoré', total: 30000, date: '20 Oct. 2024', status: 'SHIPPED' },
-    { id: 'CMD-040', product: 'Pommes de terre', qty: '50kg', producer: 'Saliou Diallo', total: 15000, date: '15 Oct. 2024', status: 'DELIVERED' }
-  ];
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  const filteredOrders = (activeOrders || []).filter((o: any) => {
+    if (activeTab === 'ALL') return true;
+    return o.status === activeTab;
+  });
 
   const columns = [
     {
       header: 'Référence',
       accessor: (o: any) => (
-        <span className="font-bold text-[var(--text-primary)]">#{o.id}</span>
+        <span className="font-bold text-[var(--text-primary)]">#{o.id || o._id?.slice(-8).toUpperCase()}</span>
       ),
       isMono: true
     },
@@ -38,24 +44,24 @@ const BuyerOrdersPage: React.FC = () => {
       header: 'Produit & Quantité',
       accessor: (o: any) => (
         <div className="flex flex-col">
-          <span className="text-[13px] font-medium text-[var(--text-primary)]">{o.product}</span>
-          <span className="text-[11px] text-[var(--text-secondary)]">{o.qty}</span>
+          <span className="text-[13px] font-medium text-[var(--text-primary)]">{o.product || o.items?.[0]?.product?.name || 'Produit inconnu'}</span>
+          <span className="text-[11px] text-[var(--text-secondary)]">{o.qty || '1 Lot'}</span>
         </div>
       )
     },
     {
       header: 'Producteur',
-      accessor: (o: any) => <span className="text-[13px]">{o.producer}</span>
+      accessor: (o: any) => <span className="text-[13px] font-medium text-[var(--text-primary)]">{o.seller || o.farmer?.firstName || 'Agriculteur'}</span>
     },
     {
       header: 'Total',
       accessor: (o: any) => (
-        <span className="font-bold font-mono text-[var(--text-primary)]">{formatFCFA(o.total)}</span>
+        <span className="font-bold font-mono text-[var(--text-accent)]">{formatFCFA(o.price || o.amount || o.totalAmount || 0)}</span>
       )
     },
     {
       header: 'Date',
-      accessor: (o: any) => <span className="text-[12px] text-[var(--text-secondary)]">{o.date}</span>
+      accessor: (o: any) => <span className="text-[12px] text-[var(--text-secondary)] font-mono uppercase">{o.date || format(new Date(), 'dd MMM yyyy', { locale: fr })}</span>
     },
     {
       header: 'Statut',
@@ -66,8 +72,8 @@ const BuyerOrdersPage: React.FC = () => {
       header: '',
       accessor: (o: any) => (
         <div className="flex justify-end gap-2">
-           <Button variant="ghost" size="sm" className="p-1.5"><MessageSquare size={14} /></Button>
-           <Button variant="ghost" size="sm" className="p-1.5"><ArrowRight size={14} /></Button>
+           <Button variant="ghost" size="sm" className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-accent)]"><MessageSquare size={14} /></Button>
+           <Button variant="ghost" size="sm" className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-accent)]"><ArrowRight size={14} /></Button>
         </div>
       )
     }
@@ -81,7 +87,7 @@ const BuyerOrdersPage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-8 pb-12 font-body">
+    <div className="space-y-8 pb-12 font-body animate-in fade-in duration-700">
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
@@ -110,22 +116,23 @@ const BuyerOrdersPage: React.FC = () => {
          ))}
       </div>
 
-      <Card className="p-0 overflow-hidden">
-        <div className="p-4 border-b border-[var(--border-light)] flex flex-col md:flex-row gap-4 items-center justify-between bg-[var(--bg-muted)]/10">
+      <Card className="p-0 overflow-hidden border-[var(--border-light)]">
+        <div className="p-4 border-b border-[var(--border-light)] flex flex-col md:flex-row gap-4 items-center justify-between bg-[var(--bg-muted)]/30">
            <div className="flex-1 w-full md:max-w-md">
               <Input 
                 placeholder="Rechercher par référence ou produit..." 
                 icon={<Search size={16} />}
-                className="py-2"
+                className="py-2 bg-[var(--bg-surface)] border-[var(--border-light)]"
               />
            </div>
            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" icon={<Filter size={14} />}>Filtres avancés</Button>
+              <Button variant="ghost" size="sm" className="text-[var(--text-secondary)] font-bold" icon={<Filter size={14} />}>Filtres avancés</Button>
            </div>
         </div>
         <DataTable 
           columns={columns} 
-          data={orders} 
+          data={filteredOrders} 
+          isLoading={loading}
           onRowClick={() => {}}
           emptyMessage="Aucune commande correspondante."
         />

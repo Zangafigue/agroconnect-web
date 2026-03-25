@@ -26,8 +26,23 @@ api.interceptors.response.use((response) => {
   return response;
 }, (error) => {
   if (error.response?.status === 401) {
-    localStorage.removeItem('auth-storage');
-    window.location.href = '/login';
+    const requestUrl = error.config?.url || '';
+    const currentPath = window.location.pathname;
+
+    // Only force-logout if the failed request is to an auth-specific endpoint
+    // (e.g., token verification, profile fetch) OR if we're not already in a protected area.
+    // Background data requests (products, orders, etc.) returning 401 should NOT wipe the session.
+    const isAuthEndpoint = requestUrl.includes('/auth/') || requestUrl.includes('/me');
+    const isOnProtectedPage = currentPath.startsWith('/farmer') || 
+                              currentPath.startsWith('/buyer') || 
+                              currentPath.startsWith('/transporter') || 
+                              currentPath.startsWith('/admin');
+
+    if (isAuthEndpoint || !isOnProtectedPage) {
+      localStorage.removeItem('auth-storage');
+      window.location.href = '/login';
+    }
+    // Otherwise swallow the 401 silently – the user is already logged in
   }
   return Promise.reject(error);
 });

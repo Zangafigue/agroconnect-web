@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { useThemeStore } from '../../store/themeStore';
 import Avatar from './Avatar';
 import Button from './Button';
+import LogoutModal from './LogoutModal';
 
 export default function Header() {
   const { user, logout } = useAuthStore() as any;
   const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -16,6 +18,7 @@ export default function Header() {
   };
 
   return (
+    <>
     <header className="bg-[var(--bg-surface)] h-[64px] flex items-center justify-between px-6 z-30 border-b border-[var(--border-light)] sticky top-0 font-body">
       {/* Search Bar */}
       <div className="flex items-center gap-4">
@@ -73,6 +76,7 @@ export default function Header() {
             name={user?.firstName || user?.name} 
             role="ADMIN" 
             size="sm" 
+            image={user?.profilePicture}
             className="group-hover:scale-105 transition-transform"
           />
         </div>
@@ -81,11 +85,17 @@ export default function Header() {
         <Button
           variant="danger"
           size="sm"
-          onClick={handleLogout}
+          onClick={() => setShowLogoutModal(true)}
           icon={<span className="material-symbols-outlined">logout</span>}
           className="ml-2"
         />
       </div>
     </header>
+    <LogoutModal
+      isOpen={showLogoutModal}
+      onClose={() => setShowLogoutModal(false)}
+      onConfirm={handleLogout}
+    />
+    </>
   );
 }

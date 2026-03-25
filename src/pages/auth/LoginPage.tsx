@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuthStore } from '../../store/authStore';
-import { Mail, Lock, Eye, EyeOff, AlertCircle, ArrowRight, ShieldCheck, Leaf } from 'lucide-react';
+import { ArrowRight, Mail, Lock, Eye, EyeOff, ShieldCheck, AlertCircle, CheckCircle2, Leaf } from 'lucide-react';
+import { getUserRole, getRoleSlug } from '../../utils/auth';
 import VisitorFooter from '../../components/shared/VisitorFooter';
 import loginBg from '../../assets/images/login-bg.png';
 
@@ -35,13 +36,19 @@ const LoginPage: React.FC = () => {
         return;
       }
 
-      switch (user.role) {
-        case 'FARMER': navigate('/farmer/dashboard'); break;
-        case 'BUYER': navigate('/buyer/dashboard'); break;
-        case 'TRANSPORTER': navigate('/transporter/dashboard'); break;
-        case 'ADMIN': navigate('/admin'); break;
-        default: navigate('/'); break;
-      }
+      const resolved = getUserRole(user);
+      const slug = getRoleSlug(resolved);
+
+      // DEBUG
+      console.log('[LOGIN] user.role=', user.role, '| canSell=', user.canSell, '| canBuy=', user.canBuy, '| canDeliver=', user.canDeliver);
+      console.log('[LOGIN] resolved role:', resolved, '→ slug:', slug);
+
+      let targetPath = '/';
+      if (resolved === 'ADMIN') targetPath = '/admin';
+      else if (slug !== 'visitor') targetPath = `/${slug}/dashboard`;
+
+      console.log('[LOGIN] Redirecting to:', targetPath);
+      window.location.href = targetPath;
     } catch (err: any) {
       setError(err.response?.data?.message || 'Identifiants incorrects ou erreur réseau.');
     } finally {

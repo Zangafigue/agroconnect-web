@@ -7,7 +7,8 @@ export const useAuthStore = create(
     (set, get) => ({
       token: null,
       user: null,
-      setAuth: (token, user) => set({ token, user }),
+      isAuthChecked: false, // Track if rehydration finished
+      setAuth: (token, user) => set({ token, user, isAuthChecked: true }),
       
       updateUser: (partialUser) => set((state) => ({
         user: state.user ? { ...state.user, ...partialUser } : null
@@ -34,12 +35,27 @@ export const useAuthStore = create(
           throw error;
         }
       },
+      
+      updatePassword: async (currentPassword, newPassword) => {
+        try {
+          const response = await profileService.updatePassword(currentPassword, newPassword);
+          return response;
+        } catch (error) {
+          console.error('Erreur mise à jour mot de passe:', error);
+          throw error;
+        }
+      },
 
       logout: () => {
-        set({ token: null, user: null });
+        set({ token: null, user: null, isAuthChecked: true });
         localStorage.removeItem('auth-storage');
       },
     }),
-    { name: 'auth-storage' }
+    { 
+      name: 'auth-storage',
+      onRehydrateStorage: () => (state) => {
+        if (state) state.isAuthChecked = true;
+      }
+    }
   )
 );

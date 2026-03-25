@@ -8,8 +8,7 @@ import {
   ArrowLeft, 
   Info,
   Smartphone,
-  Truck,
-  Package
+  Truck
 } from 'lucide-react';
 import { formatFCFA } from '../../utils/currency';
 import Card from '../../components/shared/Card';
@@ -21,7 +20,7 @@ const BuyerPaymentPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="space-y-8 pb-12 font-body max-w-5xl mx-auto">
+    <div className="space-y-8 pb-12 font-body max-w-5xl mx-auto animate-in fade-in duration-700">
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-4">
         <div>
@@ -36,7 +35,7 @@ const BuyerPaymentPage: React.FC = () => {
         {/* Left Column: Payment Process */}
         <div className="lg:col-span-2 space-y-8">
           
-          <Card className="p-8 space-y-6">
+          <Card className="p-8 space-y-6 border-[var(--border-light)]">
             <h2 className="text-[14px] font-bold text-[var(--text-primary)] uppercase tracking-widest border-l-4 border-[var(--text-accent)] pl-3">Mode de règlement</h2>
             
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -49,7 +48,7 @@ const BuyerPaymentPage: React.FC = () => {
                 <button 
                   key={method.id}
                   onClick={() => setSelectedMethod(method.id)}
-                  className={`flex flex-col items-center justify-center p-4 rounded-xl transition-all border-2 ${selectedMethod === method.id ? 'border-[var(--text-accent)] bg-[var(--text-accent)]/5 shadow-md' : 'border-[var(--border-light)] bg-[var(--bg-surface)] hover:bg-[var(--bg-muted)]'}`}
+                  className={`flex flex-col items-center justify-center p-4 rounded-xl transition-all border-2 ${selectedMethod === method.id ? 'border-[var(--text-accent)] bg-[var(--text-accent)]/5 shadow-md' : 'border-[var(--border-light)] bg-[var(--bg-muted)] hover:border-[var(--text-accent)]/30'}`}
                 >
                   <method.icon size={24} className={`mb-3 ${selectedMethod === method.id ? 'text-[var(--text-accent)]' : 'text-[var(--text-secondary)]'}`} />
                   <span className={`text-[10px] uppercase font-bold text-center ${selectedMethod === method.id ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>{method.label}</span>
@@ -63,22 +62,22 @@ const BuyerPaymentPage: React.FC = () => {
                     <Input 
                       label="Numéro de téléphone mobile"
                       placeholder="7x xx xx xx"
-                      className="font-mono text-lg py-3"
+                      className="font-mono text-lg py-3 bg-[var(--bg-surface)] border-[var(--border-light)]"
                       icon={<span className="text-[var(--text-secondary)] font-bold pl-2">+226</span>}
                     />
-                    <div className="flex items-start gap-3 p-4 bg-amber-50 rounded-xl border border-amber-100">
+                    <div className="flex items-start gap-3 p-4 bg-amber-500/10 rounded-xl border border-amber-500/20">
                       <Info size={16} className="text-amber-500 mt-0.5 shrink-0" />
-                      <p className="text-[11px] font-medium text-amber-700 leading-relaxed">
+                      <p className="text-[11px] font-medium text-amber-500 leading-relaxed">
                         Un message USSD sera envoyé sur votre téléphone pour autoriser le prélèvement.
                       </p>
                     </div>
                  </div>
                ) : selectedMethod === 'card' ? (
                  <div className="space-y-4 max-w-md mx-auto md:mx-0">
-                    <Input label="Numéro de carte" placeholder="0000 0000 0000 0000" icon={<CreditCard size={18} />} className="font-mono text-lg" />
+                    <Input label="Numéro de carte" placeholder="0000 0000 0000 0000" icon={<CreditCard size={18} />} className="font-mono text-lg bg-[var(--bg-surface)]" />
                     <div className="flex gap-4">
-                       <Input label="Expiration" placeholder="MM/AA" className="font-mono text-lg text-center" />
-                       <Input label="CVV" placeholder="123" className="font-mono text-lg text-center" />
+                       <Input label="Expiration" placeholder="MM/AA" className="font-mono text-lg text-center bg-[var(--bg-surface)]" />
+                       <Input label="CVV" placeholder="123" className="font-mono text-lg text-center bg-[var(--bg-surface)]" />
                     </div>
                  </div>
                ) : (
@@ -87,7 +86,7 @@ const BuyerPaymentPage: React.FC = () => {
                     <div className="space-y-3 font-mono text-[11px]">
                        <div className="flex justify-between border-b border-[var(--border-light)] pb-2">
                           <span className="text-[var(--text-secondary)]">Banque</span>
-                          <span className="font-bold">Coris Bank International</span>
+                          <span className="font-bold text-[var(--text-primary)]">Coris Bank International</span>
                        </div>
                        <div className="flex justify-between border-b border-[var(--border-light)] pb-2">
                           <span className="text-[var(--text-secondary)]">IBAN</span>
@@ -99,8 +98,8 @@ const BuyerPaymentPage: React.FC = () => {
             </div>
           </Card>
 
-          <Card className="bg-[var(--text-accent)]/5 border-none shadow-sm flex items-start gap-4 p-6">
-             <div className="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-[var(--text-accent)] shrink-0">
+          <Card className="bg-[var(--text-accent)]/5 border border-[var(--text-accent)]/10 shadow-sm flex items-start gap-4 p-6">
+             <div className="w-10 h-10 bg-[var(--bg-surface)] rounded-xl shadow-sm flex items-center justify-center text-[var(--text-accent)] shrink-0 border border-[var(--border-light)]">
                 <ShieldCheck size={20} />
              </div>
              <div>
@@ -115,21 +114,21 @@ const BuyerPaymentPage: React.FC = () => {
 
         {/* Right Column: Order Summary */}
         <div className="space-y-6">
-           <Card className="p-8 sticky top-24">
-              <h3 className="text-[18px] font-display text-[var(--text-primary)] mb-6 pb-4 border-b border-[var(--border-light)]">Récapitulatif</h3>
+           <Card className="p-8 sticky top-24 border-[var(--border-light)]">
+              <h3 className="text-[18px] font-display font-bold text-[var(--text-primary)] mb-6 pb-4 border-b border-[var(--border-light)]">Récapitulatif</h3>
               
               <div className="space-y-4 mb-6">
                  <div className="flex justify-between text-[13px]">
                     <span className="text-[var(--text-secondary)]">Produits (Maïs sec)</span>
-                    <span className="font-bold font-mono">70 000 F</span>
+                    <span className="font-bold font-mono text-[var(--text-primary)]">70 000 F</span>
                  </div>
                  <div className="flex justify-between text-[13px]">
-                    <span className="text-[var(--text-secondary)] flex items-center gap-1"><Truck size={14} /> Transport</span>
-                    <span className="font-bold font-mono">15 000 F</span>
+                    <span className="text-[var(--text-secondary)] flex items-center gap-1"><Truck size={14} className="text-[var(--text-accent)]" /> Transport</span>
+                    <span className="font-bold font-mono text-[var(--text-primary)]">15 000 F</span>
                  </div>
                  <div className="flex justify-between text-[13px]">
                     <span className="text-[var(--text-secondary)]">Frais de service (2%)</span>
-                    <span className="font-bold font-mono">1 700 F</span>
+                    <span className="font-bold font-mono text-[var(--text-primary)]">1 700 F</span>
                  </div>
               </div>
               
@@ -141,10 +140,10 @@ const BuyerPaymentPage: React.FC = () => {
               </div>
 
               <div className="space-y-4">
-                 <Button variant="primary" size="lg" className="w-full justify-center" icon={<Lock size={16} />}>
+                 <Button variant="primary" size="lg" className="w-full justify-center shadow-lg shadow-[var(--text-accent)]/20" icon={<Lock size={16} />}>
                     Payer 86 700 F
                  </Button>
-                 <Button variant="ghost" size="sm" className="w-full justify-center text-[var(--text-secondary)]" icon={<ArrowLeft size={14} />} onClick={() => navigate(-1)}>
+                 <Button variant="ghost" size="sm" className="w-full justify-center text-[var(--text-secondary)] font-bold hover:text-[var(--text-primary)]" icon={<ArrowLeft size={14} />} onClick={() => navigate(-1)}>
                     Annuler & Retour
                  </Button>
               </div>

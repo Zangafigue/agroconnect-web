@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
+import { useNavigate } from 'react-router-dom';
 import { 
   User, 
   Truck, 
@@ -14,7 +15,8 @@ import {
   ShoppingCart,
   Save,
   LogOut,
-  Zap
+  Zap,
+  Lock
 } from 'lucide-react';
 import { formatFCFA } from '../../utils/currency';
 import toast from 'react-hot-toast';
@@ -22,17 +24,22 @@ import Card from '../../components/shared/Card';
 import Button from '../../components/shared/Button';
 import Input from '../../components/shared/Input';
 import Avatar from '../../components/shared/Avatar';
+import ChangePasswordModal from '../../components/shared/ChangePasswordModal';
+import LogoutModal from '../../components/shared/LogoutModal';
 
 const TransporterProfilePage: React.FC = () => {
-  const { user, updateProfile } = useAuthStore() as any;
+  const { user, updateProfile, logout } = useAuthStore() as any;
+  const navigate = useNavigate();
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [canBuy, setCanBuy] = useState(false);
+  const [canBuy, setCanBuy] = useState(user?.canBuy || false);
   const [formData, setFormData] = useState({
-    name: user?.name || 'Koné Dramane',
-    phone: user?.phone || '+226 70 00 00 00',
-    email: user?.email || 'd.kone@email.bf',
-    vehicle: user?.vehicle || 'Camionnette 2T',
-    zone: user?.zone || 'Rayon de 200km autour de Ouagadougou'
+    name: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : (user?.name || ''),
+    phone: user?.phone || '',
+    email: user?.email || '',
+    vehicleType: user?.vehicleType || '',
+    city: user?.city || ''
   });
 
   const handleUpdate = async () => {
@@ -136,7 +143,10 @@ const TransporterProfilePage: React.FC = () => {
               <Button variant="secondary" size="md" className="w-full justify-center text-[11px]" icon={<Award size={14} />}>
                 Gérer mes badges
               </Button>
-              <Button variant="ghost" size="md" className="w-full justify-center text-red-600 hover:bg-red-50 hover:text-red-700 text-[11px]" icon={<LogOut size={14} />}>
+              <Button onClick={() => setIsPasswordModalOpen(true)} variant="secondary" size="md" className="w-full justify-center text-[11px] hover:bg-red-50 hover:text-red-700 hover:border-red-200" icon={<Lock size={14} />}>
+                Changer le mot de passe
+              </Button>
+              <Button variant="ghost" size="md" className="w-full justify-center text-red-600 hover:bg-red-50 hover:text-red-700 text-[11px]" icon={<LogOut size={14} />} onClick={() => setShowLogoutModal(true)}>
                  Déconnexion
               </Button>
             </div>
@@ -150,13 +160,13 @@ const TransporterProfilePage: React.FC = () => {
             <div className="space-y-6">
               <div>
                 <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Fonds disponibles</p>
-                <p className="text-3xl font-mono font-bold text-[var(--text-accent)]">{formatFCFA(145000)}</p>
+                <p className="text-3xl font-mono font-bold text-[var(--text-accent)]">{formatFCFA(user?.walletBalance || 0)}</p>
               </div>
               <div className="bg-[var(--bg-muted)]/50 rounded-xl p-4 border border-[var(--border-light)]">
                 <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest mb-1 flex items-center gap-1.5">
-                   <ShieldCheck size={12} className="text-orange-500" /> Sous séquestre
+                   <ShieldCheck size={12} className="text-[var(--text-accent)]" /> Sous séquestre
                 </p>
-                <p className="text-xl font-mono font-bold text-[var(--text-primary)]">{formatFCFA(28500)}</p>
+                <p className="text-xl font-mono font-bold text-[var(--text-primary)]">{formatFCFA(user?.walletPending || 0)}</p>
               </div>
               <Button variant="secondary" size="sm" className="w-full justify-center" onClick={() => window.location.href='/transporter/wallet'} icon={<ChevronRight size={14} />} iconPosition="right">
                 Détails financiers
@@ -207,15 +217,15 @@ const TransporterProfilePage: React.FC = () => {
                />
                <Input 
                   label="Véhicule Principal" 
-                  name="vehicle"
-                  value={formData.vehicle}
+                  name="vehicleType"
+                  value={formData.vehicleType}
                   onChange={handleChange}
                />
                <div className="md:col-span-2">
                   <Input 
-                     label="Zone d'intervention habituelle" 
-                     name="zone"
-                     value={formData.zone}
+                     label="Ville/Zone de base" 
+                     name="city"
+                     value={formData.city}
                      onChange={handleChange}
                   />
                </div>
@@ -275,6 +285,12 @@ const TransporterProfilePage: React.FC = () => {
 
         </div>
       </div>
+      <ChangePasswordModal isOpen={isPasswordModalOpen} onClose={() => setIsPasswordModalOpen(false)} />
+      <LogoutModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={() => { logout(); navigate('/login'); }}
+      />
     </div>
   );
 };

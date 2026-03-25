@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ShoppingCart, 
@@ -9,22 +9,26 @@ import {
   TrendingUp,
   Package
 } from 'lucide-react';
+import { useAuthStore } from '../../store/authStore';
+import { useBuyerStore } from '../../store/buyerStore';
 import Card from '../../components/shared/Card';
 import Button from '../../components/shared/Button';
 import DataTable from '../../components/shared/DataTable';
 import StatusBadge from '../../components/shared/StatusBadge';
 
 const BuyerDashboard: React.FC = () => {
-  const recentOrders = [
-    { id: '#B-882', product: 'Pommes de terre', qty: '50kg', status: 'SHIPPED', price: 25000, date: '21 Mars' },
-    { id: '#B-881', product: 'Oignons Galmi', qty: '2 sacs', status: 'CONFIRMED', price: 30000, date: '20 Mars' }
-  ];
+  const { user } = useAuthStore() as any;
+  const { stats, activeOrders, loading, fetchDashboardData } = useBuyerStore() as any;
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
   const columns = [
     {
       header: 'Commande',
       accessor: (o: any) => (
-        <span className="font-bold text-[var(--text-primary)]">{o.id}</span>
+        <span className="font-bold text-[var(--text-primary)]">#{o.id || o._id?.slice(-8).toUpperCase()}</span>
       ),
       isMono: true
     },
@@ -32,15 +36,15 @@ const BuyerDashboard: React.FC = () => {
       header: 'Produit',
       accessor: (o: any) => (
         <div className="flex flex-col">
-          <span className="text-[13px] font-medium">{o.product}</span>
-          <span className="text-[11px] text-[var(--text-muted)]">{o.qty}</span>
+          <span className="text-[13px] font-medium text-[var(--text-primary)]">{o.product || o.items?.[0]?.product?.name || 'Produit inconnu'}</span>
+          <span className="text-[11px] text-[var(--text-secondary)]">{o.qty || '1 Lot'}</span>
         </div>
       )
     },
     {
       header: 'Total',
       accessor: (o: any) => (
-        <span className="font-bold text-[var(--text-primary)] font-mono">{o.price.toLocaleString()} F</span>
+        <span className="font-bold text-[var(--text-primary)] font-mono">{(o.price || o.amount || o.totalAmount || 0).toLocaleString()} F</span>
       ),
       className: 'text-right'
     },
@@ -54,7 +58,7 @@ const BuyerDashboard: React.FC = () => {
     {
       header: '',
       accessor: () => (
-        <Button variant="ghost" size="sm" className="p-1">
+        <Button variant="ghost" size="sm" className="p-1 text-[var(--text-secondary)] hover:text-[var(--text-accent)]">
           <ArrowRight size={16} />
         </Button>
       ),
@@ -63,12 +67,12 @@ const BuyerDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6 pb-12 font-body">
+    <div className="space-y-6 pb-12 font-body animate-in fade-in duration-700">
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-4xl text-[var(--text-primary)] tracking-tight mb-2">Espace Acheteur</h1>
-          <p className="text-[14px] text-[var(--text-secondary)]">Trouvez les meilleurs produits frais au prix juste.</p>
+          <p className="text-[14px] text-[var(--text-secondary)]">Trouvez les meilleurs produits frais au prix juste, <span className="text-[var(--text-accent)] font-bold">{user?.firstName || 'Partenaire'}</span>.</p>
         </div>
         <div>
           <Link to="/buyer/marketplace">
@@ -81,31 +85,31 @@ const BuyerDashboard: React.FC = () => {
 
       {/* KPI Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="flex items-center gap-4 py-6">
+        <Card className="flex items-center gap-4 py-6 hover:border-[var(--text-accent)]/30 transition-colors">
            <div className="w-10 h-10 rounded-xl bg-[var(--text-accent)]/10 text-[var(--text-accent)] flex items-center justify-center">
               <ShoppingCart size={20} />
            </div>
            <div>
               <p className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Commandes Actives</p>
-              <h3 className="text-xl font-bold text-[var(--text-primary)]">2 en cours</h3>
+              <h3 className="text-xl font-bold text-[var(--text-primary)]">{stats?.activeOrdersCount || 0} en cours</h3>
            </div>
         </Card>
-        <Card className="flex items-center gap-4 py-6">
-           <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-600 flex items-center justify-center">
+        <Card className="flex items-center gap-4 py-6 hover:border-red-500/30 transition-colors">
+           <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center">
               <Heart size={20} />
            </div>
            <div>
               <p className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Favoris</p>
-              <h3 className="text-xl font-bold text-[var(--text-primary)]">12 produits</h3>
+              <h3 className="text-xl font-bold text-[var(--text-primary)]">{stats?.favoritesCount || 0} produits</h3>
            </div>
         </Card>
-        <Card className="flex items-center gap-4 py-6">
-           <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 flex items-center justify-center">
+        <Card className="flex items-center gap-4 py-6 hover:border-blue-500/30 transition-colors">
+           <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
               <MessageSquare size={20} />
            </div>
            <div>
               <p className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Messages</p>
-              <h3 className="text-xl font-bold text-[var(--text-primary)]">5 non lus</h3>
+              <h3 className="text-xl font-bold text-[var(--text-primary)]">{stats?.unreadMessages || 0} non lus</h3>
            </div>
         </Card>
       </div>
@@ -121,9 +125,10 @@ const BuyerDashboard: React.FC = () => {
            </div>
            <DataTable 
              columns={columns} 
-             data={recentOrders} 
+             data={activeOrders || []} 
+             isLoading={loading}
              onRowClick={() => {}}
-             emptyMessage="Aucun achat récent."
+             emptyMessage="Aucun achat récent. Vos commandes en cours s'afficheront ici."
            />
         </div>
 
@@ -133,7 +138,7 @@ const BuyerDashboard: React.FC = () => {
             <h3 className="text-[14px] font-bold text-[var(--text-primary)] mb-4 uppercase tracking-widest">Catégories d'intérêt</h3>
             <div className="grid grid-cols-2 gap-2">
               {['Céréales', 'Légumes', 'Fruits', 'Bétail'].map((cat) => (
-                <button key={cat} className="px-3 py-2 bg-[var(--bg-muted)] rounded-lg text-[12px] font-medium text-[var(--text-secondary)] hover:bg-[var(--text-accent)]/10 hover:text-[var(--text-accent)] transition-all">
+                <button key={cat} className="px-3 py-2 bg-[var(--bg-muted)] border border-[var(--border-light)] rounded-lg text-[12px] font-medium text-[var(--text-secondary)] hover:bg-[var(--text-accent)]/10 hover:border-[var(--text-accent)]/30 hover:text-[var(--text-accent)] transition-all">
                   {cat}
                 </button>
               ))}
@@ -143,7 +148,7 @@ const BuyerDashboard: React.FC = () => {
             </Link>
           </Card>
 
-          <Card className="bg-[var(--bg-muted)]/50 border-dashed p-6 border-t-4 border-t-[var(--text-accent)]">
+          <Card className="bg-[var(--bg-muted)]/50 border-dashed p-6 border-t-4 border-t-[var(--text-accent)] hover:bg-[var(--bg-muted)] transition-colors">
             <div className="flex items-center gap-2 mb-3">
                <TrendingUp size={18} className="text-[var(--text-accent)]" />
                <h3 className="text-[14px] font-bold text-[var(--text-primary)]">Offre Flash</h3>

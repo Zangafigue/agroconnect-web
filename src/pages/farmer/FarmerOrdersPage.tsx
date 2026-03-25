@@ -6,8 +6,7 @@ import {
   Package,
   TrendingUp,
   Download,
-  Filter,
-  Users
+  Filter
 } from 'lucide-react';
 import { useOrderStore } from '../../store/orderStore';
 import { formatFCFA } from '../../utils/currency';
@@ -42,8 +41,8 @@ const FarmerOrdersPage: React.FC = () => {
       header: 'Commande',
       accessor: (o: any) => (
         <div className="flex flex-col">
-          <span className="font-bold text-on-surface">#{o._id?.slice(-8).toUpperCase()}</span>
-          <span className="text-[10px] text-on-surface-variant font-mono uppercase">
+          <span className="font-bold text-[var(--text-primary)]">#{o._id?.slice(-8).toUpperCase()}</span>
+          <span className="text-[10px] text-[var(--text-secondary)] font-mono uppercase">
             {o.createdAt ? format(new Date(o.createdAt), 'dd MMM yyyy', { locale: fr }) : '-'}
           </span>
         </div>
@@ -55,14 +54,14 @@ const FarmerOrdersPage: React.FC = () => {
       accessor: (o: any) => (
         <div className="flex items-center gap-3">
            <Avatar name={o.buyer?.firstName || 'P'} size="sm" role="BUYER" />
-           <span className="text-[13px] font-bold text-on-surface">{o.buyer?.firstName || 'Partenaire'}</span>
+           <span className="text-[13px] font-bold text-[var(--text-primary)]">{o.buyer?.firstName || 'Partenaire'}</span>
         </div>
       )
     },
     {
       header: 'Produit(s)',
       accessor: (o: any) => (
-        <span className="text-[12px] text-on-surface-variant font-medium truncate max-w-[180px] block">
+        <span className="text-[12px] text-[var(--text-secondary)] font-medium truncate max-w-[180px] block">
           {o.items?.[0]?.product?.name || 'Lot agricole'} {o.items?.length > 1 ? `(+${o.items.length - 1})` : ''}
         </span>
       )
@@ -70,7 +69,7 @@ const FarmerOrdersPage: React.FC = () => {
     {
       header: 'Total Net',
       accessor: (o: any) => (
-        <span className="font-mono font-bold text-primary">{formatFCFA(o.totalAmount || 0)}</span>
+        <span className="font-mono font-bold text-[var(--text-accent)]">{formatFCFA(o.totalAmount || 0)}</span>
       ),
       isMono: true
     },
@@ -98,12 +97,12 @@ const FarmerOrdersPage: React.FC = () => {
   const totalVolume = (orders || []).reduce((sum: number, o: any) => sum + (o.totalAmount || 0), 0);
 
   return (
-    <div className="space-y-8 pb-12 animate-in fade-in duration-700">
+    <div className="space-y-8 pb-12 animate-in fade-in duration-700 font-body">
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl md:text-4xl font-serif-display text-on-surface tracking-tight mb-2">Ventes & Expéditions</h1>
-          <p className="text-sm text-on-surface-variant font-medium">Suivez l'acheminement de vos produits vers vos clients.</p>
+          <h1 className="text-3xl md:text-4xl font-display text-[var(--text-primary)] tracking-tight mb-2">Ventes & Expéditions</h1>
+          <p className="text-sm text-[var(--text-secondary)] font-medium">Suivez l'acheminement de vos produits vers vos clients.</p>
         </div>
         <Button variant="secondary" size="md" icon={<Download size={18} />}>
           Exporter XLS
@@ -112,40 +111,40 @@ const FarmerOrdersPage: React.FC = () => {
 
       {/* Stats Quick View */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="flex items-center gap-5 p-6 border-l-4 border-l-orange-500">
-           <div className="w-12 h-12 rounded-2xl bg-orange-500/10 text-orange-600 flex items-center justify-center shrink-0">
+        <Card className="flex items-center gap-5 p-6 border-l-4 border-l-orange-500 hover:border-l-[var(--text-accent)] transition-colors">
+           <div className="w-12 h-12 rounded-2xl bg-[var(--text-accent)]/10 text-[var(--text-accent)] flex items-center justify-center shrink-0">
               <Package size={24} />
            </div>
            <div>
-              <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">À expédier</p>
-              <h3 className="text-xl font-bold text-on-surface">{pendingOrders.length} commandes en attente</h3>
+              <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-1">À expédier</p>
+              <h3 className="text-xl font-bold text-[var(--text-primary)]">{pendingOrders.length} commandes</h3>
            </div>
         </Card>
         
-        <Card className="flex items-center gap-5 p-6 border-l-4 border-l-primary">
-           <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+        <Card className="flex items-center gap-5 p-6 border-l-4 border-l-[var(--green-500)]">
+           <div className="w-12 h-12 rounded-2xl bg-[var(--green-500)]/10 text-[var(--green-600)] flex items-center justify-center shrink-0">
               <TrendingUp size={24} />
            </div>
            <div>
-              <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Chiffre d'affaires</p>
-              <h3 className="text-xl font-bold text-on-surface">{formatFCFA(totalVolume)}</h3>
+              <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-1">Chiffre d'affaires</p>
+              <h3 className="text-xl font-bold text-[var(--text-primary)]">{formatFCFA(totalVolume)}</h3>
            </div>
         </Card>
 
-        <Card className="bg-surface-container-low border-dashed border-2 flex items-center gap-5 p-6">
+        <Card className="bg-[var(--bg-muted)] border-dashed border-2 flex items-center gap-5 p-6">
             <div className="flex -space-x-3">
                {[1,2,3].map(i => (
-                 <div key={i} className="w-10 h-10 rounded-full bg-white border-2 border-surface-container flex items-center justify-center shadow-sm overflow-hidden">
+                 <div key={i} className="w-10 h-10 rounded-full bg-white dark:bg-[#1a1d24] border-2 border-[var(--bg-muted)] flex items-center justify-center shadow-sm overflow-hidden">
                     <Avatar name={`U${i}`} size="sm" role="BUYER" />
                  </div>
                ))}
-               <div className="w-10 h-10 rounded-full bg-primary text-white border-2 border-white flex items-center justify-center text-[10px] font-bold z-10 shadow-sm">
+               <div className="w-10 h-10 rounded-full bg-[var(--text-accent)] text-white border-2 border-[var(--bg-surface)] flex items-center justify-center text-[10px] font-bold z-10 shadow-sm relative right-[6px]">
                   +12
                </div>
             </div>
             <div>
-               <p className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Base Clients</p>
-               <h3 className="text-sm font-bold text-on-surface">Clients récurrents</h3>
+               <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-1">Base Clients</p>
+               <h3 className="text-sm font-bold text-[var(--text-primary)]">Clients récurrents</h3>
             </div>
         </Card>
       </div>
@@ -158,11 +157,11 @@ const FarmerOrdersPage: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             icon={<Search size={18} />}
-            className="bg-white border-outline-variant/20 shadow-sm"
+            className="bg-white dark:bg-[#1a1d24] border-[var(--border-light)] shadow-sm"
           />
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="flex items-center gap-2 px-4 py-2 bg-surface-container rounded-2xl border border-outline-variant/10 text-on-surface-variant">
+          <div className="flex items-center gap-2 px-4 py-2 bg-[var(--bg-muted)] rounded-2xl border border-[var(--border-light)] text-[var(--text-secondary)]">
             <Filter size={14} className="opacity-50" />
             <select 
               value={filter}

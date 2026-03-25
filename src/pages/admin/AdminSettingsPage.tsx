@@ -11,165 +11,269 @@ import {
   Lock,
   Eye,
   Zap,
-  Cpu,
   Server,
-  Cloud
+  Cloud,
+  Layers,
+  ShieldCheck,
+  ChevronRight,
+  Sun,
+  Moon,
+  Monitor
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import Card from '../../components/shared/Card';
+import Button from '../../components/shared/Button';
+import Input from '../../components/shared/Input';
+import { useThemeStore } from '../../store/themeStore';
+import api from '../../api/axios';
 
 const AdminSettingsPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
+  const [infraLoading, setInfraLoading] = useState<string | null>(null);
+  const { theme, setTheme } = useThemeStore();
+  
   const [settings, setSettings] = useState({
     commission: '3.00',
     minWithdrawal: '5000',
     twoFA: true,
     kycAuto: false,
-    maintenance: false
+    maintenance: false,
+    notifications: true
   });
 
   const handleSave = async () => {
     setLoading(true);
-    // Simulation d'API
-    await new Promise(resolve => setTimeout(resolve, 800));
-    setLoading(false);
-    toast.success('Protocoles mis à jour avec succès.', {
-      style: {
-        borderRadius: '1.5rem',
-        background: 'var(--gray-900)',
-        color: '#fff',
-        fontSize: '10px',
-        fontWeight: 'bold',
-        textTransform: 'uppercase',
-        letterSpacing: '0.1em'
-      }
-    });
+    try {
+      // TODO: Backend dev to implement PATCH /admin/settings
+      await api.patch('/admin/settings', settings);
+      toast.success('Paramètres système mis à jour.');
+    } catch (error) {
+      toast.error('Endpoint backend manquant. Paramètres modifiés localement.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleInfraAction = async (action: string, label: string) => {
+    setInfraLoading(action);
+    try {
+      // TODO: Backend dev to implement POST /admin/infra/{action}
+      await api.post(`/admin/infra/${action}`);
+      toast.success(`${label} effectué avec succès.`);
+    } catch (error) {
+      toast.error(`Le backend ne gère pas encore l'action: ${label}`);
+    } finally {
+      setInfraLoading(null);
+    }
   };
 
   return (
-    <div className="space-y-12 pb-20 animate-in fade-in slide-in-from-bottom-4 duration-700 font-body">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+    <div className="space-y-8 pb-12 font-body">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 className="text-4xl font-display font-black text-[var(--text-accent)] uppercase tracking-tight leading-none mb-3">
-            Configuration Système
-          </h2>
-          <p className="text-[var(--text-muted)] font-medium italic text-sm max-w-xl">
-            Gouvernance souveraine des protocoles, des commissions et des infrastructures critiques de la plateforme.
+          <h1 className="font-display text-4xl text-[var(--text-primary)] tracking-tight mb-2">Configuration Système</h1>
+          <p className="text-[14px] text-[var(--text-secondary)] max-w-xl">
+            Gérez les protocoles commerciaux, la sécurité et l'infrastructure de la plateforme.
           </p>
         </div>
-        <div className="flex items-center gap-4">
-           <div className="flex items-center gap-2 px-6 py-3 bg-[var(--green-600)]/10 text-[var(--green-600)] rounded-full text-[9px] font-black uppercase tracking-widest border border-[var(--green-600)]/20 animate-pulse">
-              <Server size={14} /> Cluster Ouagadougou-01 : OK
+        <div className="flex gap-2">
+           <div className="flex items-center gap-2 px-4 py-2 bg-[var(--green-600)]/10 text-[var(--green-600)] rounded-xl text-[10px] font-bold uppercase tracking-widest border border-[var(--green-600)]/20">
+              <span className="w-2 h-2 rounded-full bg-[var(--green-600)] animate-pulse"></span>
+              Cluster Ouagadougou-01 Online
            </div>
         </div>
-      </div>
+      </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        <div className="lg:col-span-2 space-y-10">
-          {/* Commercial protocol */}
-          <section className="bg-[var(--bg-surface)] rounded-[3.5rem] p-12 shadow-sm border border-[var(--border-light)] relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[var(--green-600)]/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <h3 className="font-display text-2xl font-black mb-10 text-[var(--text-accent)] flex items-center gap-4 uppercase italic">
-              <Sliders size={24} className="text-[var(--green-600)]" /> Protocoles Commerciaux
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Settings Area */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Appearance Section */}
+          <Card className="p-8">
+            <h3 className="text-lg font-bold text-[var(--text-primary)] mb-8 flex items-center gap-3">
+              <Monitor size={20} className="text-[var(--text-accent)]" />
+              Apparence & Interface
             </h3>
-            <div className="space-y-6">
-               <div className="flex items-center justify-between p-8 rounded-[2rem] bg-[var(--bg-muted)]/30 border border-transparent hover:border-[var(--green-600)]/20 transition-all group shadow-inner">
-                  <div>
-                    <h4 className="font-display font-bold text-[var(--text-accent)] text-lg uppercase tracking-tight">Commission Plateforme</h4>
-                    <p className="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest opacity-40 italic">Prélèvement sur chaque vente finalisée</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+               <button 
+                  onClick={() => setTheme('light')}
+                  className={`flex items-center gap-4 p-6 rounded-2xl border-2 transition-all text-left ${theme === 'light' ? 'border-[var(--text-accent)] bg-[var(--bg-subtle)]' : 'border-[var(--border-light)] bg-white hover:border-[var(--text-accent)]/30'}`}
+               >
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${theme === 'light' ? 'bg-[var(--text-accent)] text-white' : 'bg-[var(--bg-muted)] text-[var(--text-muted)]'}`}>
+                     <Sun size={24} />
                   </div>
-                  <div className="flex items-center gap-4 bg-[var(--bg-surface)] p-2 rounded-2xl border border-[var(--border-light)] shadow-sm">
-                     <input
-                      type="text"
-                      value={settings.commission}
-                      onChange={(e) => setSettings({...settings, commission: e.target.value})}
-                      className="w-20 p-3 bg-transparent text-center font-mono font-black text-[var(--text-accent)] text-lg outline-none"
-                     />
-                     <span className="font-black text-[var(--text-muted)] opacity-30 text-xs pr-4">%</span>
+                  <div>
+                     <p className="font-bold text-[var(--text-primary)]">Mode Clair</p>
+                     <p className="text-[11px] text-[var(--text-secondary)]">Interface lumineuse et aérée</p>
+                  </div>
+               </button>
+               <button 
+                  onClick={() => setTheme('dark')}
+                  className={`flex items-center gap-4 p-6 rounded-2xl border-2 transition-all text-left ${theme === 'dark' ? 'border-[var(--text-accent)] bg-[#1a1d24]' : 'border-[var(--border-light)] bg-white hover:border-[var(--text-accent)]/30'}`}
+               >
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${theme === 'dark' ? 'bg-[var(--text-accent)] text-white' : 'bg-[var(--bg-muted)] text-[var(--text-muted)]'}`}>
+                     <Moon size={24} />
+                  </div>
+                  <div>
+                     <p className="font-bold text-[var(--text-primary)]">Mode Sombre</p>
+                     <p className="text-[11px] text-[var(--text-secondary)]">Confort visuel en basse lumière</p>
+                  </div>
+               </button>
+            </div>
+          </Card>
+
+          {/* Commercial protocol */}
+          <Card className="p-8">
+            <h3 className="text-lg font-bold text-[var(--text-primary)] mb-8 flex items-center gap-3">
+              <Sliders size={20} className="text-[var(--text-accent)]" />
+              Protocoles Commerciaux
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+               <div className="p-6 bg-[var(--bg-subtle)] rounded-2xl border border-[var(--border-light)] shadow-inner group">
+                  <div className="flex flex-col gap-4">
+                    <div>
+                      <h4 className="text-[14px] font-bold text-[var(--text-primary)] mb-1">Commission Plateforme</h4>
+                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed italic">Prélèvement automatique sur chaque transaction finalisée.</p>
+                    </div>
+                    <div className="relative">
+                       <Input 
+                          value={settings.commission}
+                          onChange={(e) => setSettings({...settings, commission: e.target.value})}
+                          className="font-mono font-bold text-lg text-center pr-12"
+                       />
+                       <span className="absolute right-4 top-[34px] font-bold text-[var(--text-muted)]">%</span>
+                    </div>
                   </div>
                </div>
-               <div className="flex items-center justify-between p-8 rounded-[2rem] bg-[var(--bg-muted)]/30 border border-transparent hover:border-[var(--green-600)]/20 transition-all group shadow-inner">
-                  <div>
-                    <h4 className="font-display font-bold text-[var(--text-accent)] text-lg uppercase tracking-tight">Seuil de retrait minimum</h4>
-                    <p className="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest opacity-40 italic">Montant minimal pour un décaissement</p>
-                  </div>
-                  <div className="flex items-center gap-4 bg-[var(--bg-surface)] p-2 rounded-2xl border border-[var(--border-light)] shadow-sm">
-                     <input
-                      type="text"
-                      value={settings.minWithdrawal}
-                      onChange={(e) => setSettings({...settings, minWithdrawal: e.target.value})}
-                      className="w-32 p-3 bg-transparent text-center font-mono font-black text-[var(--text-accent)] text-lg outline-none"
-                     />
-                     <span className="font-black text-[var(--text-muted)] opacity-30 text-xs pr-4">FCFA</span>
+               <div className="p-6 bg-[var(--bg-subtle)] rounded-2xl border border-[var(--border-light)] shadow-inner group">
+                  <div className="flex flex-col gap-4">
+                    <div>
+                      <h4 className="text-[14px] font-bold text-[var(--text-primary)] mb-1">Seuil de Retrait</h4>
+                      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed italic">Montant minimal requis pour une demande de virement.</p>
+                    </div>
+                    <div className="relative">
+                       <Input 
+                          value={settings.minWithdrawal}
+                          onChange={(e) => setSettings({...settings, minWithdrawal: e.target.value})}
+                          className="font-mono font-bold text-lg text-center pr-16"
+                       />
+                       <span className="absolute right-4 top-[34px] font-bold text-[var(--text-muted)]">FCFA</span>
+                    </div>
                   </div>
                </div>
             </div>
-          </section>
+          </Card>
 
-          {/* Security constraints */}
-          <section className="bg-[var(--bg-surface)] rounded-[3.5rem] p-12 shadow-sm border border-[var(--border-light)] relative overflow-hidden group">
-             <h3 className="font-display text-2xl font-black mb-10 text-[var(--text-accent)] flex items-center gap-4 uppercase italic">
-               <Lock size={24} className="text-[var(--green-600)]" /> Sécurité & Conformité
+          {/* Security & Compliance */}
+          <Card className="p-8">
+             <h3 className="text-lg font-bold text-[var(--text-primary)] mb-8 flex items-center gap-3">
+               <Lock size={20} className="text-[var(--text-accent)]" />
+               Sécurité & Gouvernance
              </h3>
-             <div className="space-y-4 font-body">
+             <div className="divide-y divide-[var(--border-light)] bg-[var(--bg-subtle)] rounded-2xl border border-[var(--border-light)] overflow-hidden">
                 {[
-                  { id: 'twoFA', label: "Double authentification (2FA) obligatoire admins", desc: "Renforce la sécurité des comptes critiques", enabled: settings.twoFA, icon: Shield },
-                  { id: 'kycAuto', label: "Vérification KYC automatique", desc: "Utilise l'IA pour valider les pièces d'identité", enabled: settings.kycAuto, icon: Eye },
-                  { id: 'maintenance', label: "Maintenance Mode", desc: "Désactive temporairement le site pour le public", enabled: settings.maintenance, icon: Zap },
+                  { id: 'twoFA', label: "Authentification 2FA", desc: "Exiger le 2FA pour tous les accès administrateurs.", enabled: settings.twoFA, icon: Shield },
+                  { id: 'kycAuto', label: "Vérification KYC Auto", desc: "Validation automatique des dossiers par intelligence artificielle.", enabled: settings.kycAuto, icon: Eye },
+                  { id: 'maintenance', label: "Mode Maintenance", desc: "Suspendre l'accès public pour la maintenance technique.", enabled: settings.maintenance, icon: Zap },
                 ].map((s, i) => (
                   <div
                     key={i}
                     onClick={() => setSettings({...settings, [s.id as any]: !s.enabled})}
-                    className="flex items-center justify-between p-8 rounded-[2rem] hover:bg-[var(--bg-muted)] transition-all border border-transparent hover:border-[var(--border-light)] group cursor-pointer shadow-sm"
+                    className="flex items-center justify-between p-6 hover:bg-[var(--bg-muted)]/50 transition-all group cursor-pointer"
                   >
-                    <div className="flex items-center gap-6">
-                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${s.enabled ? 'bg-[var(--green-600)] text-white' : 'bg-[var(--bg-muted)] text-[var(--text-muted)]'}`}>
-                          <s.icon size={22} />
+                    <div className="flex items-center gap-4">
+                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${s.enabled ? 'bg-[var(--text-accent)] text-white shadow-lg shadow-[var(--text-accent)]/20' : 'bg-white text-[var(--text-muted)] border border-[var(--border-light)]'}`}>
+                          <s.icon size={18} />
                        </div>
                        <div>
-                          <p className="font-display font-black text-[var(--text-accent)] text-xs uppercase tracking-widest">{s.label}</p>
-                          <p className="text-[10px] text-[var(--text-muted)] font-medium italic opacity-60 mt-1">{s.desc}</p>
+                          <p className="text-[13px] font-bold text-[var(--text-primary)]">{s.label}</p>
+                          <p className="text-[10px] text-[var(--text-muted)] font-medium italic opacity-70 leading-none mt-1">{s.desc}</p>
                        </div>
                     </div>
-                    <button className={`w-16 h-9 rounded-full p-1.5 transition-all duration-500 shadow-inner ${s.enabled ? 'bg-[var(--green-600)]' : 'bg-[var(--gray-300)]'}`}>
-                      <div className={`w-6 h-6 bg-white rounded-full shadow-lg transform transition-transform ${s.enabled ? 'translate-x-7' : 'translate-x-0'}`} />
-                    </button>
+                    <div className={`w-12 h-6 rounded-full p-1 transition-all duration-300 ${s.enabled ? 'bg-[var(--text-accent)]' : 'bg-[var(--gray-300)]'}`}>
+                       <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform ${s.enabled ? 'translate-x-6' : 'translate-x-0'}`} />
+                    </div>
                   </div>
                 ))}
              </div>
-          </section>
+          </Card>
         </div>
 
         {/* Action Sidebar */}
-        <div className="space-y-10">
-           <section className="bg-[var(--gray-900)] rounded-[3.5rem] p-10 shadow-2xl relative overflow-hidden border border-white/5">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-3xl rounded-full"></div>
-              <h3 className="font-display text-xl font-black mb-8 text-white uppercase italic flex items-center gap-3">
-                 <Cpu size={20} className="text-[var(--green-600)]" /> Infrastructure
+        <div className="space-y-8">
+           {/* Infrastructure Card */}
+           <Card className={`${theme === 'dark' ? 'bg-[#111827]' : 'bg-[var(--text-accent)]'} p-8 text-white relative overflow-hidden border-none border-0 transition-colors duration-500`}>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl rounded-full"></div>
+              <h3 className="text-lg font-bold mb-8 flex items-center gap-3 relative z-10">
+                 <Server size={20} className="text-white" />
+                 Infrastructure
               </h3>
               <div className="space-y-4 relative z-10">
-                 <button className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl text-[9px] font-black text-white/60 uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-white/10 hover:text-white transition-all shadow-inner">
-                   <RefreshCcw size={16} /> Flush Cache RAM
-                 </button>
-                 <button className="w-full py-5 bg-white/5 border border-white/10 rounded-2xl text-[9px] font-black text-white/60 uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-white/10 hover:text-white transition-all shadow-inner">
-                   <Cloud size={16} /> Sync Backup Cloud
-                 </button>
-                 <button className="w-full py-5 bg-red-500/10 border border-red-500/20 rounded-2xl text-[9px] font-black text-red-400 uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-red-500 hover:text-white transition-all shadow-lg">
-                    Reboot Services
-                 </button>
+                 <Button 
+                    variant="ghost" 
+                    fullWidth 
+                    className="bg-white/5 border border-white/10 text-white/80 hover:bg-white/10 hover:text-white justify-between"
+                    isLoading={infraLoading === 'cache'}
+                    onClick={() => handleInfraAction('cache', 'Vider le cache RAM')}
+                 >
+                    <div className="flex items-center gap-3">
+                       <RefreshCcw size={16} /> <span className="text-[11px] font-bold uppercase tracking-widest">Vider le cache RAM</span>
+                    </div>
+                    <ChevronRight size={14} />
+                 </Button>
+                 <Button 
+                    variant="ghost" 
+                    fullWidth 
+                    className="bg-white/5 border border-white/10 text-white/80 hover:bg-white/10 hover:text-white justify-between"
+                    isLoading={infraLoading === 'backup'}
+                    onClick={() => handleInfraAction('backup', 'Sauvegarde Cloud')}
+                 >
+                    <div className="flex items-center gap-3">
+                       <Cloud size={16} /> <span className="text-[11px] font-bold uppercase tracking-widest">Sauvegarde Cloud</span>
+                    </div>
+                    <ChevronRight size={14} />
+                 </Button>
+                 <Button 
+                    variant="danger" 
+                    fullWidth 
+                    className="bg-red-500/20 border border-red-500/30 text-red-100 hover:bg-red-500 hover:text-white justify-between"
+                    isLoading={infraLoading === 'reboot'}
+                    onClick={() => handleInfraAction('reboot', 'Redémarrage des services')}
+                 >
+                    <div className="flex items-center gap-3">
+                       <Zap size={16} /> <span className="text-[11px] font-bold uppercase tracking-widest">Reboot Services</span>
+                    </div>
+                    <ChevronRight size={14} />
+                 </Button>
               </div>
-           </section>
+              
+              <div className="mt-10 p-4 bg-white/5 rounded-2xl border border-white/5">
+                 <div className="flex items-center gap-3 mb-3">
+                    <Database size={14} className="text-white/60" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Statut Nœud</span>
+                 </div>
+                 <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold">Node-AC-452</span>
+                    <span className="text-[10px] font-black text-white uppercase">Sain</span>
+                 </div>
+              </div>
+           </Card>
 
-           <div className="px-4">
-              <button 
+           {/* Save Action */}
+           <div className="space-y-4">
+              <Button 
+                fullWidth 
+                size="lg" 
+                className="h-16 text-[12px] font-black uppercase tracking-[0.3em] shadow-xl shadow-[var(--text-accent)]/20"
+                isLoading={loading}
                 onClick={handleSave}
-                disabled={loading}
-                className="w-full py-6 bg-[var(--green-600)] text-white rounded-[2.5rem] text-[10px] font-black uppercase tracking-[0.4em] flex items-center justify-center gap-4 shadow-2xl shadow-[var(--green-600)]/40 hover:scale-[1.02] active:scale-[0.98] transition-all group disabled:opacity-50"
+                icon={<ShieldCheck size={20} />}
               >
-                {loading ? <RefreshCcw size={20} className="animate-spin" /> : <Save size={20} className="group-hover:rotate-12 transition-transform" />} 
-                {loading ? 'Traitement...' : 'Sceller la Config'}
-              </button>
-              <p className="text-center text-[8px] font-black text-[var(--text-muted)] uppercase tracking-widest mt-6 opacity-40 italic">Dernière mise à jour par l'Administrateur Racine : 22 Mars 2026</p>
+                Appliquer les Paramètres
+              </Button>
+              <p className="text-center text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-widest opacity-40 italic">
+                 Dernière modification : {new Date().toLocaleDateString('fr-FR')} à {new Date().toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}
+              </p>
            </div>
         </div>
       </div>

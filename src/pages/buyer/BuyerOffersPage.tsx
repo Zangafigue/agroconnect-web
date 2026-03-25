@@ -26,7 +26,7 @@ const BuyerOffersPage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-8 pb-12 font-body">
+    <div className="space-y-8 pb-12 font-body animate-in fade-in duration-700">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-[var(--text-secondary)]">
         <span className="hover:text-[var(--text-accent)] cursor-pointer transition-colors" onClick={() => navigate('/buyer/orders')}>Commandes</span>
@@ -42,33 +42,33 @@ const BuyerOffersPage: React.FC = () => {
             Choisissez le transporteur idéal pour votre commande <span className="font-mono font-bold text-[var(--text-accent)]">#CMD-043</span>
           </p>
         </div>
-        <Card className="px-4 py-2 bg-[var(--text-accent)]/5 border-none flex items-center gap-3">
+        <Card className="px-4 py-2 bg-[var(--text-accent)]/10 border-none flex items-center gap-3">
           <Truck size={18} className="text-[var(--text-accent)]" />
           <span className="text-[12px] font-bold text-[var(--text-primary)] uppercase tracking-wide">
-            Bobo <ArrowRight size={12} className="inline mx-1" /> Ouaga
+            Bobo <ArrowRight size={12} className="inline mx-1 text-[var(--text-secondary)]" /> Ouaga
           </span>
         </Card>
       </header>
 
       {/* Journey Map Preview (Minimalist) */}
-      <Card className="p-0 overflow-hidden relative group">
+      <Card className="p-0 overflow-hidden relative group border-[var(--border-light)] shadow-sm">
          <div className="h-48 bg-[var(--bg-muted)] relative">
             <img 
                src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1200&q=80" 
                alt="Carte" 
-               className="w-full h-full object-cover opacity-20 group-hover:opacity-30 transition-opacity duration-1000" 
+               className="w-full h-full object-cover opacity-20 dark:opacity-40 filter grayscale group-hover:opacity-30 dark:group-hover:opacity-50 transition-opacity duration-1000 mix-blend-multiply dark:mix-blend-screen" 
             />
             <div className="absolute inset-0 flex items-center justify-center">
                <div className="flex items-center gap-4">
                   <div className="w-3 h-3 rounded-full bg-[var(--text-accent)] shadow-[0_0_15px_rgba(var(--text-accent-rgb),0.5)]"></div>
-                  <div className="h-0.5 w-32 bg-dashed border-t border-[var(--text-accent)]/30"></div>
+                  <div className="h-0.5 w-32 bg-dashed border-t border-[var(--text-accent)]/50"></div>
                   <Navigation size={20} className="text-[var(--text-accent)] rotate-90" />
-                  <div className="h-0.5 w-32 bg-dashed border-t border-[var(--text-accent)]/30"></div>
-                  <MapPin size={20} className="text-red-500" />
+                  <div className="h-0.5 w-32 bg-dashed border-t border-[var(--text-accent)]/50"></div>
+                  <MapPin size={20} className="text-red-500 shadow-lg" />
                </div>
             </div>
-            <div className="absolute top-4 left-4 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/50 shadow-sm flex items-center gap-2">
-               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+            <div className="absolute top-4 left-4 bg-[var(--bg-surface)]/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-[var(--border-light)] shadow-sm flex items-center gap-2">
+               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></div>
                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-primary)]">Optimisation de trajet active</span>
             </div>
          </div>
@@ -78,25 +78,25 @@ const BuyerOffersPage: React.FC = () => {
       <div className="space-y-4">
          <h3 className="text-[11px] font-bold uppercase tracking-widest text-[var(--text-secondary)] flex items-center gap-2 px-2">
             <Info size={14} className="text-[var(--text-accent)]" /> 
-            {offers.length} transporteurs disponibles
+            <span className="text-[var(--text-primary)] font-black">{offers.length}</span> transporteurs disponibles
          </h3>
          
          <div className="grid grid-cols-1 gap-4">
             {offers.map((offer) => (
-               <Card key={offer.id} className="p-6 group hover:border-[var(--text-accent)] transition-all">
+               <Card key={offer.id} className="p-6 group border-[var(--border-light)] hover:border-[var(--text-accent)]/50 hover:shadow-lg transition-all">
                   <div className="flex flex-col md:flex-row items-center gap-8">
                      <div className="flex-shrink-0 flex flex-col items-center">
                         <Avatar name={offer.name} role={offer.role} size="lg" />
-                        <div className="flex items-center gap-1 mt-2 text-amber-500">
-                           <Star size={12} fill="currentColor" />
-                           <span className="text-[12px] font-bold">{offer.rating}</span>
+                        <div className="flex items-center gap-1 mt-3 bg-amber-500/10 px-2 py-0.5 rounded-full text-amber-500 border border-amber-500/20">
+                           <Star size={10} fill="currentColor" />
+                           <span className="text-[11px] font-bold">{offer.rating}</span>
                         </div>
                      </div>
 
                      <div className="flex-1 space-y-4 text-center md:text-left">
                         <div>
                            {offer.tag && (
-                              <span className={`inline-block mb-2 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest ${offer.tag === 'Premium' ? 'bg-indigo-100 text-indigo-700' : 'bg-green-100 text-green-700'}`}>
+                              <span className={`inline-block mb-2 px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-widest ${offer.tag === 'Premium' ? 'bg-[var(--text-accent)]/10 text-[var(--text-accent)] border border-[var(--text-accent)]/20' : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'}`}>
                                  {offer.tag}
                               </span>
                            )}
@@ -105,11 +105,11 @@ const BuyerOffersPage: React.FC = () => {
                         </div>
                         
                         <div className="flex flex-wrap justify-center md:justify-start gap-3">
-                           <div className="px-3 py-1.5 bg-[var(--bg-muted)] rounded-lg flex items-center gap-2 text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wide">
+                           <div className="px-3 py-1.5 bg-[var(--bg-muted)] rounded-lg flex items-center gap-2 text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wide border border-[var(--border-light)]">
                               <Clock size={14} className="text-[var(--text-accent)]" />
                               {offer.time}
                            </div>
-                           <div className="px-3 py-1.5 bg-[var(--bg-muted)] rounded-lg flex items-center gap-2 text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wide">
+                           <div className="px-3 py-1.5 bg-[var(--bg-muted)] rounded-lg flex items-center gap-2 text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wide border border-[var(--border-light)]">
                               <Box size={14} className="text-[var(--text-accent)]" />
                               {offer.type}
                            </div>
@@ -119,9 +119,9 @@ const BuyerOffersPage: React.FC = () => {
                      <div className="flex flex-col items-center md:items-end gap-3 w-full md:w-auto md:border-l border-[var(--border-light)] md:pl-8">
                         <div className="text-center md:text-right">
                            <span className="font-mono text-2xl font-bold text-[var(--text-accent)] block">{formatFCFA(offer.price)}</span>
-                           <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">TTC • Assurance incluse</span>
+                           <span className="text-[10px] font-bold text-[var(--text-secondary)]/60 uppercase tracking-wider">TTC • Assurance incluse</span>
                         </div>
-                        <Button variant="primary" size="lg" className="w-full md:w-auto" icon={<ChevronRight size={18} />} iconPosition="right">
+                        <Button variant="primary" size="lg" className="w-full md:w-auto shadow-lg shadow-[var(--text-accent)]/20" icon={<ChevronRight size={18} />} iconPosition="right">
                            Réserver
                         </Button>
                      </div>

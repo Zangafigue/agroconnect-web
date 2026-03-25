@@ -15,6 +15,10 @@ const profileService = {
     });
     return response.data;
   },
+  updatePassword: async (currentPassword, newPassword) => {
+    const response = await axios.patch('/auth/password', { currentPassword, newPassword });
+    return response.data;
+  },
 };
 
 export default profileService;

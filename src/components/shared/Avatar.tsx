@@ -3,7 +3,8 @@ import React from 'react';
 interface AvatarProps {
   name?: string;
   role?: 'FARMER' | 'BUYER' | 'TRANSPORTER' | 'ADMIN' | string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  image?: string;
   className?: string;
 }
 
@@ -11,9 +12,11 @@ const Avatar: React.FC<AvatarProps> = ({
   name = 'User', 
   role = 'USER', 
   size = 'md', 
+  image,
   className = '' 
 }) => {
   const getInitials = (n: string) => {
+    if (!n) return '?';
     return n.split(' ').map(part => part[0]).join('').toUpperCase().substring(0, 2);
   };
 
@@ -37,16 +40,23 @@ const Avatar: React.FC<AvatarProps> = ({
     sm: 'w-8 h-8 text-[11px]',
     md: 'w-10 h-10 text-[13px]',
     lg: 'w-12 h-12 text-[15px]',
+    xl: 'w-16 h-16 text-xl'
   };
 
   const { bg, text } = getRoleStyles();
+  const apiBaseUrl = import.meta.env.VITE_API_URL || '';
+  const imageUrl = image ? (image.startsWith('http') ? image : `${apiBaseUrl}${image}`) : null;
 
   return (
     <div 
-      className={`rounded-full flex items-center justify-center font-bold flex-shrink-0 ${sizes[size]} ${className}`}
+      className={`rounded-full flex items-center justify-center font-bold flex-shrink-0 overflow-hidden border border-[var(--border-light)] shadow-sm ${sizes[size]} ${className}`}
       style={{ backgroundColor: bg, color: text }}
     >
-      {getInitials(name)}
+      {imageUrl ? (
+        <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
+      ) : (
+        getInitials(name)
+      )}
     </div>
   );
 };

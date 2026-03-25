@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import api from '../../api/axios';
 import { useAuthStore } from '../../store/authStore';
 import { ShieldCheck, ArrowRight, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { getUserRole, getRoleSlug } from '../../utils/auth';
 import VisitorFooter from '../../components/shared/VisitorFooter';
 
 const VerifyOtpPage: React.FC = () => {
@@ -56,7 +57,10 @@ const VerifyOtpPage: React.FC = () => {
         setAuth(useAuthStore.getState().token, { ...user, isVerified: true });
       }
       setTimeout(() => {
-        navigate(user?.role === 'ADMIN' ? '/admin' : `/${user?.role?.toLowerCase()}/dashboard`);
+        const updatedUser = useAuthStore.getState().user;
+        const resolved = getUserRole(updatedUser || user);
+        if (resolved === 'ADMIN') navigate('/admin');
+        else navigate(`/${getRoleSlug(resolved)}/dashboard`);
       }, 2000);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Code invalide ou expiré.');
@@ -124,7 +128,7 @@ const VerifyOtpPage: React.FC = () => {
                     {otp.map((digit, index) => (
                       <input
                         key={index}
-                        ref={(el) => (inputRefs.current[index] = el as HTMLInputElement)}
+                        ref={(el) => { inputRefs.current[index] = el as HTMLInputElement; }}
                         className="w-full h-16 text-center text-3xl font-bold bg-[var(--gray-50)] border-2 border-transparent rounded-2xl focus:border-[var(--gray-900)] focus:bg-white focus:ring-4 focus:ring-[var(--gray-900)]/5 outline-none transition-all font-mono text-[var(--gray-900)]"
                         maxLength={1}
                         placeholder="•"

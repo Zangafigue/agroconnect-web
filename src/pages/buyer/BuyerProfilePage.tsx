@@ -19,42 +19,50 @@ import Card from '../../components/shared/Card';
 import Button from '../../components/shared/Button';
 import Avatar from '../../components/shared/Avatar';
 import Input from '../../components/shared/Input';
+import ChangePasswordModal from '../../components/shared/ChangePasswordModal';
+import { useBuyerStore } from '../../store/buyerStore';
 
 const BuyerProfilePage: React.FC = () => {
   const { user } = useAuthStore() as any;
+  const { stats, fetchDashboardData } = useBuyerStore() as any;
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
   
   return (
-    <div className="space-y-8 pb-12 font-body">
+    <div className="space-y-8 pb-12 font-body animate-in fade-in duration-700">
       {/* Profile Header Card */}
-      <Card className="p-8 border-none shadow-sm ring-1 ring-[var(--border-light)] bg-[var(--bg-surface)] relative overflow-hidden">
+      <Card className="p-8 border-[var(--border-light)] shadow-sm bg-[var(--bg-surface)] relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--text-accent)]/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
         
         <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
            <div className="relative group">
-              <Avatar name={user?.name || 'Fatima Traoré'} role="BUYER" size="xl" />
-              <button className="absolute -bottom-2 -right-2 w-10 h-10 bg-[var(--text-accent)] text-white rounded-xl flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all ring-4 ring-white">
+              <Avatar name={user?.firstName || 'Partenaire'} role="BUYER" size="xl" className="border-4 border-[var(--bg-surface)] shadow-xl" />
+              <button className="absolute -bottom-2 -right-2 w-10 h-10 bg-[var(--text-accent)] text-white rounded-xl flex items-center justify-center shadow-lg hover:brightness-110 active:scale-95 transition-all ring-4 ring-[var(--bg-surface)]">
                 <Edit3 size={18} />
               </button>
            </div>
            
            <div className="flex-1 text-center md:text-left space-y-3">
-              <div className="inline-flex items-center gap-2 bg-amber-50 text-amber-600 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border border-amber-100">
-                <Award size={14} /> Acheteur Premium
+              <div className="inline-flex items-center gap-2 bg-amber-500/10 text-amber-500 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase border border-amber-500/20">
+                <Award size={14} /> Acheteur {user?.isPremium ? 'Premium' : 'Standard'}
               </div>
-              <h1 className="text-4xl font-display text-[var(--text-primary)] tracking-tight">{user?.name || 'Fatima Traoré'}</h1>
-              <div className="flex items-center justify-center md:justify-start gap-2 text-[var(--text-secondary)] text-[14px]">
+              <h1 className="text-4xl font-display font-bold text-[var(--text-primary)] tracking-tight">{user?.firstName ? `${user.firstName} ${user.lastName || ''}` : 'Partenaire AgroConnect'}</h1>
+              <div className="flex items-center justify-center md:justify-start gap-2 text-[var(--text-secondary)] text-[14px] font-medium">
                 <MapPin size={16} className="text-[var(--text-accent)]" />
-                <span>Ouagadougou, Burkina Faso</span>
+                <span>{user?.address?.city ? `${user.address.city}, ${user.address.country || 'Burkina Faso'}` : 'Veuillez renseigner votre adresse'}</span>
               </div>
               
               <div className="flex gap-4 mt-6 justify-center md:justify-start">
-                 <div className="bg-[var(--bg-muted)]/50 px-4 py-3 rounded-xl border border-[var(--border-light)]">
-                   <p className="text-[10px] uppercase font-bold text-[var(--text-muted)] tracking-wider">Commandes</p>
-                   <p className="text-2xl font-mono font-bold text-[var(--text-primary)]">24</p>
+                 <div className="bg-[var(--bg-muted)] px-4 py-3 rounded-xl border border-[var(--border-light)]">
+                   <p className="text-[10px] uppercase font-bold text-[var(--text-secondary)] tracking-wider">Commandes</p>
+                   <p className="text-2xl font-mono font-bold text-[var(--text-primary)]">{stats?.activeOrdersCount || 0}</p>
                  </div>
-                 <div className="bg-[var(--bg-muted)]/50 px-4 py-3 rounded-xl border border-[var(--border-light)]">
-                   <p className="text-[10px] uppercase font-bold text-[var(--text-muted)] tracking-wider">Favoris</p>
-                   <p className="text-2xl font-mono font-bold text-[var(--text-primary)]">12</p>
+                 <div className="bg-[var(--bg-muted)] px-4 py-3 rounded-xl border border-[var(--border-light)]">
+                   <p className="text-[10px] uppercase font-bold text-[var(--text-secondary)] tracking-wider">Favoris</p>
+                   <p className="text-2xl font-mono font-bold text-[var(--text-primary)]">{stats?.favoritesCount || 0}</p>
                  </div>
               </div>
            </div>
@@ -64,30 +72,30 @@ const BuyerProfilePage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Account Details */}
         <div className="lg:col-span-2 space-y-8">
-          <Card className="p-8 space-y-8">
+          <Card className="p-8 space-y-8 border-[var(--border-light)]">
             <div className="flex justify-between items-center px-1">
               <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-3">
                 <User size={20} className="text-[var(--text-accent)]" />
                 Détails du compte
               </h2>
-              <Button variant="ghost" size="sm">Modifier</Button>
+              <Button variant="ghost" size="sm" className="font-bold">Modifier</Button>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <Input label="Nom complet" defaultValue={user?.name || 'Fatima Traoré'} icon={<User size={16} />} />
-               <Input label="Email" defaultValue={user?.email || 'fatima.t@example.com'} icon={<Mail size={16} />} />
-               <Input label="Téléphone" defaultValue="+226 70 12 34 56" icon={<Phone size={16} />} />
+               <Input label="Nom complet" defaultValue={user?.firstName ? `${user.firstName} ${user.lastName || ''}` : ''} icon={<User size={16} />} className="bg-[var(--bg-surface)]" />
+               <Input label="Email" defaultValue={user?.email || ''} icon={<Mail size={16} />} className="bg-[var(--bg-surface)]" />
+               <Input label="Téléphone" defaultValue={user?.phone || ''} icon={<Phone size={16} />} className="bg-[var(--bg-surface)]" />
                <div className="space-y-1.5">
-                  <label className="text-[12px] font-medium text-[var(--text-secondary)]">Type d'acheteur</label>
-                  <div className="h-[42px] px-4 bg-[var(--bg-muted)] rounded-[var(--radius-md)] flex items-center justify-between text-[14px] font-medium text-[var(--text-primary)]">
-                     <span>Grossiste Certifié</span>
+                  <label className="text-[12px] font-medium text-[var(--text-secondary)] ml-1 tracking-wide uppercase text-[10px]">Type d'acheteur</label>
+                  <div className="h-[46px] px-4 bg-[var(--bg-muted)] rounded-[var(--radius-md)] flex items-center justify-between text-[14px] font-bold text-[var(--text-primary)] border border-[var(--border-light)]">
+                     <span>{user?.isPremium ? 'Grossiste Certifié' : 'Acheteur Standard'}</span>
                      <Zap size={16} className="text-amber-500" />
                   </div>
                </div>
             </div>
           </Card>
 
-          <Card className="p-8 space-y-6">
+          <Card className="p-8 space-y-6 border-[var(--border-light)]">
             <div className="flex justify-between items-center px-1">
               <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-3">
                  <MapPin size={20} className="text-[var(--text-accent)]" />
@@ -98,7 +106,7 @@ const BuyerProfilePage: React.FC = () => {
             
             <div className="p-6 rounded-2xl border-2 border-[var(--text-accent)] bg-[var(--text-accent)]/5 flex justify-between items-center group">
                <div className="flex gap-4 items-center">
-                  <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-[var(--text-accent)] shadow-sm">
+                  <div className="w-12 h-12 bg-[var(--bg-surface)] border border-[var(--border-light)] rounded-xl flex items-center justify-center text-[var(--text-accent)] shadow-sm">
                      <Home size={24} />
                   </div>
                   <div>
@@ -106,10 +114,10 @@ const BuyerProfilePage: React.FC = () => {
                         <h3 className="font-bold text-[var(--text-primary)] text-[15px]">Dépôt Principal</h3>
                         <span className="bg-[var(--text-accent)] text-white text-[9px] px-2 py-0.5 rounded-full font-bold uppercase">Défaut</span>
                      </div>
-                     <p className="text-[13px] text-[var(--text-secondary)]">Secteur 15, Ouagadougou</p>
+                     <p className="text-[13px] text-[var(--text-secondary)] font-medium mt-0.5">{user?.address?.city ? `${user.address.street || ''} ${user.address.city}, ${user.address.country || 'Burkina Faso'}` : 'Veuillez renseigner votre adresse'}</p>
                   </div>
                </div>
-               <button className="p-2 text-[var(--text-muted)] hover:text-[var(--text-accent)] transition-colors">
+               <button className="p-3 bg-[var(--bg-surface)] rounded-xl border border-[var(--border-light)] text-[var(--text-secondary)] hover:text-[var(--text-accent)] hover:border-[var(--text-accent)]/30 transition-all">
                   <Edit3 size={18} />
                </button>
             </div>
@@ -118,23 +126,23 @@ const BuyerProfilePage: React.FC = () => {
 
         {/* Right Column: Security & Preferences */}
         <div className="space-y-8">
-           <Card className="p-8 bg-red-50/30 border-dashed border-red-200">
+           <Card className="p-8 bg-red-500/5 border-dashed border-red-500/20">
               <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-3 mb-6">
                 <Lock size={20} className="text-red-500" />
                 Sécurité
               </h2>
-              <Button variant="ghost" size="md" className="w-full justify-between bg-white shadow-sm hover:shadow-md ring-1 ring-red-100" icon={<ChevronRight size={16} />} iconPosition="right">
+              <Button variant="ghost" size="md" className="w-full justify-between bg-[var(--bg-surface)] shadow-sm hover:shadow-md border border-[var(--border-light)] hover:border-red-500/30" icon={<ChevronRight size={16} className="text-[var(--text-secondary)]" />} iconPosition="right" onClick={() => setIsPasswordModalOpen(true)}>
                  <div className="flex items-center gap-3">
                     <ShieldCheck size={18} className="text-red-500" />
                     <div className="text-left">
-                       <p className="text-[13px] font-bold">Mot de passe</p>
-                       <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider">Dernier changement: 2 mois</p>
+                       <p className="text-[13px] font-bold text-[var(--text-primary)]">Mot de passe</p>
+                       <p className="text-[10px] text-[var(--text-secondary)] uppercase tracking-wider">Modifier l'accès sécurisé</p>
                     </div>
                  </div>
               </Button>
            </Card>
 
-           <Card className="p-8 space-y-8">
+           <Card className="p-8 space-y-8 border-[var(--border-light)]">
               <h2 className="text-lg font-bold text-[var(--text-primary)] flex items-center gap-3">
                 <Bell size={20} className="text-[var(--text-accent)]" />
                 Notifications
@@ -147,7 +155,7 @@ const BuyerProfilePage: React.FC = () => {
                     <div key={i} className="flex items-center justify-between">
                        <div>
                           <p className="text-[13px] font-bold text-[var(--text-primary)]">{pref.label}</p>
-                          <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest">{pref.sub}</p>
+                          <p className="text-[10px] text-[var(--text-secondary)] font-bold mt-0.5 uppercase tracking-widest">{pref.sub}</p>
                        </div>
                        <label className="relative inline-flex items-center cursor-pointer">
                           <input type="checkbox" className="sr-only peer" defaultChecked={pref.active} />
@@ -159,6 +167,7 @@ const BuyerProfilePage: React.FC = () => {
            </Card>
         </div>
       </div>
+      <ChangePasswordModal isOpen={isPasswordModalOpen} onClose={() => setIsPasswordModalOpen(false)} />
     </div>
   );
 };

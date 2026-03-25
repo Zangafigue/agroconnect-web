@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Bell, 
@@ -7,9 +7,7 @@ import {
   Info, 
   Trash2, 
   Clock, 
-  MoreVertical,
   Search,
-  Filter,
   ArrowRight,
   ShieldCheck,
   Wallet
@@ -17,10 +15,15 @@ import {
 import { useNotificationStore } from '../../store/notificationStore';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import Card from '../../components/shared/Card';
+import Button from '../../components/shared/Button';
+import Input from '../../components/shared/Input';
 
 const AdminNotificationsPage: React.FC = () => {
   const navigate = useNavigate();
   const { notifications, fetchNotifications, markAsRead, deleteNotification, loading } = useNotificationStore() as any;
+  const [filter, setFilter] = useState('ALL');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchNotifications();
@@ -28,141 +31,154 @@ const AdminNotificationsPage: React.FC = () => {
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'DISPUTE': return <AlertTriangle size={20} className="text-red-500" />;
-      case 'KYC': return <ShieldCheck size={20} className="text-[var(--green-600)]" />;
-      case 'PAYMENT': return <Wallet size={20} className="text-amber-500" />;
-      default: return <Info size={20} className="text-[var(--text-accent)]" />;
+      case 'DISPUTE': return <AlertTriangle size={18} className="text-[var(--btn-danger-text)]" />;
+      case 'KYC': return <ShieldCheck size={18} className="text-[var(--text-accent)]" />;
+      case 'PAYMENT': return <Wallet size={18} className="text-amber-500" />;
+      default: return <Info size={18} className="text-[var(--text-secondary)]" />;
     }
   };
 
-  const getBgColor = (type: string) => {
-     switch (type) {
-      case 'DISPUTE': return 'bg-red-500/10 border-red-500/20';
-      case 'KYC': return 'bg-[var(--green-600)]/10 border-[var(--green-600)]/20';
-      case 'PAYMENT': return 'bg-amber-500/10 border-amber-500/20';
-      default: return 'bg-[var(--bg-muted)] border-[var(--border-light)]';
-    }
-  }
+  const filteredNotifications = notifications.filter((n: any) => {
+    const matchesFilter = filter === 'ALL' || n.type === filter;
+    const matchesSearch = n.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          n.message.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
 
   if (loading) {
      return (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 animate-pulse">
-           <div className="w-16 h-16 border-4 border-[var(--green-600)] border-t-transparent rounded-full animate-spin"></div>
-           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--text-muted)] italic">Écoute du Flux d'Événements...</p>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+           <div className="w-10 h-10 border-2 border-[var(--text-accent)] border-t-transparent rounded-full animate-spin"></div>
+           <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-[var(--text-muted)]">Chargement des notifications...</p>
         </div>
      );
   }
 
   return (
-    <div className="space-y-12 pb-20 animate-in fade-in slide-in-from-bottom-4 duration-700 font-body">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+    <div className="space-y-8 pb-12 font-body">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 className="text-4xl font-display font-black text-[var(--text-accent)] uppercase tracking-tight leading-none mb-3">
-            Flux de Notifications
-          </h2>
-          <p className="text-[var(--text-muted)] font-medium italic text-sm max-w-xl">
-            Journal de bord temps réel des activités critiques nécessitant l'attention ou la validation de l'Administrateur.
+          <h1 className="font-display text-4xl text-[var(--text-primary)] tracking-tight mb-2">Flux de Notifications</h1>
+          <p className="text-[14px] text-[var(--text-secondary)] max-w-xl">
+            Journal de bord des activités critiques nécessitant votre attention.
           </p>
         </div>
-        <div className="flex items-center gap-4">
-          <button className="flex items-center gap-3 px-8 py-4 bg-[var(--bg-surface)] border border-[var(--border-light)] text-[var(--text-accent)] rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-[var(--bg-muted)] transition-all shadow-sm">
-             Tout marquer comme lu
-          </button>
+        <div className="flex gap-2">
+          <Button 
+            variant="secondary" 
+            size="md" 
+            onClick={() => notifications.forEach((n: any) => !n.read && markAsRead(n._id))}
+            icon={<CheckCircle2 size={16} />}
+          >
+            Tout marquer comme lu
+          </Button>
         </div>
-      </div>
+      </header>
 
-      {/* Main Container */}
-      <div className="bg-[var(--bg-surface)] rounded-[3.5rem] border border-[var(--border-light)] shadow-sm overflow-hidden flex flex-col md:flex-row min-h-[600px]">
+      {/* Main Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
          {/* Sidebar Navigation */}
-         <aside className="w-full md:w-80 border-r border-[var(--border-light)] p-8 space-y-8 bg-[var(--bg-muted)]/10">
-            <div className="space-y-3">
-               <p className="text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest mb-6 opacity-40 italic">Filtrage des Flux</p>
+         <div className="lg:col-span-1 space-y-4">
+            <Card className="p-4 space-y-2">
+               <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-4 opacity-70">Filtrer par type</p>
                {[ 
-                 { label: 'Tous les événements', count: notifications.length, active: true },
-                 { label: 'Litiges', count: notifications.filter((n: any) => n.type === 'DISPUTE').length, active: false },
-                 { label: 'Certifications KYC', count: notifications.filter((n: any) => n.type === 'KYC').length, active: false },
-                 { label: 'Paiements', count: notifications.filter((n: any) => n.type === 'PAYMENT').length, active: false },
+                 { label: 'Tous les événements', type: 'ALL', count: notifications.length },
+                 { label: 'Litiges', type: 'DISPUTE', count: notifications.filter((n: any) => n.type === 'DISPUTE').length },
+                 { label: 'Certifications KYC', type: 'KYC', count: notifications.filter((n: any) => n.type === 'KYC').length },
+                 { label: 'Paiements', type: 'PAYMENT', count: notifications.filter((n: any) => n.type === 'PAYMENT').length },
                ].map((item, i) => (
                  <button 
                    key={i} 
-                   className={`w-full flex items-center justify-between p-5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${item.active ? 'bg-[var(--gray-900)] text-white shadow-xl shadow-gray-900/20' : 'bg-white text-[var(--text-muted)] border border-[var(--border-light)] hover:bg-[var(--bg-muted)]'}`}
+                   onClick={() => setFilter(item.type)}
+                   className={`w-full flex items-center justify-between p-3 rounded-[var(--radius-md)] text-[12px] font-medium transition-all ${filter === item.type ? 'bg-[var(--bg-subtle)] text-[var(--text-accent)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-muted)]'}`}
                  >
                    {item.label}
-                   <span className={`w-6 h-6 rounded-lg flex items-center justify-center text-[8px] ${item.active ? 'bg-white/20' : 'bg-[var(--bg-muted)]'}`}>{item.count}</span>
+                   <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${filter === item.type ? 'bg-[var(--text-accent)] text-white' : 'bg-[var(--bg-muted)] text-[var(--text-muted)]'}`}>{item.count}</span>
                  </button>
                ))}
-            </div>
-         </aside>
+            </Card>
+         </div>
 
          {/* Notification List */}
-         <main className="flex-1 p-10 space-y-6">
-            <div className="flex items-center gap-4 mb-10 pb-6 border-b border-[var(--border-light)]">
-               <div className="flex items-center gap-4 bg-white border border-[var(--border-light)] px-6 py-3 rounded-2xl w-full max-w-md shadow-inner">
-                  <Search size={18} className="text-[var(--text-muted)]" />
-                  <input type="text" placeholder="Rechercher une alerte..." className="bg-transparent border-none text-sm font-medium w-full outline-none placeholder:opacity-30" />
-               </div>
-               <button className="p-3 bg-white border border-[var(--border-light)] text-[var(--text-muted)] rounded-2xl hover:bg-[var(--bg-muted)] shadow-sm"><Filter size={20} /></button>
-            </div>
+         <div className="lg:col-span-3 space-y-4">
+            <Card className="flex items-center gap-4">
+               <Input 
+                 placeholder="Rechercher une alerte..." 
+                 value={searchTerm}
+                 onChange={(e) => setSearchTerm(e.target.value)}
+                 icon={<Search size={16} />}
+                 className="flex-1"
+               />
+            </Card>
 
-            <div className="space-y-4">
-               {notifications.length > 0 ? (
-                 notifications.map((notif: any) => (
-                    <div 
+            <div className="space-y-3">
+               {filteredNotifications.length > 0 ? (
+                 filteredNotifications.map((notif: any) => (
+                    <Card 
                       key={notif._id} 
-                      className={`group p-8 rounded-[2.5rem] border transition-all flex items-start gap-8 relative overflow-hidden ${notif.read ? 'bg-white border-[var(--border-light)]' : 'bg-[var(--bg-muted)] border-[var(--green-600)] shadow-2xl shadow-[var(--green-600)]/5 animate-in slide-in-from-left-2 duration-500'}`}
-                      onClick={() => markAsRead(notif._id)}
+                      className={`relative overflow-hidden border-l-4 transition-all ${notif.read ? 'border-l-transparent px-6' : 'border-l-[var(--text-accent)] bg-[var(--bg-subtle)]/30 px-6'}`}
                     >
-                       {!notif.read && (
-                         <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:rotate-6 transition-transform">
-                            <Bell size={100} />
-                         </div>
-                       )}
-                       
-                       <div className={`w-14 h-14 rounded-2xl border flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform ${getBgColor(notif.type)}`}>
-                          {getTypeIcon(notif.type)}
-                       </div>
+                       <div className="flex items-start gap-4">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-[var(--bg-muted)] border border-[var(--border-light)] shadow-sm`}>
+                             {getTypeIcon(notif.type)}
+                          </div>
 
-                       <div className="flex-1 space-y-2 relative z-10">
-                          <div className="flex items-center justify-between">
-                             <h4 className={`font-display font-black text-lg uppercase tracking-tight ${notif.read ? 'text-[var(--text-accent)]' : 'text-[var(--green-600)]'}`}>{notif.title}</h4>
-                             <div className="flex items-center gap-3 text-[9px] font-black text-[var(--text-muted)] uppercase tracking-widest opacity-40 italic">
-                                <Clock size={12} /> {formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true, locale: fr })}
+                          <div className="flex-1 space-y-1">
+                             <div className="flex items-center justify-between">
+                                <h4 className={`text-[15px] font-bold ${notif.read ? 'text-[var(--text-primary)]' : 'text-[var(--text-accent)]'}`}>{notif.title}</h4>
+                                <div className="flex items-center gap-1.5 text-[10px] font-medium text-[var(--text-muted)]">
+                                   <Clock size={12} /> {formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true, locale: fr })}
+                                </div>
+                             </div>
+                             <p className={`text-[13px] leading-relaxed ${notif.read ? 'text-[var(--text-secondary)]' : 'text-[var(--text-primary)] font-medium'}`}>{notif.message}</p>
+                             
+                             <div className="pt-4 flex items-center gap-2">
+                                <Button 
+                                   size="sm"
+                                   variant="secondary"
+                                   onClick={() => {
+                                     markAsRead(notif._id);
+                                     if (notif.type === 'DISPUTE') navigate(`/admin/disputes/${notif.relatedId}`);
+                                     else if (notif.type === 'KYC') navigate(`/admin/users/${notif.relatedId}`);
+                                     else if (notif.type === 'PAYMENT') navigate(`/admin/payments`);
+                                     else if (notif.relatedId) navigate(`/admin/orders/${notif.relatedId}`);
+                                   }}
+                                   icon={<ArrowRight size={14} />}
+                                   iconPosition="right"
+                                 >
+                                   Détails
+                                </Button>
+                                {!notif.read && (
+                                   <Button 
+                                     size="sm"
+                                     variant="ghost"
+                                     onClick={() => markAsRead(notif._id)}
+                                   >
+                                     Marquer comme lu
+                                   </Button>
+                                )}
+                                <Button 
+                                  size="sm"
+                                  variant="ghost"
+                                  className="text-[var(--btn-danger-text)] hover:bg-[var(--badge-dispute-bg)] p-2 min-w-0"
+                                  onClick={() => deleteNotification(notif._id)}
+                                >
+                                   <Trash2 size={16} />
+                                </Button>
                              </div>
                           </div>
-                          <p className={`text-sm font-medium italic ${notif.read ? 'text-[var(--text-muted)]' : 'text-[var(--text-accent)]'}`}>{notif.message}</p>
-                          <div className="pt-4 flex items-center gap-4">
-                             <button 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  markAsRead(notif._id);
-                                  if (notif.type === 'DISPUTE') navigate(`/admin/disputes/${notif.relatedId}`);
-                                  else if (notif.type === 'KYC') navigate(`/admin/users/${notif.relatedId}`);
-                                  else if (notif.type === 'PAYMENT') navigate(`/admin/payments`);
-                                  else if (notif.relatedId) navigate(`/admin/orders/${notif.relatedId}`);
-                                }}
-                                className="flex items-center gap-2 px-6 py-2.5 bg-[var(--gray-900)] text-white text-[9px] font-black uppercase tracking-widest rounded-xl hover:bg-black transition-all shadow-lg group-hover:scale-105"
-                              >
-                                Consulter <ArrowRight size={12} />
-                             </button>
-                             <button 
-                               onClick={(e) => { e.stopPropagation(); deleteNotification(notif._id); }}
-                               className="p-2.5 text-[var(--text-muted)] hover:text-red-500 transition-colors"
-                             >
-                                <Trash2 size={18} />
-                             </button>
-                          </div>
                        </div>
-                    </div>
+                    </Card>
                  ))
                ) : (
-                 <div className="flex flex-col items-center justify-center py-20 opacity-30 italic">
-                    <Bell size={64} className="mb-6" />
-                    <p className="text-sm font-black uppercase tracking-widest">Le journal de bord est vide.</p>
-                 </div>
+                 <Card className="flex flex-col items-center justify-center py-20 opacity-40 italic">
+                    <Bell size={48} className="mb-4 text-[var(--text-muted)]" />
+                    <p className="text-[13px] font-bold uppercase tracking-widest text-[var(--text-muted)]">Aucune notification correspondant aux critères.</p>
+                 </Card>
                )}
             </div>
-         </main>
+         </div>
       </div>
     </div>
   );

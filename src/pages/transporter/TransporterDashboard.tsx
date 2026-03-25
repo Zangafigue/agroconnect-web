@@ -1,204 +1,226 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Truck, 
   Map as MapIcon, 
   Navigation, 
-  Wallet, 
   ArrowRight, 
   Clock,
   CheckCircle,
-  Calendar,
-  AlertCircle
+  AlertCircle,
+  Package
 } from 'lucide-react';
 import Card from '../../components/shared/Card';
 import Button from '../../components/shared/Button';
-import Avatar from '../../components/shared/Avatar';
 import StatusBadge from '../../components/shared/StatusBadge';
+import DataTable from '../../components/shared/DataTable';
+import { useAuthStore } from '../../store/authStore';
+import { useTransporterStore } from '../../store/transporterStore';
+import { formatFCFA } from '../../utils/currency';
 
 export default function TransporterDashboard() {
   const navigate = useNavigate();
+  const { user } = useAuthStore() as any;
+  const { missions, deliveries, fetchMissions, fetchDeliveries, missionsLoading, deliveriesLoading } = useTransporterStore() as any;
+
+  useEffect(() => {
+    fetchMissions();
+    fetchDeliveries();
+  }, []);
+
+  const pendingDeliveries = deliveries.filter((d: any) => d.status === 'IN_PROGRESS' || d.status === 'ASSIGNED');
+  const completedDeliveries = deliveries.filter((d: any) => d.status === 'DELIVERED' || d.status === 'COMPLETED');
+  const totalEarned = completedDeliveries.reduce((sum: number, d: any) => sum + (d.amount || d.price || 0), 0);
+
+  const deliveryColumns = [
+    {
+      header: 'Réf.',
+      accessor: (d: any) => <span className="font-mono font-bold text-[var(--text-primary)]">#{(d._id || d.id)?.slice(-6).toUpperCase()}</span>,
+    },
+    {
+      header: 'Trajet',
+      accessor: (d: any) => (
+        <div className="flex flex-col">
+          <span className="text-[13px] font-medium text-[var(--text-primary)]">{d.pickupCity || d.from || '—'}</span>
+          <span className="text-[11px] text-[var(--text-muted)]">→ {d.deliveryCity || d.to || '—'}</span>
+        </div>
+      ),
+    },
+    {
+      header: 'Montant',
+      accessor: (d: any) => (
+        <span className="font-mono font-bold text-[var(--text-primary)]">{formatFCFA(d.amount || d.price || 0)}</span>
+      ),
+      className: 'text-right',
+    },
+    {
+      header: 'Statut',
+      accessor: (d: any) => <StatusBadge status={d.status} />,
+      className: 'text-center',
+    },
+    {
+      header: '',
+      accessor: (d: any) => (
+        <Button variant="ghost" size="sm" className="p-1" onClick={() => navigate(`/transporter/deliveries`)}>
+          <ArrowRight size={16} />
+        </Button>
+      ),
+      className: 'text-right',
+    },
+  ];
 
   return (
-    <div className="space-y-8 pb-12 font-body max-w-7xl mx-auto">
-      {/* Header Section */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-4">
+    <div className="space-y-8 pb-12 font-body">
+      {/* Header */}
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="font-display text-4xl text-[var(--text-primary)] tracking-tight mb-2">Espace Transporteur</h1>
-          <p className="text-[14px] text-[var(--text-secondary)]">Gérez vos expéditions, suivez vos trajets et optimisez vos revenus.</p>
+          <h1 className="font-display text-3xl md:text-4xl text-[var(--text-primary)] tracking-tight mb-1">
+            Bonjour, {user?.firstName} 👋
+          </h1>
+          <p className="text-[14px] text-[var(--text-secondary)]">
+            {user?.vehicleType || 'Transporteur'} • {user?.city || 'Burkina Faso'}
+          </p>
         </div>
-        <div className="flex gap-3">
-          <Button 
-            variant="primary" 
-            size="lg" 
-            icon={<Navigation size={18} />}
-            onClick={() => navigate('/transporter/missions')}
-          >
-            Trouver des Missions
-          </Button>
-        </div>
+        <Button 
+          variant="primary" 
+          size="md" 
+          icon={<Navigation size={18} />}
+          onClick={() => navigate('/transporter/missions')}
+        >
+          Trouver des Missions
+        </Button>
       </header>
 
       {/* KPI Grid */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-6">
-           <div className="flex justify-between items-start mb-4">
-              <div className="w-10 h-10 rounded-xl bg-[var(--text-accent)]/10 text-[var(--text-accent)] flex items-center justify-center">
-                 <Truck size={20} />
-              </div>
-           </div>
-           <div>
-              <p className="text-[12px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Livraisons en cours</p>
-              <p className="text-3xl font-mono font-bold text-[var(--text-primary)]">3</p>
-           </div>
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="p-5">
+          <div className="w-9 h-9 rounded-xl bg-[var(--text-accent)]/10 text-[var(--text-accent)] flex items-center justify-center mb-3">
+            <Truck size={18} />
+          </div>
+          <p className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">En cours</p>
+          <p className="text-2xl font-mono font-bold text-[var(--text-primary)]">
+            {deliveriesLoading ? '...' : pendingDeliveries.length}
+          </p>
         </Card>
-        
-        <Card className="p-6">
-           <div className="flex justify-between items-start mb-4">
-              <div className="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center">
-                 <CheckCircle size={20} />
-              </div>
-           </div>
-           <div>
-              <p className="text-[12px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Total Livré</p>
-              <p className="text-3xl font-mono font-bold text-[var(--text-primary)]">158</p>
-           </div>
+        <Card className="p-5">
+          <div className="w-9 h-9 rounded-xl bg-green-100 text-green-600 flex items-center justify-center mb-3">
+            <CheckCircle size={18} />
+          </div>
+          <p className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Livré</p>
+          <p className="text-2xl font-mono font-bold text-[var(--text-primary)]">
+            {deliveriesLoading ? '...' : completedDeliveries.length}
+          </p>
         </Card>
-
-        <Card className="p-6">
-           <div className="flex justify-between items-start mb-4">
-              <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
-                 <MapIcon size={20} />
-              </div>
-           </div>
-           <div>
-              <p className="text-[12px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Missions Dispos</p>
-              <p className="text-3xl font-mono font-bold text-[var(--text-primary)]">12</p>
-           </div>
+        <Card className="p-5">
+          <div className="w-9 h-9 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center mb-3">
+            <MapIcon size={18} />
+          </div>
+          <p className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Missions dispo</p>
+          <p className="text-2xl font-mono font-bold text-[var(--text-primary)]">
+            {missionsLoading ? '...' : missions.length}
+          </p>
         </Card>
-
-        <Card className="p-6">
-           <div className="flex justify-between items-start mb-4">
-              <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
-                 <Wallet size={20} />
-              </div>
-           </div>
-           <div>
-              <p className="text-[12px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Gains ce mois</p>
-              <p className="text-3xl font-mono font-bold text-[var(--text-primary)]">450k</p>
-           </div>
+        <Card className="p-5">
+          <div className="w-9 h-9 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center mb-3">
+            <Package size={18} />
+          </div>
+          <p className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-1">Total gagné</p>
+          <p className="text-xl font-mono font-bold text-[var(--text-primary)]">
+            {deliveriesLoading ? '...' : formatFCFA(user?.totalEarned || totalEarned)}
+          </p>
         </Card>
       </section>
 
-      {/* Main Insights Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Active Deliveries (Left 2/3) */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="flex items-center justify-between mb-2">
-            <h2 className="text-xl font-bold text-[var(--text-primary)]">Livraisons Actives</h2>
-            <Button variant="ghost" size="sm" icon={<ArrowRight size={14} />} iconPosition="right" onClick={() => navigate('/transporter/deliveries')}>
-              Voir tout
-            </Button>
-          </div>
+      {/* Recent Deliveries */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-[16px] font-bold text-[var(--text-primary)]">Livraisons récentes</h2>
+          <Link to="/transporter/deliveries">
+            <Button variant="ghost" size="sm" icon={<ArrowRight size={14} />} iconPosition="right">Voir tout</Button>
+          </Link>
+        </div>
+        {deliveriesLoading ? (
+          <Card className="p-8 text-center">
+            <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-[var(--text-muted)] text-[13px]">Chargement...</p>
+          </Card>
+        ) : deliveries.length === 0 ? (
+          <Card className="p-12 text-center">
+            <Truck size={40} className="mx-auto mb-4 text-[var(--text-muted)] opacity-30" />
+            <p className="text-[var(--text-muted)] font-medium">Aucune livraison pour le moment.</p>
+            <div className="mt-4">
+              <Button variant="primary" size="sm" onClick={() => navigate('/transporter/missions')}>
+                Parcourir les missions
+              </Button>
+            </div>
+          </Card>
+        ) : (
+          <DataTable
+            columns={deliveryColumns}
+            data={deliveries.slice(0, 5)}
+            onRowClick={() => navigate('/transporter/deliveries')}
+            emptyMessage="Aucune livraison."
+          />
+        )}
+      </section>
 
-          <div className="space-y-4">
-            {[ 
-              { id: 'TR-045', from: 'Bobo Dioulasso', to: 'Ouagadougou', load: '10T Maïs', status: 'SHIPPED', ETA: '2h' },
-              { id: 'TR-046', from: 'Koudougou', to: 'Banfora', load: '5T Oignons', status: 'PENDING', ETA: 'Demain' }
-            ].map((delivery) => (
-              <Card key={delivery.id} className="p-4 hover:border-[var(--text-accent)] transition-all flex flex-col md:flex-row items-center gap-6 group">
-                <div className="w-16 h-16 bg-[var(--bg-muted)] text-[var(--text-primary)] rounded-xl flex flex-col items-center justify-center shadow-inner">
-                   <div className="text-[10px] font-bold text-[var(--text-secondary)] leading-none mb-1">REF</div>
-                   <div className="font-mono font-bold text-sm tracking-tighter leading-none">{delivery.id}</div>
+      {/* Available Missions Preview */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <h2 className="text-[16px] font-bold text-[var(--text-primary)]">Missions disponibles</h2>
+            {missions.length > 0 && (
+              <span className="px-2 py-0.5 bg-[var(--text-accent)] text-white text-[10px] font-bold rounded-full">
+                {missionsLoading ? '...' : missions.length}
+              </span>
+            )}
+          </div>
+          <Link to="/transporter/missions">
+            <Button variant="ghost" size="sm" icon={<ArrowRight size={14} />} iconPosition="right">Voir tout</Button>
+          </Link>
+        </div>
+
+        {missionsLoading ? (
+          <Card className="p-8 text-center">
+            <div className="w-8 h-8 border-2 border-[var(--text-accent)] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+            <p className="text-[var(--text-muted)] text-[13px]">Chargement des missions...</p>
+          </Card>
+        ) : missions.length === 0 ? (
+          <Card className="p-12 text-center">
+            <AlertCircle size={40} className="mx-auto mb-4 text-[var(--text-muted)] opacity-30" />
+            <p className="text-[var(--text-muted)] font-medium">Aucune mission disponible actuellement.</p>
+            <p className="text-[13px] text-[var(--text-muted)] mt-1">Revenez bientôt — de nouvelles opportunités sont publiées chaque jour.</p>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {missions.slice(0, 3).map((m: any) => (
+              <Card key={m._id || m.id} className="p-5 hover:shadow-md transition-shadow cursor-pointer" onClick={() => navigate('/transporter/missions')}>
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">
+                      {m.product?.category || m.category || 'Produit agricole'}
+                    </span>
+                    <h3 className="font-bold text-[var(--text-primary)] mt-0.5">{m.product?.name || m.title || 'Mission de transport'}</h3>
+                  </div>
+                  <span className="text-[var(--text-accent)] font-mono font-bold text-[15px]">
+                    {formatFCFA(m.transportCost || m.budget || 0)}
+                  </span>
                 </div>
-                
-                <div className="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-4 w-full text-center md:text-left">
-                   <div>
-                     <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                       <span className="font-bold text-[14px] text-[var(--text-primary)]">{delivery.from}</span>
-                       <ArrowRight size={14} className="text-[var(--text-muted)]" />
-                       <span className="font-bold text-[14px] text-[var(--text-primary)]">{delivery.to}</span>
-                     </div>
-                     <p className="text-[12px] text-[var(--text-secondary)] font-bold uppercase tracking-wider flex items-center justify-center md:justify-start gap-2">
-                        <Truck size={12} /> {delivery.load}
-                     </p>
-                   </div>
-                   
-                   <div className="flex items-center justify-center gap-4 border-t md:border-t-0 md:border-l border-[var(--border-light)] pt-4 md:pt-0 md:pl-6 w-full md:w-auto">
-                      <div className="text-left">
-                         <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest flex items-center gap-1 mb-1">
-                           <Clock size={12} /> E.T.A
-                         </p>
-                         <p className="font-mono font-bold text-[14px]">{delivery.ETA}</p>
-                      </div>
-                      <StatusBadge status={delivery.status} />
-                   </div>
+                <div className="flex flex-col gap-1 text-[12px] text-[var(--text-secondary)]">
+                  <span>📦 {m.quantity || '—'} {m.unit || ''}</span>
+                  <span>📍 {m.seller?.city || m.pickupCity || '—'} → {m.buyer?.city || m.deliveryCity || '—'}</span>
                 </div>
-                
-                <Button variant="secondary" size="md" className="w-full md:w-auto mt-4 md:mt-0 opacity-0 group-hover:opacity-100 transition-opacity absolute md:relative right-4 md:right-auto md:flex">
-                   Suivre
-                </Button>
+                <div className="mt-4 flex justify-between items-center">
+                  <StatusBadge status={m.status || 'PENDING'} />
+                  <Button variant="primary" size="sm" onClick={(e: any) => { e.stopPropagation(); navigate('/transporter/missions'); }}>
+                    Postuler
+                  </Button>
+                </div>
               </Card>
             ))}
           </div>
-
-          <Card className="p-6 bg-red-50/50 border-red-100 flex items-start gap-4">
-             <AlertCircle size={20} className="text-red-500 shrink-0 mt-0.5" />
-             <div>
-                <h4 className="text-[13px] font-bold text-red-700 mb-1">Alerte Météo: Axe Bobo-Ouaga</h4>
-                <p className="text-[12px] text-red-600/80 leading-relaxed">De fortes pluies sont signalées sur l'axe principal. Prévoyez des retards et roulez prudemment pour la livraison TR-045.</p>
-             </div>
-          </Card>
-        </div>
-
-        {/* Calendar / Availability (Right 1/3) */}
-        <div className="space-y-6">
-           <Card className="p-8 space-y-6">
-             <h3 className="text-[14px] font-bold text-[var(--text-primary)] uppercase tracking-widest flex items-center gap-2 border-l-4 border-[var(--text-accent)] pl-3">
-               <Calendar size={16} className="text-[var(--text-accent)]" /> 
-               Disponibilité
-             </h3>
-             
-             <div className="space-y-3">
-               <div className="flex justify-between items-center p-3 rounded-lg border-2 border-[var(--text-accent)] bg-[var(--text-accent)]/5 shadow-sm">
-                 <span className="text-[13px] font-bold text-[var(--text-primary)]">Ouagadougou</span>
-                 <span className="bg-[var(--text-accent)] text-white text-[9px] font-bold uppercase px-2 py-0.5 rounded">Aujourd'hui</span>
-               </div>
-               <div className="flex justify-between items-center p-3 rounded-lg bg-[var(--bg-muted)] border border-[var(--border-light)]">
-                 <span className="text-[13px] font-bold text-[var(--text-secondary)]">Bobo Dioulasso</span>
-                 <span className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Demain</span>
-               </div>
-             </div>
-             
-             <Button variant="secondary" size="md" className="w-full justify-center text-[11px]">
-               Modifier le planning
-             </Button>
-           </Card>
-
-           <Card className="p-8 bg-[var(--text-accent)] text-white shadow-xl shadow-[var(--text-accent-rgb)]/20 border-none group relative overflow-hidden">
-             <div className="absolute top-0 right-0 p-6 opacity-20 transform group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500">
-                <Wallet size={80} />
-             </div>
-             
-             <div className="relative z-10">
-                <h3 className="text-xl font-display mb-3">Bonus Fidélité</h3>
-                <p className="text-[13px] text-white/90 mb-6 leading-relaxed">
-                  Encore <span className="font-bold underline decoration-2 underline-offset-4 decoration-white/50">5 livraisons</span> ce mois-ci pour débloquer votre prime de 15 000 F !
-                </p>
-                
-                <div className="w-full h-2 bg-white/20 rounded-full overflow-hidden mb-2">
-                   <div className="w-2/3 h-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)]"></div>
-                </div>
-                <div className="flex justify-between text-[10px] font-bold tracking-widest uppercase text-white/80">
-                   <span>En cours</span>
-                   <span>67%</span>
-                </div>
-             </div>
-           </Card>
-        </div>
-
-      </div>
+        )}
+      </section>
     </div>
   );
 }
