@@ -75,7 +75,7 @@ const HomePage: React.FC = () => {
         <section className="relative h-[85vh] min-h-[700px] bg-hero-field flex items-center overflow-hidden">
           <div className="absolute inset-0 bg-black/40 z-0"></div>
           <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full relative z-10">
-            <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-12 duration-1000">
+            <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-12 duration-1000 pt-24 md:pt-16">
               <span className="inline-block px-4 py-1.5 bg-primary text-white text-[10px] font-black tracking-[0.3em] rounded-full uppercase mb-8 shadow-2xl border border-white/10">
                 L'AGRI-TECH AU BURKINA FASO
               </span>
