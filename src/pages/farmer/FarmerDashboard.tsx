@@ -90,9 +90,12 @@ const FarmerDashboard: React.FC = () => {
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl md:text-4xl font-display text-[var(--text-primary)] tracking-tight mb-2">Tableau de Bord</h1>
+          <p className="text-[11px] font-bold text-[var(--text-accent)] uppercase tracking-[0.25em] mb-2">Espace Agriculteur</p>
+          <h1 className="text-4xl md:text-5xl font-display text-[var(--text-primary)] tracking-tight mb-2">
+            Bonjour, {user?.firstName ? `${user.firstName} ${user.lastName || ''}` : 'Partenaire'} 👋
+          </h1>
           <p className="text-sm text-[var(--text-secondary)] font-medium">
-            Heureux de vous revoir, <span className="text-[var(--text-accent)] font-bold">{user?.firstName ? `${user.firstName} ${user.lastName || ''}` : 'Partenaire'}</span>. Voici l'état de votre exploitation.
+            Voici l'état de votre exploitation aujourd'hui.
           </p>
         </div>
         <Button 

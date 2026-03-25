@@ -71,8 +71,11 @@ const BuyerDashboard: React.FC = () => {
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-4xl text-[var(--text-primary)] tracking-tight mb-2">Espace Acheteur</h1>
-          <p className="text-[14px] text-[var(--text-secondary)]">Trouvez les meilleurs produits frais au prix juste, <span className="text-[var(--text-accent)] font-bold">{user?.firstName || 'Partenaire'}</span>.</p>
+          <p className="text-[11px] font-bold text-[var(--text-accent)] uppercase tracking-[0.25em] mb-2">Espace Acheteur</p>
+          <h1 className="font-display text-4xl md:text-5xl text-[var(--text-primary)] tracking-tight mb-2">
+            Bonjour, {user?.firstName ? `${user.firstName} ${user.lastName || ''}` : 'Partenaire'} 👋
+          </h1>
+          <p className="text-[14px] text-[var(--text-secondary)]">Trouvez les meilleurs produits frais au prix juste.</p>
         </div>
         <div>
           <Link to="/buyer/marketplace">

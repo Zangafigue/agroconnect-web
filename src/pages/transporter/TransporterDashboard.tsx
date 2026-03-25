@@ -74,8 +74,9 @@ export default function TransporterDashboard() {
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="font-display text-3xl md:text-4xl text-[var(--text-primary)] tracking-tight mb-1">
-            Bonjour, {user?.firstName} 👋
+          <p className="text-[11px] font-bold text-[var(--text-accent)] uppercase tracking-[0.25em] mb-2">Espace Transporteur</p>
+          <h1 className="font-display text-4xl md:text-5xl text-[var(--text-primary)] tracking-tight mb-2">
+            Bonjour, {user?.firstName || 'Partenaire'} 👋
           </h1>
           <p className="text-[14px] text-[var(--text-secondary)]">
             {user?.vehicleType || 'Transporteur'} • {user?.city || 'Burkina Faso'}
