@@ -17,6 +17,37 @@ export const useProductStore = create((set) => ({
     }
   },
   
+  createProduct: async (formData) => {
+    set({ loading: true, error: null });
+    try {
+      const data = await productService.createProduct(formData);
+      set((state) => ({
+        products: [data, ...state.products],
+        loading: false
+      }));
+      return data;
+    } catch (error) {
+      set({ error: error.message, loading: false });
+      throw error;
+    }
+  },
+  
+  updateProduct: async (id, formData) => {
+    set({ loading: true, error: null });
+    try {
+      const data = await productService.updateProduct(id, formData);
+      set((state) => ({
+        products: state.products.map(p => p._id === id ? data : p),
+        selectedProduct: state.selectedProduct?._id === id ? data : state.selectedProduct,
+        loading: false
+      }));
+      return data;
+    } catch (error) {
+      set({ error: error.message, loading: false });
+      throw error;
+    }
+  },
+  
   fetchProductById: async (id) => {
     set({ loading: true });
     try {

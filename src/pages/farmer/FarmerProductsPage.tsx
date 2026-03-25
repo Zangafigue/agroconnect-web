@@ -20,13 +20,13 @@ import toast from 'react-hot-toast';
 
 const FarmerProductsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { products, fetchUserProducts, deleteProduct, loading } = useProductStore() as any;
+  const { products, fetchProducts, deleteProduct, loading } = useProductStore() as any;
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
 
   useEffect(() => {
-    fetchUserProducts();
-  }, [fetchUserProducts]);
+    fetchProducts();
+  }, [fetchProducts]);
 
   const filteredProducts = (products || []).filter((p: any) => {
     const matchesFilter = filter === 'all' || p.status === filter;

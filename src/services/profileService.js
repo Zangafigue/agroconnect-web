@@ -8,11 +8,7 @@ const profileService = {
   uploadPicture: async (file) => {
     const formData = new FormData();
     formData.append('picture', file);
-    const response = await axios.post('/auth/profile/picture', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await axios.post('/auth/profile/picture', formData);
     return response.data;
   },
   updatePassword: async (currentPassword, newPassword) => {

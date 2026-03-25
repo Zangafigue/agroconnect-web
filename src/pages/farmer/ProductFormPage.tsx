@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { 
   ChevronRight, 
   Package, 
@@ -19,10 +19,105 @@ import {
 import Card from '../../components/shared/Card';
 import Button from '../../components/shared/Button';
 import Input from '../../components/shared/Input';
+import LocationPicker from '../../components/shared/LocationPicker';
+import { useProductStore } from '../../store/productStore';
+import toast from 'react-hot-toast';
 
 const ProductFormPage: React.FC = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{id: string}>();
+  const isEditing = !!id;
+  const { products, createProduct, updateProduct, fetchProductById } = useProductStore() as any;
+  const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState('Céréales');
+  const [coords, setCoords] = useState({ lat: 12.3641, lng: -1.5330 });
+  const [images, setImages] = useState<File[]>([]);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    price: '',
+    unit: 'Kilogramme (kg)',
+    quantity: '',
+    region: 'Bobo-Dioulasso',
+    address: ''
+  });
+
+  React.useEffect(() => {
+    if (isEditing && id) {
+      // 1. Try to find the product in the local store cache first to avoid network errors
+      const cachedProduct = products?.find((p: any) => p._id === id);
+      
+      const populateForm = (product: any) => {
+        if (!product) return;
+        setFormData({
+          name: product.title || product.name || '',
+          description: product.description || '',
+          price: product.price?.toString() || '',
+          unit: product.unit || 'Kilogramme (kg)',
+          quantity: product.inventory?.toString() || product.quantity?.toString() || '',
+          // Use precise nullish coalescing to prevent undefined values creeping into React state
+          region: (product.location ? product.location.split(',')[0]?.trim() : '') || 'Bobo-Dioulasso',
+          address: (product.location ? product.location.split(',')[1]?.trim() : '') || ''
+        });
+        setCategory(product.category || 'Céréales');
+      };
+
+      if (cachedProduct) {
+        populateForm(cachedProduct);
+      } else {
+        // 2. Fallback to fetching it directly if not in cache (e.g direct URL visit)
+        fetchProductById(id).then(populateForm).catch(console.error);
+      }
+    }
+  }, [id, fetchProductById, isEditing, products]);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      setImages(prev => [...prev, ...filesArray].slice(0, 4)); // Max 4 photos
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.name || !formData.price || !formData.quantity) {
+      return toast.error("Veuillez remplir les champs obligatoires (Nom, Prix, Quantité).");
+    }
+    
+    setLoading(true);
+    const toastId = toast.loading("Publication de l'annonce...");
+    
+    try {
+      const submitData = new FormData();
+      submitData.append('title', formData.name);
+      submitData.append('description', formData.description);
+      submitData.append('category', category);
+      submitData.append('price', formData.price);
+      submitData.append('unit', formData.unit);
+      submitData.append('inventory', formData.quantity);
+      submitData.append('location', `${formData.region}, ${formData.address}`);
+      
+      images.forEach(img => {
+        submitData.append('images', img);
+      });
+
+      if (isEditing) {
+        await updateProduct(id, submitData);
+        toast.success("Annonce modifiée avec succès !", { id: toastId });
+      } else {
+        await createProduct(submitData);
+        toast.success("Annonce publiée avec succès !", { id: toastId });
+      }
+      navigate('/farmer/products');
+    } catch (error) {
+       toast.error("Erreur lors de l'enregistrement.", { id: toastId });
+    } finally {
+       setLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-8 pb-24 animate-in fade-in duration-700 font-body">
@@ -31,12 +126,14 @@ const ProductFormPage: React.FC = () => {
         <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-secondary)]/60">
           <Link className="hover:text-[var(--text-accent)] transition-colors" to="/farmer/products">Catalogue</Link>
           <ChevronRight size={10} />
-          <span className="text-[var(--text-secondary)]">Référencement</span>
+          <span className="text-[var(--text-secondary)]">{isEditing ? 'Modification' : 'Référencement'}</span>
         </nav>
 
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <h1 className="text-3xl md:text-4xl font-display text-[var(--text-primary)] tracking-tight mb-2">Mise en Vente Directe</h1>
+            <h1 className="text-3xl md:text-4xl font-display text-[var(--text-primary)] tracking-tight mb-2">
+              {isEditing ? "Modifier l'Annonce" : "Mise en Vente Directe"}
+            </h1>
             <p className="text-sm text-[var(--text-secondary)] font-medium">Capturez les détails de votre récolte pour une visibilité maximale.</p>
           </div>
         </header>
@@ -55,15 +152,27 @@ const ProductFormPage: React.FC = () => {
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="aspect-square bg-[var(--bg-muted)] border-2 border-dashed border-[var(--border-light)] rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-[var(--text-accent)]/40 hover:bg-[var(--text-accent)]/5 transition-all group/upload relative overflow-hidden">
+              <label className="aspect-square bg-[var(--bg-muted)] border-2 border-dashed border-[var(--border-light)] rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-[var(--text-accent)]/40 hover:bg-[var(--text-accent)]/5 transition-all group/upload relative overflow-hidden">
+                <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageUpload} />
                 <UploadCloud size={32} className="text-[var(--text-secondary)]/50 group-hover/upload:text-[var(--text-accent)] group-hover/upload:-translate-y-1 transition-all duration-300" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)]/50 mt-3 group-hover/upload:text-[var(--text-accent)] transition-colors">Couverture</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)]/50 mt-3 group-hover/upload:text-[var(--text-accent)] transition-colors">Photos</span>
                 <div className="absolute inset-0 bg-[var(--text-accent)]/5 opacity-0 group-hover/upload:opacity-100 transition-opacity"></div>
-              </div>
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="aspect-square bg-[var(--bg-muted)] border-2 border-dashed border-[var(--border-light)] rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-[var(--text-accent)]/20 transition-all group/item">
-                  <Plus size={24} className="text-[var(--text-secondary)]/30 group-hover/item:text-[var(--text-accent)]/40 transition-colors" />
+              </label>
+              
+              {images.map((file, i) => (
+                <div key={i} className="aspect-square bg-[var(--bg-muted)] border border-[var(--border-light)] rounded-2xl relative overflow-hidden group/item">
+                  <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
+                  <button onClick={() => removeImage(i)} className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity hover:scale-110">
+                    <Plus size={14} className="rotate-45" />
+                  </button>
                 </div>
+              ))}
+              
+              {[...Array(Math.max(0, 3 - images.length))].map((_, i) => (
+                <label key={`empty-${i}`} className="aspect-square bg-[var(--bg-muted)] border-2 border-dashed border-[var(--border-light)] rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-[var(--text-accent)]/20 transition-all group/item">
+                  <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageUpload} />
+                  <Plus size={24} className="text-[var(--text-secondary)]/30 group-hover/item:text-[var(--text-accent)]/40 transition-colors" />
+                </label>
               ))}
             </div>
           </Card>
@@ -75,6 +184,8 @@ const ProductFormPage: React.FC = () => {
                 label="Nom commercial du produit" 
                 placeholder="Ex: Maïs Blanc de Bagré - Récolte 2024" 
                 className="text-lg font-bold"
+                value={formData.name}
+                onChange={e => setFormData({...formData, name: e.target.value})}
               />
               <div className="space-y-3">
                 <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] ml-1">Spécifications & Qualités</label>
@@ -82,6 +193,8 @@ const ProductFormPage: React.FC = () => {
                   rows={5}
                   className="w-full bg-[var(--bg-muted)] border border-[var(--border-light)] rounded-2xl px-5 py-4 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--text-accent)] transition-all resize-none font-medium placeholder:text-[var(--text-secondary)]/50"
                   placeholder="Précisez les variétés, le taux d'humidité, les méthodes de culture (bio, raisonnée), le conditionnement..."
+                  value={formData.description}
+                  onChange={e => setFormData({...formData, description: e.target.value})}
                 />
               </div>
             </div>
@@ -114,18 +227,18 @@ const ProductFormPage: React.FC = () => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Input label="Prix unitaire (FCFA)" type="number" placeholder="0" icon={<Tag size={16} />} />
+              <Input label="Prix unitaire (FCFA)" type="number" placeholder="0" icon={<Tag size={16} />} value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} />
               <div className="space-y-2">
                  <label className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[.2em] ml-1">Unité de mesure</label>
-                 <select className="h-[48px] w-full px-5 bg-[var(--bg-muted)] border border-[var(--border-light)] rounded-2xl text-sm font-bold text-[var(--text-primary)] outline-none focus:border-[var(--text-accent)] transition-all appearance-none cursor-pointer">
-                    <option>Kilogramme (kg)</option>
-                    <option>Sac (50kg)</option>
-                    <option>Sac (100kg)</option>
-                    <option>Tonne (T)</option>
-                    <option>Caisse / Plateau</option>
+                 <select value={formData.unit} onChange={e => setFormData({...formData, unit: e.target.value})} className="h-[48px] w-full px-5 bg-[var(--bg-muted)] border border-[var(--border-light)] rounded-2xl text-sm font-bold text-[var(--text-primary)] outline-none focus:border-[var(--text-accent)] transition-all appearance-none cursor-pointer">
+                    <option value="Kilogramme (kg)">Kilogramme (kg)</option>
+                    <option value="Sac (50kg)">Sac (50kg)</option>
+                    <option value="Sac (100kg)">Sac (100kg)</option>
+                    <option value="Tonne (T)">Tonne (T)</option>
+                    <option value="Caisse / Plateau">Caisse / Plateau</option>
                  </select>
               </div>
-              <Input label="Disponibilité Totale" type="number" placeholder="Quantité" />
+              <Input label="Disponibilité Totale" type="number" placeholder="Quantité" value={formData.quantity} onChange={e => setFormData({...formData, quantity: e.target.value})} />
             </div>
 
             <div className="p-4 bg-[var(--text-accent)]/5 rounded-2xl flex gap-3 border border-[var(--text-accent)]/10">
@@ -146,17 +259,19 @@ const ProductFormPage: React.FC = () => {
             </div>
             
             <div className="space-y-6">
-               <Input label="Région / Ville" defaultValue="Bobo-Dioulasso" />
-               <Input label="Adresse Exacte de Collecte" placeholder="Indications pour le transporteur..." icon={<Truck size={16} />} />
+               <Input label="Région / Ville" value={formData.region} onChange={e => setFormData({...formData, region: e.target.value})} />
+               <Input label="Adresse Exacte de Collecte" placeholder="Indications pour le transporteur..." icon={<Truck size={16} />} value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} />
                
-               <div className="aspect-video bg-[var(--bg-muted)] rounded-2xl border border-[var(--border-light)] flex flex-col items-center justify-center text-center p-6 gap-3 group/map relative overflow-hidden">
-                  <div className="w-12 h-12 rounded-2xl bg-white dark:bg-[#1a1d24] flex items-center justify-center text-[var(--text-secondary)] shadow-sm group-hover/map:scale-110 transition-transform relative z-10">
-                     <MapPin size={24} className="text-[var(--text-accent)]" />
-                  </div>
-                  <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest leading-relaxed relative z-10">
-                     Ouvrir Maps
-                  </p>
-               </div>
+               <LocationPicker
+                  className="h-56 w-full"
+                  initialPosition={{ lat: 12.3641, lng: -1.5330 }}
+                  onChange={(pos) => {
+                    setCoords(pos);
+                  }}
+                />
+                <p className="text-[10px] text-[var(--text-secondary)] font-medium mt-2 text-center">
+                  📍 Cliquez sur la carte pour placer votre point de collecte — Lat: {coords.lat.toFixed(4)}, Lng: {coords.lng.toFixed(4)}
+                </p>
             </div>
           </Card>
 
@@ -178,9 +293,10 @@ const ProductFormPage: React.FC = () => {
                      variant="primary" 
                      size="lg" 
                      className="w-full flex justify-between group shadow-xl shadow-[var(--text-accent)]/20"
-                     onClick={() => navigate('/farmer/products')}
+                     onClick={handleSubmit}
+                     disabled={loading}
                    >
-                     <span className="font-bold">Publier l'Annonce</span>
+                     <span className="font-bold">{loading ? "Enregistrement..." : (isEditing ? "Enregistrer les modifications" : "Publier l'Annonce")}</span>
                      <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                    </Button>
                    <Button 

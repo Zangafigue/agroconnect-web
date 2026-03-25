@@ -21,7 +21,7 @@ import Avatar from '../../components/shared/Avatar';
 import ChangePasswordModal from '../../components/shared/ChangePasswordModal';
 
 const FarmerProfilePage: React.FC = () => {
-  const { user, updateProfile } = useAuthStore() as any;
+  const { user, updateProfile, uploadPicture } = useAuthStore() as any;
   const [loading, setLoading] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [formData, setFormData] = useState({
@@ -52,9 +52,8 @@ const FarmerProfilePage: React.FC = () => {
     if (!file) return;
     setLoading(true);
     try {
-      const { uploadPicture } = useAuthStore.getState() as any;
       await uploadPicture(file);
-      toast.success('Photo mise à jour !');
+      toast.success('Photo de profil mise à jour !');
     } catch (error) {
       toast.error('Erreur lors de l\'envoi de la photo.');
     } finally {
@@ -80,9 +79,12 @@ const FarmerProfilePage: React.FC = () => {
         {/* Left Column: Profile Card */}
         <div className="lg:col-span-2 space-y-8">
           <Card className="p-0 overflow-hidden group border-[var(--border-light)]">
-            <div className="h-32 bg-[var(--bg-muted)] relative overflow-hidden">
+            <div className="h-32 bg-[var(--bg-muted)] relative">
                <div className="absolute inset-0 bg-[var(--text-accent)]/5 group-hover:bg-[var(--text-accent)]/10 transition-colors duration-500"></div>
-               <div className="absolute -bottom-16 left-8">
+            </div>
+            
+            <div className="relative px-8 pb-8 flex flex-col items-center">
+               <div className="absolute -top-16">
                   <div className="relative group/avatar">
                     <Avatar 
                       name={formData.firstName || formData.name} 
@@ -106,28 +108,28 @@ const FarmerProfilePage: React.FC = () => {
                     </button>
                   </div>
                </div>
-            </div>
-            
-            <div className="pt-20 pb-8 px-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
-               <div className="space-y-1">
-                  <h2 className="text-2xl font-display font-bold text-[var(--text-primary)]">
-                    {formData.firstName} {formData.lastName}
-                  </h2>
-                  <p className="text-sm text-[var(--text-secondary)] flex items-center gap-1.5 font-medium">
-                    <MapPin size={14} className="text-[var(--text-accent)]" /> {formData.location || 'Localisation non définie'}
-                  </p>
-               </div>
-               <div className="flex gap-4">
-                  <div className="text-center px-5 py-3 bg-[var(--bg-muted)] rounded-2xl border border-[var(--border-light)]">
-                     <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-1 opacity-60">Indice</p>
-                     <div className="flex items-center gap-1.5 text-amber-500">
-                        <Star size={14} fill="currentColor" />
-                        <span className="font-mono font-bold text-lg">4.9</span>
-                     </div>
+               
+               <div className="pt-20 text-center space-y-6 w-full">
+                  <div className="space-y-1">
+                    <h2 className="text-2xl font-display font-bold text-[var(--text-primary)]">
+                      {formData.firstName} {formData.lastName}
+                    </h2>
+                    <p className="text-sm text-[var(--text-secondary)] flex items-center justify-center gap-1.5 font-medium">
+                      <MapPin size={14} className="text-[var(--text-accent)]" /> {formData.location || 'Localisation non définie'}
+                    </p>
                   </div>
-                  <div className="text-center px-5 py-3 bg-[var(--bg-muted)] rounded-2xl border border-[var(--border-light)]">
-                     <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-1 opacity-60">Volume</p>
-                     <span className="font-mono font-bold text-lg text-[var(--text-primary)]">124</span>
+                  <div className="flex justify-center gap-4">
+                    <div className="text-center px-8 py-3 bg-[var(--bg-muted)] rounded-2xl border border-[var(--border-light)]">
+                       <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-1 opacity-60">Indice</p>
+                       <div className="flex items-center justify-center gap-1.5 text-amber-500">
+                          <Star size={14} fill="currentColor" />
+                          <span className="font-mono font-bold text-lg">4.9</span>
+                       </div>
+                    </div>
+                    <div className="text-center px-8 py-3 bg-[var(--bg-muted)] rounded-2xl border border-[var(--border-light)]">
+                       <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-1 opacity-60">Volume</p>
+                       <span className="font-mono font-bold text-lg text-[var(--text-primary)]">124</span>
+                    </div>
                   </div>
                </div>
             </div>
@@ -193,23 +195,23 @@ const FarmerProfilePage: React.FC = () => {
 
         {/* Right Column: Sidebar */}
         <div className="space-y-6">
-          <Card className="p-8 border-none bg-[var(--text-primary)] text-[var(--bg-surface)] transition-colors duration-500">
+          <Card className="p-8 border-[var(--border-light)]">
             <div className="flex items-center gap-3 mb-8">
               <Lock size={20} className="text-[var(--text-accent)]" />
-              <h3 className="text-lg font-display font-bold">Sécurité</h3>
+              <h3 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em]">Sécurité</h3>
             </div>
             <div className="space-y-6">
-              <div className="p-4 bg-white/5 border border-white/10 dark:border-white/5 rounded-2xl">
-                <p className="text-[10px] text-white/40 uppercase font-black mb-2 tracking-widest">Compte</p>
+              <div className="p-4 bg-[var(--bg-muted)] border border-[var(--border-light)] rounded-2xl">
+                <p className="text-[10px] text-[var(--text-secondary)] uppercase font-black mb-2 tracking-widest">Compte</p>
                 <div className="flex justify-between items-center text-sm">
                    <span className="text-[var(--green-500)] font-bold">2FA Activée</span>
-                   <Button variant="ghost" size="sm" className="text-white/60 p-0 h-auto hover:text-white font-bold">Gérer</Button>
+                   <Button variant="ghost" size="sm" className="text-[var(--text-secondary)] p-0 h-auto hover:text-[var(--text-primary)] font-bold">Gérer</Button>
                 </div>
               </div>
               <Button 
-                variant="ghost" 
+                variant="secondary" 
                 size="md" 
-                className="w-full bg-white/5 text-white border-white/10 hover:bg-white/10 font-bold"
+                className="w-full font-bold"
                 onClick={() => setIsPasswordModalOpen(true)}
               >
                 Changer le mot de passe

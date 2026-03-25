@@ -28,7 +28,7 @@ import ChangePasswordModal from '../../components/shared/ChangePasswordModal';
 import LogoutModal from '../../components/shared/LogoutModal';
 
 const TransporterProfilePage: React.FC = () => {
-  const { user, updateProfile, logout } = useAuthStore() as any;
+  const { user, updateProfile, logout, uploadPicture } = useAuthStore() as any;
   const navigate = useNavigate();
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -65,10 +65,7 @@ const TransporterProfilePage: React.FC = () => {
     if (!file) return;
     setLoading(true);
     try {
-      const { uploadPicture } = useAuthStore.getState() as any;
-      if (uploadPicture) {
-         await uploadPicture(file);
-      }
+      await uploadPicture(file);
       toast.success('Photo mise à jour !');
     } catch (error) {
       toast.error('Erreur lors de l\'upload de la photo.');

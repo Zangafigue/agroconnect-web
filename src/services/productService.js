@@ -5,6 +5,14 @@ const productService = {
     const response = await api.get('/products', { params });
     return response.data;
   },
+  createProduct: async (formData) => {
+    const response = await api.post('/products', formData);
+    return response.data;
+  },
+  updateProduct: async (id, formData) => {
+    const response = await api.put(`/products/${id}`, formData);
+    return response.data;
+  },
   getAllAdmin: async () => {
     const response = await api.get('/admin/products');
     return response.data;

@@ -13,7 +13,8 @@ import {
   Bell,
   Phone,
   Mail,
-  Zap
+  Zap,
+  Camera
 } from 'lucide-react';
 import Card from '../../components/shared/Card';
 import Button from '../../components/shared/Button';
@@ -21,15 +22,28 @@ import Avatar from '../../components/shared/Avatar';
 import Input from '../../components/shared/Input';
 import ChangePasswordModal from '../../components/shared/ChangePasswordModal';
 import { useBuyerStore } from '../../store/buyerStore';
+import toast from 'react-hot-toast';
 
 const BuyerProfilePage: React.FC = () => {
-  const { user } = useAuthStore() as any;
+  const { user, uploadPicture } = useAuthStore() as any;
   const { stats, fetchDashboardData } = useBuyerStore() as any;
   const [isPasswordModalOpen, setIsPasswordModalOpen] = React.useState(false);
 
   React.useEffect(() => {
     fetchDashboardData();
   }, [fetchDashboardData]);
+  
+  const handlePictureUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const toastId = toast.loading('Téléchargement de la photo...');
+    try {
+      await uploadPicture(file);
+      toast.success('Photo mise à jour', { id: toastId });
+    } catch (error) {
+      toast.error('Erreur lors de l\'upload de la photo.', { id: toastId });
+    }
+  };
   
   return (
     <div className="space-y-8 pb-12 font-body animate-in fade-in duration-700">
@@ -39,9 +53,19 @@ const BuyerProfilePage: React.FC = () => {
         
         <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
            <div className="relative group">
-              <Avatar name={user?.firstName || 'Partenaire'} role="BUYER" size="xl" className="border-4 border-[var(--bg-surface)] shadow-xl" />
-              <button className="absolute -bottom-2 -right-2 w-10 h-10 bg-[var(--text-accent)] text-white rounded-xl flex items-center justify-center shadow-lg hover:brightness-110 active:scale-95 transition-all ring-4 ring-[var(--bg-surface)]">
-                <Edit3 size={18} />
+              <Avatar name={user?.firstName || 'Partenaire'} role="BUYER" size="xl" image={user?.avatar} className="border-4 border-[var(--bg-surface)] shadow-xl" />
+              <input 
+                type="file" 
+                id="buyer-avatar" 
+                className="hidden" 
+                accept="image/*" 
+                onChange={handlePictureUpload} 
+              />
+              <button 
+                onClick={() => document.getElementById('buyer-avatar')?.click()}
+                className="absolute -bottom-2 -right-2 w-10 h-10 bg-[var(--text-accent)] text-white rounded-xl flex items-center justify-center shadow-lg hover:brightness-110 active:scale-95 transition-all ring-4 ring-[var(--bg-surface)]"
+              >
+                <Camera size={18} />
               </button>
            </div>
            

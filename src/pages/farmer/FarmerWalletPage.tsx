@@ -24,13 +24,13 @@ import DataTable from '../../components/shared/DataTable';
 import toast from 'react-hot-toast';
 
 const FarmerWalletPage: React.FC = () => {
-  const { orders, fetchUserOrders, loading } = useOrderStore() as any;
+  const { orders, fetchOrders, loading } = useOrderStore() as any;
   const [withdrawalAmount, setWithdrawalAmount] = useState('');
   const [selectedMethod, setSelectedMethod] = useState('OM');
 
   useEffect(() => {
-    fetchUserOrders();
-  }, [fetchUserOrders]);
+    fetchOrders();
+  }, [fetchOrders]);
 
   // Financial calculations
   const availableBalance = (orders || [])
@@ -106,7 +106,7 @@ const FarmerWalletPage: React.FC = () => {
           <h1 className="text-3xl md:text-4xl font-display text-[var(--text-primary)] tracking-tight mb-2">Mon Trésor Agricole</h1>
           <p className="text-sm text-[var(--text-secondary)] font-medium">Suivez vos revenus en temps réel et gérez vos extractions de fonds.</p>
         </div>
-        <div className="flex items-center gap-3 px-4 py-2 bg-[var(--text-primary)] text-[var(--bg-surface)] rounded-2xl border border-[var(--border-light)] shadow-xl">
+        <div className="flex items-center gap-3 px-4 py-2 bg-slate-800 text-white rounded-2xl border border-[var(--border-light)] shadow-xl">
            <ShieldCheck size={18} className="text-[var(--text-accent)]" />
            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Fonds Sécurisés</span>
         </div>
@@ -114,7 +114,7 @@ const FarmerWalletPage: React.FC = () => {
 
       {/* Main Balances */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="p-8 bg-[var(--text-primary)] text-[var(--bg-surface)] border-none relative overflow-hidden group col-span-1 md:col-span-2 transition-colors duration-500">
+        <Card className="p-8 bg-slate-800 text-white border-none relative overflow-hidden group col-span-1 md:col-span-2 transition-colors duration-500">
            <div className="relative z-10 space-y-6">
               <div className="flex items-center justify-between">
                 <div className="p-3 bg-white/10 rounded-2xl">

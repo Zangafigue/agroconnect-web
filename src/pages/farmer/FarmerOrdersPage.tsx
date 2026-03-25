@@ -21,13 +21,13 @@ import Avatar from '../../components/shared/Avatar';
 
 const FarmerOrdersPage: React.FC = () => {
   const navigate = useNavigate();
-  const { orders, fetchUserOrders, loading } = useOrderStore() as any;
+  const { orders, fetchOrders, loading } = useOrderStore() as any;
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
 
   useEffect(() => {
-    fetchUserOrders();
-  }, [fetchUserOrders]);
+    fetchOrders();
+  }, [fetchOrders]);
 
   const filteredOrders = (orders || []).filter((o: any) => {
     const matchesFilter = filter === 'all' || o.status === filter;
