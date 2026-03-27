@@ -98,14 +98,14 @@ const FarmerProductsPage: React.FC = () => {
             variant="ghost" 
             size="sm" 
             icon={<Eye size={16} />}
-            onClick={(e) => { e.stopPropagation(); navigate(`/catalog/${p._id}`); }}
-            title="Voir"
+            onClick={(e) => { e.stopPropagation(); navigate(`/farmer/products/${p._id}`); }}
+            title="Consulter les détails"
           />
           <Button 
             variant="ghost" 
             size="sm" 
             icon={<Edit3 size={16} />}
-            onClick={(e) => { e.stopPropagation(); navigate(`/farmer/products/${p._id}/edit`); }}
+            onClick={(e) => { e.stopPropagation(); navigate(`/farmer/products/${p._id}?action=edit`); }}
             title="Modifier"
           />
           <Button 
@@ -179,7 +179,7 @@ const FarmerProductsPage: React.FC = () => {
           columns={columns} 
           data={filteredProducts} 
           isLoading={loading}
-          onRowClick={(p: any) => navigate(`/farmer/products/${p._id}/edit`)}
+          onRowClick={(p: any) => navigate(`/farmer/products/${p._id}`)}
           emptyMessage="Votre catalogue est vide. Commencez par ajouter votre première récolte."
         />
       </section>

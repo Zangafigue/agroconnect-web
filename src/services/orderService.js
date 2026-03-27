@@ -1,6 +1,30 @@
 import axios from '../api/axios';
 
 const orderService = {
+  // ====================================================================
+  // BUYER ORDER ROUTES NEEDED:
+  //   POST /api/orders        → create a new order
+  //   GET  /api/orders/mine   → get the current buyer's orders
+  // ====================================================================
+
+  /**
+   * Create a new order (buyer places order on a product).
+   * Payload: { productId, quantity, deliveryAddress, deliveryDate, notes }
+   */
+  createOrder: async (payload) => {
+    const response = await axios.post('/orders', payload);
+    return response.data;
+  },
+
+  /**
+   * Get orders belonging to the currently logged-in buyer.
+   */
+  getMyOrders: async () => {
+    const response = await axios.get('/orders/mine');
+    return response.data;
+  },
+
+  // Admin routes
   getOrders: async () => {
     const response = await axios.get('/admin/orders');
     return response.data;

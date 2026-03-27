@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { 
   ChevronRight, 
   Package, 
@@ -14,7 +14,11 @@ import {
   ArrowRight,
   Info,
   CheckCircle,
-  Truck
+  Truck,
+  Edit3,
+  Eye,
+  Lock,
+  Unlock
 } from 'lucide-react';
 import Card from '../../components/shared/Card';
 import Button from '../../components/shared/Button';
@@ -26,12 +30,19 @@ import toast from 'react-hot-toast';
 const ProductFormPage: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{id: string}>();
-  const isEditing = !!id;
+  const [searchParams] = useSearchParams();
+  const isExistingProduct = !!id && !id.includes('new');
+  const isEditing = isExistingProduct; // has an id = loaded from server
+  // Start in view-only mode unless explicitly set to edit via ?action=edit or via /edit route
+  const [isViewMode, setIsViewMode] = useState(
+    isExistingProduct && searchParams.get('action') !== 'edit'
+  );
   const { products, createProduct, updateProduct, fetchProductById } = useProductStore() as any;
   const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState('Céréales');
   const [coords, setCoords] = useState({ lat: 12.3641, lng: -1.5330 });
   const [images, setImages] = useState<File[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -60,6 +71,10 @@ const ProductFormPage: React.FC = () => {
           address: (product.location ? product.location.split(',')[1]?.trim() : '') || ''
         });
         setCategory(product.category || 'Céréales');
+        // Load existing image URLs so they display in the photo grid
+        if (Array.isArray(product.images)) {
+          setExistingImages(product.images.filter(Boolean));
+        }
       };
 
       if (cachedProduct) {
@@ -80,6 +95,10 @@ const ProductFormPage: React.FC = () => {
 
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = (index: number) => {
+    setExistingImages(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
@@ -103,6 +122,10 @@ const ProductFormPage: React.FC = () => {
       images.forEach(img => {
         submitData.append('images', img);
       });
+      // Tell the backend which existing images to keep
+      existingImages.forEach(url => {
+        submitData.append('existingImages', url);
+      });
 
       if (isEditing) {
         await updateProduct(id, submitData);
@@ -118,6 +141,120 @@ const ProductFormPage: React.FC = () => {
        setLoading(false);
     }
   };
+
+  const product = products?.find((p: any) => p._id === id);
+
+  // ─── Read-Only View Mode ────────────────────────────────────────────────────
+  if (isViewMode && product) {
+    return (
+      <div className="space-y-8 pb-24 animate-in fade-in duration-700 font-body">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-secondary)]/60">
+          <Link className="hover:text-[var(--text-accent)] transition-colors" to="/farmer/products">Mon Catalogue</Link>
+          <ChevronRight size={10} />
+          <span className="text-[var(--text-secondary)] truncate max-w-xs">{product.name || product.title}</span>
+        </nav>
+
+        {/* Hero product card */}
+        <Card className="p-0 overflow-hidden border-[var(--border-light)]">
+          <div className="relative h-64 md:h-80 bg-[var(--bg-muted)]">
+            <img
+              src={product.images?.[0] || 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=800&q=80'}
+              alt={product.name}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute bottom-6 left-8 right-8 flex items-end justify-between">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 mb-1">{product.category || 'Céréales'}</p>
+                <h1 className="text-3xl md:text-4xl font-display font-bold text-white tracking-tight leading-tight">
+                  {product.name || product.title}
+                </h1>
+              </div>
+              <div className="text-right shrink-0 ml-4">
+                <p className="text-3xl font-mono font-black text-white">{product.price?.toLocaleString()} FCFA</p>
+                <p className="text-sm font-bold text-white/70">{product.unit || 'Kg'}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats row */}
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-[var(--border-light)] border-t border-[var(--border-light)]">
+            {[
+              { label: 'Disponibilité', value: `${product.quantity || product.inventory || product.stock || '—'} ${product.unit || 'Kg'}` },
+              { label: 'Catégorie', value: product.category || 'Céréales' },
+              { label: 'Zone de collecte', value: product.location?.split(',')[0] || product.city || 'N/A' },
+              { label: 'Statut', value: product.status === 'active' ? 'Publié ✓' : 'Archivé' },
+            ].map(stat => (
+              <div key={stat.label} className="p-6 text-center">
+                <p className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-1">{stat.label}</p>
+                <p className="font-bold text-[var(--text-primary)]">{stat.value}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Description */}
+        {product.description && (
+          <Card className="p-8 space-y-3">
+            <div className="flex items-center gap-2">
+              <Info size={16} className="text-[var(--text-accent)]" />
+              <h3 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[.2em]">Description & Spécifications</h3>
+            </div>
+            <p className="text-[var(--text-secondary)] leading-relaxed font-medium">{product.description}</p>
+          </Card>
+        )}
+
+        {/* Photo gallery */}
+        {product.images?.length > 1 && (
+          <Card className="p-8 space-y-4">
+            <div className="flex items-center gap-2">
+              <Camera size={16} className="text-[var(--text-accent)]" />
+              <h3 className="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[.2em]">Galerie Photos</h3>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {product.images.map((src: string, i: number) => (
+                <div key={i} className="aspect-square rounded-2xl overflow-hidden border border-[var(--border-light)]">
+                  <img src={src} alt={`Photo ${i+1}`} className="w-full h-full object-cover" />
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+
+        {/* Actions */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Button
+            variant="primary"
+            size="lg"
+            icon={<Edit3 size={18} />}
+            className="flex-1"
+            onClick={() => setIsViewMode(false)}
+          >
+            Activer la modification
+          </Button>
+          <Button
+            variant="ghost"
+            size="lg"
+            className="flex-1"
+            onClick={() => navigate('/farmer/products')}
+          >
+            Retour au Catalogue
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── Loading state (no product in cache yet for view mode) ─────────────────
+  if (isViewMode && isEditing && !product) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 gap-4 text-[var(--text-secondary)]">
+        <div className="w-10 h-10 border-4 border-[var(--text-accent)]/20 border-t-[var(--text-accent)] rounded-full animate-spin" />
+        <p className="font-bold animate-pulse">Chargement du produit...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 pb-24 animate-in fade-in duration-700 font-body">
@@ -152,6 +289,7 @@ const ProductFormPage: React.FC = () => {
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {/* Upload zone – always first */}
               <label className="aspect-square bg-[var(--bg-muted)] border-2 border-dashed border-[var(--border-light)] rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-[var(--text-accent)]/40 hover:bg-[var(--text-accent)]/5 transition-all group/upload relative overflow-hidden">
                 <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageUpload} />
                 <UploadCloud size={32} className="text-[var(--text-secondary)]/50 group-hover/upload:text-[var(--text-accent)] group-hover/upload:-translate-y-1 transition-all duration-300" />
@@ -159,16 +297,40 @@ const ProductFormPage: React.FC = () => {
                 <div className="absolute inset-0 bg-[var(--text-accent)]/5 opacity-0 group-hover/upload:opacity-100 transition-opacity"></div>
               </label>
               
+              {/* Existing images from the server */}
+              {existingImages.map((url, i) => (
+                <div key={`existing-${i}`} className="aspect-square bg-[var(--bg-muted)] border border-[var(--border-light)] rounded-2xl relative overflow-hidden group/item">
+                  <img src={url} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover/item:opacity-100 transition-opacity flex items-center justify-center">
+                    <button
+                      type="button"
+                      onClick={() => removeExistingImage(i)}
+                      className="p-2 bg-red-500 text-white rounded-xl hover:scale-110 transition-transform shadow-lg"
+                    >
+                      <Plus size={14} className="rotate-45" />
+                    </button>
+                  </div>
+                  <div className="absolute bottom-2 left-2 bg-black/50 text-white text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
+                    Actuelle
+                  </div>
+                </div>
+              ))}
+
+              {/* New files being uploaded */}
               {images.map((file, i) => (
-                <div key={i} className="aspect-square bg-[var(--bg-muted)] border border-[var(--border-light)] rounded-2xl relative overflow-hidden group/item">
+                <div key={`new-${i}`} className="aspect-square bg-[var(--bg-muted)] border border-[var(--text-accent)]/40 rounded-2xl relative overflow-hidden group/item ring-2 ring-[var(--text-accent)]/20">
                   <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
-                  <button onClick={() => removeImage(i)} className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity hover:scale-110">
+                  <button type="button" onClick={() => removeImage(i)} className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-lg opacity-0 group-hover/item:opacity-100 transition-opacity hover:scale-110">
                     <Plus size={14} className="rotate-45" />
                   </button>
+                  <div className="absolute bottom-2 left-2 bg-[var(--text-accent)]/80 text-white text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
+                    Nouveau
+                  </div>
                 </div>
               ))}
               
-              {[...Array(Math.max(0, 3 - images.length))].map((_, i) => (
+              {/* Empty placeholder slots */}
+              {[...Array(Math.max(0, 3 - existingImages.length - images.length))].map((_, i) => (
                 <label key={`empty-${i}`} className="aspect-square bg-[var(--bg-muted)] border-2 border-dashed border-[var(--border-light)] rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-[var(--text-accent)]/20 transition-all group/item">
                   <input type="file" multiple accept="image/*" className="hidden" onChange={handleImageUpload} />
                   <Plus size={24} className="text-[var(--text-secondary)]/30 group-hover/item:text-[var(--text-accent)]/40 transition-colors" />
@@ -275,16 +437,16 @@ const ProductFormPage: React.FC = () => {
             </div>
           </Card>
 
-          <Card className="p-8 space-y-8 border-none bg-black dark:bg-[#111827] text-white shadow-2xl relative overflow-hidden transition-colors duration-500">
+          <Card className="p-8 space-y-8 border-[var(--border-light)] relative overflow-hidden transition-colors duration-500">
              <div className="relative z-10">
                 <div className="flex items-center justify-between mb-8">
                    <div className="space-y-1">
-                     <h4 className="text-lg font-display font-bold">Mise en Ligne</h4>
-                     <p className="text-[10px] font-bold text-white/60 uppercase tracking-widest">Disponibilité Immédiate</p>
+                     <h4 className="text-lg font-display font-bold text-[var(--text-primary)]">Mise en Ligne</h4>
+                     <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-widest">Disponibilité Immédiate</p>
                    </div>
                    <label className="relative inline-flex items-center cursor-pointer">
                      <input type="checkbox" className="sr-only peer" defaultChecked />
-                     <div className="w-12 h-6 bg-white/10 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--text-accent)]"></div>
+                     <div className="w-12 h-6 bg-[var(--bg-muted)] border border-[var(--border-light)] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-[var(--bg-surface)] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[var(--text-accent)] shadow-inner"></div>
                    </label>
                 </div>
 
@@ -302,14 +464,14 @@ const ProductFormPage: React.FC = () => {
                    <Button 
                      variant="ghost" 
                      size="md" 
-                     className="w-full text-white/60 hover:text-white font-bold"
+                     className="w-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-bold"
                      onClick={() => navigate(-1)}
                    >
                      Annuler & Retourner
                    </Button>
                 </div>
              </div>
-             <Leaf size={120} className="absolute -bottom-10 -right-10 text-white/5 -rotate-12" />
+             <Leaf size={120} className="absolute -bottom-10 -right-10 text-[var(--text-accent)]/5 -rotate-12 pointer-events-none" />
           </Card>
 
           <div className="p-6 bg-[var(--bg-surface)] rounded-3xl flex items-start gap-4 border border-[var(--border-light)]">

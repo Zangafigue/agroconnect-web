@@ -105,6 +105,7 @@ const FarmerProfilePage = lazy(() => import('../pages/farmer/FarmerProfilePage')
 const BuyerDashboard = lazy(() => import('../pages/buyer/BuyerDashboard'));
 const MarketplacePage = lazy(() => import('../pages/buyer/MarketplacePage'));
 const BuyerProductDetailPage = lazy(() => import('../pages/visitor/ProductDetailPage'));
+const BuyerProducersPage = lazy(() => import('../pages/buyer/BuyerProducersPage'));
 const BuyerOrdersPage = lazy(() => import('../pages/buyer/BuyerOrdersPage'));
 const BuyerOffersPage = lazy(() => import('../pages/buyer/BuyerOffersPage'));
 const BuyerPaymentPage = lazy(() => import('../pages/buyer/BuyerPaymentPage'));
@@ -159,6 +160,7 @@ export const router = createBrowserRouter([
     { path: '/farmer/dashboard', element: <FarmerDashboard /> },
     { path: '/farmer/products', element: <FarmerProductsPage /> },
     { path: '/farmer/products/new', element: <ProductFormPage /> },
+    { path: '/farmer/products/:id', element: <ProductFormPage /> },
     { path: '/farmer/products/:id/edit', element: <ProductFormPage /> },
     { path: '/farmer/orders', element: <FarmerOrdersPage /> },
     { path: '/farmer/messages', element: <MessagingPage /> },
@@ -173,6 +175,7 @@ export const router = createBrowserRouter([
     { path: '/buyer/dashboard', element: <BuyerDashboard /> },
     { path: '/buyer/marketplace', element: <MarketplacePage /> },
     { path: '/buyer/marketplace/product/:id', element: <BuyerProductDetailPage /> },
+    { path: '/buyer/producers', element: <BuyerProducersPage /> },
     { path: '/buyer/orders', element: <BuyerOrdersPage /> },
     { path: '/buyer/offers', element: <BuyerOffersPage /> },
     { path: '/buyer/payment', element: <BuyerPaymentPage /> },

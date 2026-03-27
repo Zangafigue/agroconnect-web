@@ -23,6 +23,7 @@ const ROLE_NAV: Record<string, { icon: string; name: string; path: string }[]> =
   BUYER: [
     { icon: 'dashboard', name: 'Dashboard', path: '/buyer/dashboard' },
     { icon: 'local_grocery_store', name: 'Marché', path: '/buyer/marketplace' },
+    { icon: 'groups', name: 'Producteurs', path: '/buyer/producers' },
     { icon: 'shopping_bag', name: 'Achats', path: '/buyer/orders' },
     { icon: 'forum', name: 'Messages', path: '/buyer/messages' },
     { icon: 'person', name: 'Profil', path: '/buyer/profile' },
