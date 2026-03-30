@@ -22,6 +22,9 @@ const LoginPage: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return setError('Veuillez entrer une adresse e-mail valide.');
+
     setNotVerifiedError(false);
     setLoading(true);
 

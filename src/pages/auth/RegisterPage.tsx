@@ -42,6 +42,9 @@ const RegisterPage: React.FC = () => {
     e.preventDefault();
     setError('');
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) return setError('Veuillez entrer une adresse e-mail valide.');
+    
     if (pwScore < 3) return setError('Votre mot de passe est trop faible. Veuillez respecter les critères.');
     if (!cguAccepted) return setError('Vous devez accepter les conditions pour continuer.');
 

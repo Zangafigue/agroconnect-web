@@ -10,8 +10,12 @@ export default function WorkspaceSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Detect current workspace from URL path
+  const currentPath = window.location.pathname;
+  const activeSlug = currentPath.startsWith('/farmer') ? 'farmer' : 
+                     currentPath.startsWith('/transporter') ? 'transporter' : 'buyer';
+  
   const role = getUserRole(user);
-  const roleSlug = getRoleSlug(role);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -37,7 +41,7 @@ export default function WorkspaceSwitcher() {
         className="w-full flex items-center justify-between bg-[var(--bg-muted)] border border-[var(--border-light)] text-[var(--text-primary)] rounded-xl py-2 px-3 hover:border-[var(--text-accent)]/50 transition-colors shadow-sm"
       >
         <span className="text-[13px] font-bold">
-          {roleSlug === 'buyer' ? 'Acheteur' : roleSlug === 'farmer' ? 'Producteur' : 'Livreur'}
+          {activeSlug === 'buyer' ? 'Acheteur' : activeSlug === 'farmer' ? 'Producteur' : 'Livreur'}
         </span>
         <ChevronDown size={16} className={`text-[var(--text-secondary)] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
@@ -49,42 +53,42 @@ export default function WorkspaceSwitcher() {
               <button 
                 onClick={() => handleSwitch('buyer')}
                 className={`w-full text-left flex items-center justify-between px-3 py-2.5 rounded-lg text-[13px] font-bold transition-colors ${
-                  roleSlug === 'buyer' ? 'bg-[var(--text-accent)]/10 text-[var(--text-accent)]' : 'text-[var(--text-primary)] hover:bg-[var(--bg-muted)]'
+                  activeSlug === 'buyer' ? 'bg-[var(--text-accent)]/10 text-[var(--text-accent)]' : 'text-[var(--text-primary)] hover:bg-[var(--bg-muted)]'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
                   <span className="material-symbols-outlined text-[18px]">shopping_cart</span>
                   Acheteur
                 </div>
-                {roleSlug === 'buyer' && <Check size={16} />}
+                {activeSlug === 'buyer' && <Check size={16} />}
               </button>
             )}
             {(user?.canSell || role === 'FARMER') && (
               <button 
                 onClick={() => handleSwitch('farmer')}
                 className={`w-full text-left flex items-center justify-between px-3 py-2.5 rounded-lg text-[13px] font-bold transition-colors ${
-                  roleSlug === 'farmer' ? 'bg-[var(--text-accent)]/10 text-[var(--text-accent)]' : 'text-[var(--text-primary)] hover:bg-[var(--bg-muted)]'
+                  activeSlug === 'farmer' ? 'bg-[var(--text-accent)]/10 text-[var(--text-accent)]' : 'text-[var(--text-primary)] hover:bg-[var(--bg-muted)]'
                 }`}
               >
                 <div className="flex items-center gap-2.5">
                   <span className="material-symbols-outlined text-[18px]">storefront</span>
                   Producteur
                 </div>
-                {roleSlug === 'farmer' && <Check size={16} />}
+                {activeSlug === 'farmer' && <Check size={16} />}
               </button>
             )}
             {(user?.canDeliver || role === 'TRANSPORTER') && (
               <button 
                 onClick={() => handleSwitch('transporter')}
                 className={`w-full text-left flex items-center justify-between px-3 py-2.5 rounded-lg text-[13px] font-bold transition-colors ${
-                  roleSlug === 'transporter' ? 'bg-[var(--text-accent)]/10 text-[var(--text-accent)]' : 'text-[var(--text-primary)] hover:bg-[var(--bg-muted)]'
+                  activeSlug === 'transporter' ? 'bg-[var(--text-accent)]/10 text-[var(--text-accent)]' : 'text-[var(--text-primary)] hover:bg-[var(--bg-muted)]'
                 }`}
               >
                  <div className="flex items-center gap-2.5">
                   <span className="material-symbols-outlined text-[18px]">local_shipping</span>
                   Livreur
                 </div>
-                {roleSlug === 'transporter' && <Check size={16} />}
+                {activeSlug === 'transporter' && <Check size={16} />}
               </button>
             )}
           </div>
