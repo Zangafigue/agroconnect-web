@@ -14,20 +14,8 @@ export const useBuyerStore = create((set, get) => ({
     try {
       // API with Fallback Mock for UI dev
       const [statsRes, ordersRes] = await Promise.all([
-        api.get('/buyer/stats').catch(() => ({ 
-          data: { 
-            activeOrdersCount: 2, 
-            favoritesCount: 12, 
-            unreadMessages: 5,
-            totalSpent: 450000
-          } 
-        })),
-        api.get('/buyer/orders/active').catch(() => ({
-          data: [
-            { id: 'CMD-B-882', product: 'Pommes de terre', qty: '50kg', status: 'SHIPPED', price: 25000, date: '2026-03-21', seller: 'Coopérative de Fada' },
-            { id: 'CMD-B-881', product: 'Oignons Galmi', qty: '2 sacs', status: 'CONFIRMED', price: 30000, date: '2026-03-20', seller: 'Ferme Kadiogo' }
-          ]
-        }))
+        api.get('/buyer/stats'),
+        api.get('/buyer/orders/active')
       ]);
 
       set({ 

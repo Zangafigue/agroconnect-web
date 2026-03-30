@@ -153,18 +153,7 @@ const BuyerDashboard: React.FC = () => {
             </Link>
           </Card>
 
-          <Card className="bg-[var(--bg-muted)]/50 border-dashed p-6 border-t-4 border-t-[var(--text-accent)] hover:bg-[var(--bg-muted)] transition-colors">
-            <div className="flex items-center gap-2 mb-3">
-              <TrendingUp size={18} className="text-[var(--text-accent)]" />
-              <h3 className="text-[14px] font-bold text-[var(--text-primary)]">Offre Flash</h3>
-            </div>
-            <p className="text-[13px] text-[var(--text-secondary)] mb-4">
-              -10% sur les commandes groupées de maïs cette semaine !
-            </p>
-            <Button variant="secondary" size="md" className="w-full">
-              En profiter
-            </Button>
-          </Card>
+{/* Offre Flash currently hidden - awaiting backend dynamic offers */}
 
           <Card className="p-6 border-l-4 border-l-[var(--green-500)] shadow-sm bg-[var(--bg-surface)]">
             <h3 className="text-[14px] font-bold text-[var(--text-primary)] mb-4 uppercase tracking-widest flex items-center gap-2">
