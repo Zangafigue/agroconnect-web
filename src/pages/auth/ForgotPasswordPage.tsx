@@ -48,7 +48,7 @@ const ForgotPasswordPage: React.FC = () => {
     <div className="min-h-screen bg-[var(--bg-page)] font-body flex flex-col">
       <header className="flex flex-col items-center justify-center w-full py-16">
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-12 h-12 bg-[var(--section-why-bg)] text-white rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 bg-[var(--text-accent)] text-white rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
              <Lock size={24} />
           </div>
           <span className="text-[var(--text-primary)] font-display text-3xl tracking-tight">AgroConnect BF</span>
@@ -58,7 +58,7 @@ const ForgotPasswordPage: React.FC = () => {
       <main className="flex-grow flex items-center justify-center px-6 pb-24">
         <div className="w-full max-w-[480px]">
           {!success ? (
-            <div className="bg-[var(--bg-surface)] rounded-[3rem] p-10 md:p-12 shadow-2xl shadow-[var(--gray-900)]/5 border border-[var(--border-light)]">
+            <div className="bg-[var(--bg-surface)] rounded-[3rem] p-10 md:p-12 shadow-2xl shadow-[var(--text-primary)]/5 border border-[var(--border-light)]">
               <div className="text-center mb-12">
                 <div className="w-20 h-20 rounded-3xl bg-[var(--bg-muted)] text-[var(--text-primary)] flex items-center justify-center mx-auto mb-8 border border-[var(--border-light)]">
                   <Lock size={36} />
@@ -80,9 +80,9 @@ const ForgotPasswordPage: React.FC = () => {
                 <div className="space-y-2 text-left">
                   <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-secondary)] pl-1" htmlFor="email">E-mail de récupération</label>
                   <div className="relative group">
-                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--gray-400)] group-focus-within:text-[var(--text-primary)] transition-colors" size={20} />
+                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--text-primary)] transition-colors" size={20} />
                     <input 
-                      className="w-full pl-14 pr-4 py-5 bg-[var(--bg-muted)] border border-transparent rounded-[1.5rem] focus:ring-2 focus:ring-[var(--gray-900)] focus:bg-[var(--bg-surface)] transition-all text-[var(--text-primary)] placeholder:text-[var(--gray-400)] outline-none font-medium" 
+                      className="w-full pl-14 pr-4 py-5 bg-[var(--bg-muted)] border border-transparent rounded-[1.5rem] focus:ring-2 focus:ring-[var(--text-accent)] focus:bg-[var(--bg-surface)] transition-all text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none font-medium" 
                       id="email" 
                       type="email"
                       required 
@@ -110,8 +110,8 @@ const ForgotPasswordPage: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="bg-[var(--bg-surface)] rounded-[3rem] p-12 shadow-2xl shadow-[var(--gray-900)]/5 border border-[var(--border-light)] text-center">
-              <div className="w-20 h-20 rounded-3xl bg-[var(--green-600)]/10 text-[var(--green-600)] flex items-center justify-center mx-auto mb-8 animate-in zoom-in">
+            <div className="bg-[var(--bg-surface)] rounded-[3rem] p-12 shadow-2xl shadow-[var(--text-primary)]/5 border border-[var(--border-light)] text-center">
+              <div className="w-20 h-20 rounded-3xl bg-[var(--text-accent)]/10 text-[var(--text-accent)] flex items-center justify-center mx-auto mb-8 animate-in zoom-in">
                 <CheckCircle2 size={40} />
               </div>
               <h2 className="text-4xl font-display text-[var(--text-primary)] mb-4 tracking-tight">Consultez votre boîte.</h2>
@@ -127,7 +127,7 @@ const ForgotPasswordPage: React.FC = () => {
               <button 
                 onClick={handleResend} 
                 disabled={countdown > 0} 
-                className="text-[var(--text-primary)] disabled:text-[var(--gray-400)] text-sm font-bold hover:underline underline-offset-8 transition-all"
+                className="text-[var(--text-primary)] disabled:text-[var(--text-muted)] text-sm font-bold hover:underline underline-offset-8 transition-all"
               >
                 Renvoyer le lien de récupération
               </button>
@@ -144,8 +144,8 @@ const ForgotPasswordPage: React.FC = () => {
       </main>
 
       <div className="py-12 flex flex-col items-center gap-4">
-        <div className="flex items-center gap-3 text-sm text-[var(--gray-400)] font-bold uppercase tracking-widest">
-           <ShieldCheck size={16} className="text-[var(--green-600)]" />
+        <div className="flex items-center gap-3 text-sm text-[var(--text-muted)] font-bold uppercase tracking-widest">
+           <ShieldCheck size={16} className="text-[var(--text-accent)]" />
            Sécurité AgroConnect
         </div>
       </div>

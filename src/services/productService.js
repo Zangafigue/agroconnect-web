@@ -39,6 +39,10 @@ const productService = {
     const response = await api.patch(`/admin/products/${id}/status`, { status });
     return response.data;
   },
+  updateMyProductStatus: async (id, status) => {
+    const response = await api.patch(`/products/${id}/status`, { status });
+    return response.data;
+  },
   deleteProduct: async (id) => {
     const response = await api.delete(`/admin/products/${id}`);
     return response.data;

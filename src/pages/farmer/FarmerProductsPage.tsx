@@ -7,7 +7,9 @@ import {
   Edit3, 
   Trash2,
   Package,
-  Filter
+  Filter,
+  Play,
+  Pause
 } from 'lucide-react';
 import { useProductStore } from '../../store/productStore';
 import { formatFCFA } from '../../utils/currency';
@@ -20,7 +22,7 @@ import toast from 'react-hot-toast';
 
 const FarmerProductsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { products, fetchProducts, deleteProduct, loading } = useProductStore() as any;
+  const { products, fetchProducts, deleteProduct, updateMyProductStatus, loading } = useProductStore() as any;
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all');
 
@@ -42,6 +44,16 @@ const FarmerProductsPage: React.FC = () => {
       } catch (error) {
         toast.error('Erreur lors du retrait du produit');
       }
+    }
+  };
+
+  const handleStatusToggle = async (id: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'active' ? 'out_of_stock' : 'active';
+    try {
+      await updateMyProductStatus(id, newStatus);
+      toast.success(newStatus === 'active' ? 'Produit publié en ligne' : 'Produit déclaré en rupture/hors ligne');
+    } catch (error) {
+      toast.error('Erreur lors de la modification du statut. Le backend doit implémenter PATCH /products/:id/status');
     }
   };
 
@@ -100,6 +112,13 @@ const FarmerProductsPage: React.FC = () => {
             icon={<Eye size={16} />}
             onClick={(e) => { e.stopPropagation(); navigate(`/farmer/products/${p._id}`); }}
             title="Consulter les détails"
+          />
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            icon={p.status === 'active' ? <Pause size={16} className="text-orange-500" /> : <Play size={16} className="text-green-500" />}
+            onClick={(e) => { e.stopPropagation(); handleStatusToggle(p._id, p.status); }}
+            title={p.status === 'active' ? 'Déclarer en Rupture / Hors ligne' : 'Publier en ligne'}
           />
           <Button 
             variant="ghost" 

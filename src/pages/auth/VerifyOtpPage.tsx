@@ -87,33 +87,33 @@ const VerifyOtpPage: React.FC = () => {
     <div className="min-h-screen bg-[var(--bg-page)] font-body flex flex-col">
        <header className="flex flex-col items-center justify-center w-full py-16">
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-12 h-12 bg-[var(--section-why-bg)] text-white rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+          <div className="w-12 h-12 bg-[var(--text-accent)] text-white rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
              <ShieldCheck size={24} />
           </div>
-          <span className="text-[var(--gray-900)] font-display text-3xl tracking-tight">AgroConnect BF</span>
+          <span className="text-[var(--text-primary)] font-display text-3xl tracking-tight">AgroConnect BF</span>
         </Link>
       </header>
 
       <main className="flex-grow flex items-center justify-center px-6 pb-24">
         <div className="w-full max-w-[500px]">
-          <div className="bg-white rounded-[3rem] p-10 md:p-12 shadow-2xl shadow-[var(--gray-900)]/5 border border-[var(--gray-200)] text-center relative overflow-hidden">
+          <div className="bg-white rounded-[3rem] p-10 md:p-12 shadow-2xl shadow-[var(--text-primary)]/5 border border-[var(--border-light)] text-center relative overflow-hidden">
             {success ? (
                <div className="animate-in fade-in zoom-in duration-500">
-                  <div className="w-24 h-24 bg-[var(--green-600)]/10 text-[var(--green-600)] rounded-full flex items-center justify-center mx-auto mb-8">
+                  <div className="w-24 h-24 bg-[var(--text-accent)]/10 text-[var(--text-accent)] rounded-full flex items-center justify-center mx-auto mb-8">
                     <CheckCircle2 size={56} />
                   </div>
-                  <h2 className="text-4xl font-display text-[var(--gray-900)] mb-4">Code vérifié.</h2>
-                  <p className="text-lg text-[var(--gray-501)] mb-10">Votre compte est désormais actif. Préparation de votre espace de travail...</p>
-                  <RefreshCw size={24} className="animate-spin text-[var(--green-600)] mx-auto" />
+                  <h2 className="text-4xl font-display text-[var(--text-primary)] mb-4">Code vérifié.</h2>
+                  <p className="text-lg text-[var(--text-secondary)] mb-10">Votre compte est désormais actif. Préparation de votre espace de travail...</p>
+                  <RefreshCw size={24} className="animate-spin text-[var(--text-accent)] mx-auto" />
                </div>
             ) : (
               <>
-                <div className="w-20 h-20 rounded-3xl bg-[var(--gray-50)] text-[var(--gray-900)] flex items-center justify-center mx-auto mb-8 border border-[var(--gray-200)]">
+                <div className="w-20 h-20 rounded-3xl bg-[var(--bg-muted)] text-[var(--text-primary)] flex items-center justify-center mx-auto mb-8 border border-[var(--border-light)]">
                    <ShieldCheck size={36} />
                 </div>
-                <h2 className="text-4xl font-display text-[var(--gray-900)] mb-4 tracking-tight">Sécurité.</h2>
-                <p className="text-[var(--gray-501)] text-lg leading-relaxed mb-10">
-                  Nous avons envoyé un code de sécurité à <span className="font-bold text-[var(--gray-900)]">{user?.email || 'votre email'}</span>.
+                <h2 className="text-4xl font-display text-[var(--text-primary)] mb-4 tracking-tight">Sécurité.</h2>
+                <p className="text-[var(--text-secondary)] text-lg leading-relaxed mb-10">
+                  Nous avons envoyé un code de sécurité à <span className="font-bold text-[var(--text-primary)]">{user?.email || 'votre email'}</span>.
                 </p>
 
                 {error && (
@@ -129,7 +129,7 @@ const VerifyOtpPage: React.FC = () => {
                       <input
                         key={index}
                         ref={(el) => { inputRefs.current[index] = el as HTMLInputElement; }}
-                        className="w-full h-16 text-center text-3xl font-bold bg-[var(--gray-50)] border-2 border-transparent rounded-2xl focus:border-[var(--gray-900)] focus:bg-white focus:ring-4 focus:ring-[var(--gray-900)]/5 outline-none transition-all font-mono text-[var(--gray-900)]"
+                        className="w-full h-16 text-center text-3xl font-bold bg-[var(--bg-muted)] border-2 border-transparent rounded-2xl focus:border-[var(--gray-900)] focus:bg-white focus:ring-4 focus:ring-[var(--text-accent)]/5 outline-none transition-all font-mono text-[var(--text-primary)]"
                         maxLength={1}
                         placeholder="•"
                         type="text"
@@ -142,7 +142,7 @@ const VerifyOtpPage: React.FC = () => {
 
                   <button 
                     disabled={loading || otp.join('').length < 6}
-                    className="w-full py-5 bg-[var(--gray-900)] text-white font-bold rounded-[1.5rem] flex items-center justify-center gap-3 hover:bg-black shadow-xl shadow-[var(--gray-900)]/10 disabled:opacity-70 disabled:cursor-not-allowed transition-all active:scale-[0.98]" 
+                    className="w-full py-5 bg-[var(--text-accent)] text-white font-bold rounded-[1.5rem] flex items-center justify-center gap-3 hover:bg-black shadow-xl shadow-[var(--text-accent)]/10 disabled:opacity-70 disabled:cursor-not-allowed transition-all active:scale-[0.98]" 
                     type="submit"
                   >
                     {loading ? 'Vérification...' : 'Confirmer l\'accès'}
@@ -150,12 +150,12 @@ const VerifyOtpPage: React.FC = () => {
                   </button>
                 </form>
 
-                <div className="mt-12 pt-10 border-t border-[var(--gray-200)]">
-                   <p className="text-sm text-[var(--gray-501)] mb-6">Code non reçu ?</p>
+                <div className="mt-12 pt-10 border-t border-[var(--border-light)]">
+                   <p className="text-sm text-[var(--text-secondary)] mb-6">Code non reçu ?</p>
                    <button 
                      onClick={handleResend}
                      disabled={resending || countdown > 0}
-                     className="flex items-center gap-3 mx-auto text-[var(--gray-900)] font-black uppercase text-[10px] tracking-[0.2em] hover:text-[var(--green-600)] disabled:text-[var(--gray-400)] transition-all"
+                     className="flex items-center gap-3 mx-auto text-[var(--text-primary)] font-black uppercase text-[10px] tracking-[0.2em] hover:text-[var(--text-accent)] disabled:text-[var(--text-muted)] transition-all"
                    >
                      {resending ? <RefreshCw size={16} className="animate-spin" /> : <RefreshCw size={16} />}
                      {countdown > 0 ? (

@@ -9,7 +9,7 @@ export const useUserStore = create((set) => ({
     set({ loading: true });
     try {
       const data = await userService.getUsers();
-      const usersArray = Array.isArray(data) ? data : (data.users || data.data || []);
+      const usersArray = Array.isArray(data) ? data : (data.users || data.data?.users || data.data || []);
       set({ users: usersArray, loading: false });
     } catch (error) {
       set({ error: error.message, loading: false });

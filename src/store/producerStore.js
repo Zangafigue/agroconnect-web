@@ -10,7 +10,7 @@ export const useProducerStore = create((set) => ({
     set({ loading: true });
     try {
       const data = await producerService.getAll(params);
-      const producersArray = Array.isArray(data) ? data : (data.producers || data.data || []);
+      const producersArray = Array.isArray(data) ? data : (data.users || data.producers || data.data?.users || data.data || []);
       set({ producers: producersArray, loading: false });
     } catch (error) {
       set({ error: error.message, loading: false });

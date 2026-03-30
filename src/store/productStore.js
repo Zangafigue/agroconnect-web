@@ -78,6 +78,21 @@ export const useProductStore = create((set) => ({
     }
   },
 
+  updateMyProductStatus: async (id, status) => {
+    try {
+      await productService.updateMyProductStatus(id, status);
+      set((state) => ({
+        products: state.products.map((p) =>
+          p._id === id ? { ...p, status } : p
+        ),
+        selectedProduct: state.selectedProduct?._id === id ? { ...state.selectedProduct, status } : state.selectedProduct
+      }));
+    } catch (error) {
+      set({ error: error.message });
+      throw error;
+    }
+  },
+
   deleteProduct: async (id) => {
     try {
       await productService.deleteProduct(id);
