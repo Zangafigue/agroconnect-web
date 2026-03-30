@@ -70,7 +70,13 @@ const MessagingPage: React.FC = () => {
     if (!silent) setLoadingConvs(true);
     try {
       const data = await messageService.getConversations();
-      const arr: Conversation[] = Array.isArray(data) ? data : (data?.conversations || data?.data || []);
+      let arr: Conversation[] = [];
+      if (Array.isArray(data)) arr = data;
+      else if (Array.isArray(data?.conversations)) arr = data.conversations;
+      else if (Array.isArray(data?.data)) arr = data.data;
+      else if (Array.isArray(data?.data?.conversations)) arr = data.data.conversations;
+      
+      console.log('Conversations loaded:', arr);
       setConversations(arr);
       return arr;
     } catch (e) {
@@ -86,7 +92,12 @@ const MessagingPage: React.FC = () => {
     if (!silent) setLoadingMsgs(true);
     try {
       const data = await messageService.getMessages(convId);
-      const arr: Message[] = Array.isArray(data) ? data : (data?.messages || data?.data || []);
+      let arr: Message[] = [];
+      if (Array.isArray(data)) arr = data;
+      else if (Array.isArray(data?.messages)) arr = data.messages;
+      else if (Array.isArray(data?.data)) arr = data.data;
+      else if (Array.isArray(data?.data?.messages)) arr = data.data.messages;
+
       setMessages(arr);
       await messageService.markAsRead(convId).catch(() => {});
     } catch (e) {
@@ -137,10 +148,19 @@ const MessagingPage: React.FC = () => {
       // Auto-open via ?open=convId
       if (openParam) {
         const found = convs.find(c => c._id === openParam);
-        if (found) { selectConversation(found); return; }
+        if (found) {
+          selectConversation(found);
+        } else {
+          // Force-open if the list didn't include it (e.g. backend parsing bug or isolated fetch)
+          const dummyConv: Conversation = { _id: openParam, participants: [], updatedAt: new Date().toISOString() };
+          setActiveConv(dummyConv);
+          await loadMessages(openParam);
+          setConversations(prev => [dummyConv, ...prev]);
+        }
+      } else {
+        // Auto-open via ?recipientId
+        await handleRecipientParam(convs);
       }
-      // Auto-open via ?recipientId
-      await handleRecipientParam(convs);
     })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -209,23 +229,12 @@ const MessagingPage: React.FC = () => {
 
   // ─── Render ──────────────────────────────────────────────────────────────
   return (
-    <div className="pt-12 px-4 md:px-8 lg:px-16 pb-8 w-full max-w-7xl mx-auto h-[calc(100vh-5rem)] flex flex-col font-body animate-in fade-in duration-700">
-      {/* Header */}
-      <div className="flex flex-col gap-2 mb-6 shrink-0">
-        <h1 className="text-4xl lg:text-5xl font-display text-[var(--text-primary)] flex items-center gap-4">
-          <MessageSquare size={40} className="text-[var(--text-accent)]" />
-          Messages
-        </h1>
-        <p className="text-[var(--text-secondary)] font-medium">
-          Coordonnez vos transactions et livraisons en direct.
-        </p>
-      </div>
-
+    <div className="w-full max-w-7xl mx-auto h-[calc(100vh-64px)] flex flex-col font-body animate-in fade-in duration-700 bg-[var(--bg-surface)]">
       {/* Main Chat UI */}
-      <div className="flex-1 bg-[var(--bg-surface)] rounded-3xl shadow-sm border border-[var(--border-light)] overflow-hidden flex min-h-0">
+      <div className="flex-1 flex min-h-0">
 
         {/* ── Sidebar : conversation list ── */}
-        <aside className="w-full max-w-xs flex flex-col bg-[var(--bg-muted)]/30 border-r border-[var(--border-light)]">
+        <aside className="w-full max-w-xs flex flex-col bg-[var(--bg-surface)] border-r border-[var(--border-light)]">
           {/* Search */}
           <div className="p-4 border-b border-[var(--border-light)] shrink-0">
             <div className="relative">

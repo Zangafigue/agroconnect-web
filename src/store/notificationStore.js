@@ -8,8 +8,8 @@ export const useNotificationStore = create((set) => ({
   fetchNotifications: async () => {
     set({ loading: true });
     try {
-      // Pour l'admin, on utilise le point de terminaison spécifique
-      const response = await axios.get('/notifications');
+      // Pour tous les utilisateurs connectés
+      const response = await axios.get('/notifications/mine');
       set({ notifications: response.data, loading: false });
     } catch (error) {
       console.error('Erreur lors de la récupération des notifications:', error);
@@ -27,6 +27,17 @@ export const useNotificationStore = create((set) => ({
       }));
     } catch (error) {
       console.error('Erreur lors du marquage comme lu:', error);
+    }
+  },
+
+  markAllAsRead: async () => {
+    try {
+      await axios.patch('/notifications/read-all');
+      set((state) => ({
+        notifications: state.notifications.map((n) => ({ ...n, isRead: true }))
+      }));
+    } catch (error) {
+      console.error('Erreur lors du marquage global:', error);
     }
   },
 

@@ -5,6 +5,7 @@ import { useThemeStore } from '../../store/themeStore';
 import Avatar from './Avatar';
 import Button from './Button';
 import LogoutModal from './LogoutModal';
+import NotificationBell from './NotificationBell';
 
 export default function Header() {
   const { user, logout } = useAuthStore() as any;
@@ -54,13 +55,7 @@ export default function Header() {
         </button>
 
         {/* Notifications */}
-        <button 
-          onClick={() => navigate('/admin/notifications')}
-          className="relative w-9 h-9 flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--border-light)] text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-all"
-        >
-          <span className="material-symbols-outlined text-[18px]">notifications</span>
-          <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-[var(--btn-danger-text)] rounded-full border border-[var(--bg-surface)]"></span>
-        </button>
+        <NotificationBell />
 
         {/* User Profile */}
         <div className="flex items-center gap-3 border-l border-[var(--border-light)] pl-4 ml-1 group cursor-pointer" onClick={() => navigate(`/admin/profile`)}>

@@ -15,6 +15,7 @@ import Button from '../../components/shared/Button';
 import Input from '../../components/shared/Input';
 import StatusBadge from '../../components/shared/StatusBadge';
 import DataTable from '../../components/shared/DataTable';
+import toast from 'react-hot-toast';
 
 const AdminProductsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -42,6 +43,30 @@ const AdminProductsPage: React.FC = () => {
   const handleToggleStatus = async (id: string, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
     await updateProductStatus(id, newStatus);
+  };
+
+  const handleStockAudit = () => {
+    if (!products || products.length === 0) {
+      toast.error('Aucun produit à auditer.');
+      return;
+    }
+    const csvContent = 
+      "ID,Produit,Categorie,Vendeur,Prix,Stock,Unite,Statut\n" +
+      products.map((p: any) => {
+        const name = (p.name || '').replace(/"/g, '""');
+        const seller = (p.seller?.name || 'Inconnu').replace(/"/g, '""');
+        return `"${p._id}","${name}","${p.category}","${seller}",${p.price},${p.stock},"${p.unit}","${p.available ? 'Actif' : 'Inactif'}"`;
+      }).join("\n");
+      
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `audit_stocks_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Rapport d\'audit exporté avec succès');
   };
 
   const columns = [
@@ -114,24 +139,16 @@ const AdminProductsPage: React.FC = () => {
             size="sm" 
             className="p-1 min-w-0"
             onClick={(e) => { e.stopPropagation(); navigate(`/admin/products/${p._id}`); }}
+            title="Détails du produit"
           >
             <Eye size={16} />
           </Button>
           <Button 
             variant="ghost" 
             size="sm" 
-            className="p-1 min-w-0"
-            onClick={(e) => { e.stopPropagation(); handleToggleStatus(p._id, p.available ? 'active' : 'inactive'); }}
-          >
-            <span className="material-symbols-outlined text-[18px]">
-              {p.available && !p.hidden ? 'visibility_off' : 'visibility'}
-            </span>
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="sm" 
             className="p-1 min-w-0 text-[var(--btn-danger-text)] hover:bg-[var(--badge-dispute-bg)]"
             onClick={(e) => { e.stopPropagation(); handleDelete(p._id); }}
+            title="Supprimer"
           >
             <Trash2 size={16} />
           </Button>
@@ -152,7 +169,7 @@ const AdminProductsPage: React.FC = () => {
           <p className="text-[14px] text-[var(--text-secondary)]">Gérez l'offre nationale et la modération des produits.</p>
         </div>
         <div className="flex gap-2">
-           <Button variant="secondary" size="md" icon={<Database size={16} />}>
+           <Button variant="secondary" size="md" icon={<Database size={16} />} onClick={handleStockAudit}>
               Audit des Stocks
            </Button>
         </div>

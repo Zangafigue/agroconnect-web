@@ -9,7 +9,16 @@ export const useUserStore = create((set) => ({
     set({ loading: true });
     try {
       const data = await userService.getUsers();
-      const usersArray = Array.isArray(data) ? data : (data.users || data.data?.users || data.data || []);
+      let usersArray = [];
+      if (Array.isArray(data)) usersArray = data;
+      else if (Array.isArray(data?.users)) usersArray = data.users;
+      else if (Array.isArray(data?.data)) usersArray = data.data;
+      else if (Array.isArray(data?.data?.users)) usersArray = data.data.users;
+      else if (Array.isArray(data?.data?.docs)) usersArray = data.data.docs;
+      else if (Array.isArray(data?.data?.items)) usersArray = data.data.items;
+      else if (Array.isArray(data?.docs)) usersArray = data.docs;
+      else if (Array.isArray(data?.items)) usersArray = data.items;
+      
       set({ users: usersArray, loading: false });
     } catch (error) {
       set({ error: error.message, loading: false });

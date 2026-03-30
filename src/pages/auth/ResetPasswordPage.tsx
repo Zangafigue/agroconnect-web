@@ -1,11 +1,14 @@
 import React, { useState, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import api from '../../api/axios';
-import { Lock, Eye, EyeOff, CheckCircle2, ArrowRight, ShieldCheck, AlertCircle, Key } from 'lucide-react';
+import { Lock, Eye, EyeOff, CheckCircle2, ArrowRight, ShieldCheck, AlertCircle, Key, Mail } from 'lucide-react';
 import VisitorFooter from '../../components/shared/VisitorFooter';
 
 const ResetPasswordPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [email, setEmail] = useState(() => location.state?.email || '');
   const [code, setCode] = useState(['', '', '', '', '', '']);
   const inputRefs = useRef<HTMLInputElement[]>([]);
 
@@ -42,13 +45,14 @@ const ResetPasswordPage: React.FC = () => {
     setError('');
 
     const otp = code.join('');
+    if (!email) return setError('Veuillez renseigner votre adresse e-mail.');
     if (otp.length !== 6) return setError('Code de vérification incomplet.');
     if (password !== confirmPassword) return setError('Les mots de passe ne correspondent pas.');
     if (pwScore < 3) return setError('Le mot de passe est trop faible.');
 
     setLoading(true);
     try {
-      await api.post('/auth/reset-password', { otp, newPassword: password });
+      await api.post('/auth/reset-password', { email, otp, newPassword: password });
       setSuccess(true);
       setTimeout(() => navigate('/login'), 3000);
     } catch (err: any) {
@@ -91,8 +95,24 @@ const ResetPasswordPage: React.FC = () => {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-10">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-secondary)] pl-1 block">Adresse E-mail</label>
+                  <div className="relative group">
+                    <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] group-focus-within:text-[var(--text-primary)] transition-colors" size={20} />
+                    <input 
+                      required 
+                      value={email}
+                      readOnly={!!location.state?.email}
+                      onChange={(e) => !location.state?.email && setEmail(e.target.value)}
+                      className={`w-full pl-14 pr-4 py-5 bg-[var(--bg-muted)] border border-transparent rounded-2xl focus:ring-2 focus:ring-[var(--gray-900)] transition-all text-[var(--text-primary)] outline-none font-medium ${location.state?.email ? 'opacity-70 cursor-not-allowed' : 'focus:bg-white'}`}
+                      placeholder="votre@email.com" 
+                      type="email" 
+                    />
+                  </div>
+                </div>
+
                 <div className="space-y-4">
-                  <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-secondary)] pl-1 text-center block">Code de vérification</label>
+                  <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--text-secondary)] pl-1 text-center block">Code de vérification (6 chiffres)</label>
                   <div className="flex justify-between gap-3">
                     {code.map((digit, index) => (
                       <input
@@ -145,7 +165,7 @@ const ResetPasswordPage: React.FC = () => {
                 </div>
 
                 <button 
-                  disabled={loading || code.join('').length !== 6 || pwScore < 3 || password !== confirmPassword} 
+                  disabled={loading || !email || code.join('').length !== 6 || pwScore < 3 || password !== confirmPassword} 
                   className="w-full bg-[var(--text-accent)] text-white font-bold py-5 rounded-[1.5rem] hover:bg-black shadow-xl shadow-[var(--text-accent)]/20 disabled:opacity-70 disabled:cursor-not-allowed transition-all active:scale-[0.98] flex items-center justify-center gap-3" 
                   type="submit"
                 >

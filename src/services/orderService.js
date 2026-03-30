@@ -36,6 +36,24 @@ const orderService = {
   updateOrderStatus: async (id, status) => {
     const response = await axios.patch(`/orders/${id}`, { status });
     return response.data;
+  },
+
+  /**
+   * Farmer confirms order availability & logistics
+   * POST /orders/:id/confirm
+   */
+  confirmOrder: async (id) => {
+    const response = await axios.post(`/orders/${id}/confirm`);
+    return response.data;
+  },
+
+  /**
+   * Buyer pays the order (Product + Delivery)
+   * PATCH /orders/:id/pay
+   */
+  payOrder: async (id) => {
+    const response = await axios.patch(`/orders/${id}/pay`);
+    return response.data;
   }
 };
 

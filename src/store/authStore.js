@@ -8,7 +8,9 @@ export const useAuthStore = create(
       token: null,
       user: null,
       isAuthChecked: false, // Track if rehydration finished
+      showUpgradeModal: false,
       setAuth: (token, user) => set({ token, user, isAuthChecked: true }),
+      setShowUpgradeModal: (isOpen) => set({ showUpgradeModal: isOpen }),
       
       updateUser: (partialUser) => set((state) => ({
         user: state.user ? { ...state.user, ...partialUser } : null

@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { ChevronDown, Check, Plus } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useThemeStore } from '../../store/themeStore';
 import Avatar from './Avatar';
 import { getUserRole, getRoleSlug } from '../../utils/auth';
 import LogoutModal from './LogoutModal';
+import NotificationBell from './NotificationBell';
+import UpgradeRoleModal from './UpgradeRoleModal';
+import WorkspaceSwitcher from './WorkspaceSwitcher';
 
 interface UserLayoutProps {
   children: React.ReactNode;
@@ -48,11 +52,15 @@ export default function UserLayout({ children }: UserLayoutProps) {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const { showUpgradeModal, setShowUpgradeModal } = useAuthStore() as any;
 
+  // Common sidebars reuse this component, but WorkspaceSwitcher is now isolated to avoid ref conflicts
   const role = getUserRole(user);
   const roleSlug = getRoleSlug(role);
   const links = ROLE_NAV[role] || [];
   
+  const currentLink = links.find(l => location.pathname === l.path || location.pathname.startsWith(l.path + '/')) || { name: 'Accueil' };
+
   const handleLogout = () => {
     logout();
     navigate('/login');
@@ -61,14 +69,17 @@ export default function UserLayout({ children }: UserLayoutProps) {
   const SidebarContent = () => (
     <>
       {/* Logo */}
-      <div className="h-14 flex items-center gap-3 px-4 border-b border-[var(--border-light)] shrink-0">
-        <Link to={`/${roleSlug}/dashboard`} className="flex items-center gap-2.5 group w-full">
+      <div className="h-14 flex items-center justify-between px-4 border-b border-[var(--border-light)] shrink-0">
+        <Link to={`/${roleSlug}/dashboard`} className="flex items-center gap-2.5 group shrink-0 w-full">
           <div className="w-8 h-8 bg-[var(--text-accent)] rounded-lg flex items-center justify-center shadow-sm">
             <span className="material-symbols-outlined text-white text-[18px]">eco</span>
           </div>
-          <span className="font-bold text-[15px] tracking-tight text-[var(--text-primary)]">AgroConnect</span>
+          <span className="font-bold text-[15px] tracking-tight text-[var(--text-primary)] md:block">AgroConnect</span>
         </Link>
       </div>
+
+      {/* Workspace Switcher */}
+      <WorkspaceSwitcher />
 
       {/* Navigation */}
       <nav className="flex-1 py-4 overflow-y-auto">
@@ -95,35 +106,22 @@ export default function UserLayout({ children }: UserLayoutProps) {
         </div>
       </nav>
 
-      {/* Bottom User Card */}
+      {/* Bottom Actions */}
       <div className="p-3 border-t border-[var(--border-light)] shrink-0">
-        <div
-          className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-[var(--bg-muted)] cursor-pointer transition-all group"
-          onClick={() => navigate(`/${roleSlug}/profile`)}
-        >
-          <Avatar role={user?.role} name={user?.firstName || user?.name} size="sm" />
-          <div className="flex-1 min-w-0">
-            <p className="text-[13px] font-semibold text-[var(--text-primary)] truncate">
-              {user?.firstName} {user?.lastName}
-            </p>
-            <p className="text-[11px] text-[var(--text-muted)] truncate">{user?.email}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 mt-2 px-1">
+        <div className="flex flex-col gap-1">
           <button
             onClick={toggleTheme}
-            title={theme === 'light' ? 'Mode sombre' : 'Mode clair'}
-            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] transition-all text-[12px] font-medium"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-[var(--text-secondary)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-all text-[13px] font-medium"
           >
-            <span className="material-symbols-outlined text-[16px]">{theme === 'light' ? 'dark_mode' : 'light_mode'}</span>
+            <span className="material-symbols-outlined text-[20px]">{theme === 'light' ? 'dark_mode' : 'light_mode'}</span>
+            Thème {theme === 'light' ? 'Sombre' : 'Clair'}
           </button>
           <button
             onClick={() => setShowLogoutModal(true)}
-            title="Se déconnecter"
-            className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all text-[12px] font-medium"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all text-[13px] font-medium"
           >
-            <span className="material-symbols-outlined text-[16px]">logout</span>
-            <span>Quitter</span>
+            <span className="material-symbols-outlined text-[20px]">logout</span>
+            Déconnexion
           </button>
         </div>
       </div>
@@ -152,20 +150,34 @@ export default function UserLayout({ children }: UserLayoutProps) {
 
       {/* Main Area */}
       <div className="flex-1 lg:ml-[220px] flex flex-col min-h-screen">
-        {/* Mobile top bar */}
-        <header className="lg:hidden h-14 flex items-center gap-4 px-4 bg-[var(--bg-surface)] border-b border-[var(--border-light)] sticky top-0 z-30">
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-[var(--bg-muted)] text-[var(--text-secondary)]"
-          >
-            <span className="material-symbols-outlined text-[22px]">menu</span>
-          </button>
-          <Link to={`/${roleSlug}/dashboard`} className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-[var(--text-accent)] rounded-lg flex items-center justify-center">
-              <span className="material-symbols-outlined text-white text-[16px]">eco</span>
+        {/* Global Header */}
+        <header className="h-[64px] flex items-center justify-between px-4 lg:px-8 bg-[var(--bg-surface)] border-b border-[var(--border-light)] sticky top-0 z-30 shrink-0">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg hover:bg-[var(--bg-muted)] text-[var(--text-secondary)]"
+            >
+              <span className="material-symbols-outlined text-[22px]">menu</span>
+            </button>
+            <div className="flex items-center gap-2">
+               <span className="font-display text-xl font-bold text-[var(--text-primary)] hidden sm:block">{currentLink.name}</span>
+               <span className="font-display text-lg font-bold text-[var(--text-primary)] sm:hidden">AgroConnect</span>
             </div>
-            <span className="font-bold text-[14px] text-[var(--text-primary)]">AgroConnect</span>
-          </Link>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <NotificationBell />
+            <div 
+              className="flex items-center gap-3 pl-4 border-l border-[var(--border-light)] cursor-pointer group"
+              onClick={() => navigate(`/${roleSlug}/profile`)}
+            >
+              <div className="hidden sm:block text-right">
+                <p className="text-[13px] font-semibold text-[var(--text-primary)] leading-tight">{user?.firstName || user?.name}</p>
+                <p className="text-[10px] text-[var(--text-muted)] font-mono uppercase tracking-wider">{user?.role === 'FARMER' ? 'Agriculteur' : user?.role === 'BUYER' ? 'Acheteur' : 'Transporteur'}</p>
+              </div>
+              <Avatar role={user?.role} name={user?.firstName || user?.name} size="sm" className="group-hover:scale-105 transition-transform" />
+            </div>
+          </div>
         </header>
 
         {/* Page Content */}
@@ -178,6 +190,7 @@ export default function UserLayout({ children }: UserLayoutProps) {
         onClose={() => setShowLogoutModal(false)}
         onConfirm={handleLogout}
       />
+      <UpgradeRoleModal />
     </div>
   );
 }

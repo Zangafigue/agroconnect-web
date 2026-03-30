@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { 
   Package, 
   Clock, 
@@ -7,9 +8,11 @@ import {
   MessageSquare, 
   Search,
   ArrowRight,
-  Filter
+  Filter,
+  CreditCard
 } from 'lucide-react';
 import { useBuyerStore } from '../../store/buyerStore';
+import orderService from '../../services/orderService';
 import { formatFCFA } from '../../utils/currency';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -26,6 +29,16 @@ const BuyerOrdersPage: React.FC = () => {
   useEffect(() => {
     fetchDashboardData();
   }, [fetchDashboardData]);
+
+  const handlePayment = async (id: string) => {
+    try {
+      await orderService.payOrder(id);
+      toast.success("Paiement effectué avec succès !");
+      fetchDashboardData();
+    } catch (error) {
+      toast.error("Échec du paiement.");
+    }
+  };
 
   const filteredOrders = (activeOrders || []).filter((o: any) => {
     if (activeTab === 'ALL') return true;
@@ -71,7 +84,17 @@ const BuyerOrdersPage: React.FC = () => {
     {
       header: '',
       accessor: (o: any) => (
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-2 items-center">
+           {o.status === 'CONFIRMED' && o.transporter && (
+             <Button 
+               variant="primary" 
+               size="sm" 
+               className="text-[10px] uppercase font-bold tracking-widest bg-blue-600 hover:bg-blue-700 h-8"
+               onClick={(e) => { e.stopPropagation(); handlePayment(o._id); }}
+             >
+               Payer
+             </Button>
+           )}
            <Button variant="ghost" size="sm" className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-accent)]"><MessageSquare size={14} /></Button>
            <Button variant="ghost" size="sm" className="p-1.5 text-[var(--text-secondary)] hover:text-[var(--text-accent)]"><ArrowRight size={14} /></Button>
         </div>

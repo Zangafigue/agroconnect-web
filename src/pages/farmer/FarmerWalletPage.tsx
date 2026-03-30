@@ -106,7 +106,7 @@ const FarmerWalletPage: React.FC = () => {
           <h1 className="text-3xl md:text-4xl font-display text-[var(--text-primary)] tracking-tight mb-2">Mon Trésor Agricole</h1>
           <p className="text-sm text-[var(--text-secondary)] font-medium">Suivez vos revenus en temps réel et gérez vos extractions de fonds.</p>
         </div>
-        <div className="flex items-center gap-3 px-4 py-2 bg-slate-800 text-white rounded-2xl border border-[var(--border-light)] shadow-xl">
+        <div className="flex items-center gap-3 px-4 py-2 bg-[var(--bg-muted)] text-[var(--text-primary)] rounded-2xl border border-[var(--border-light)] shadow-sm">
            <ShieldCheck size={18} className="text-[var(--text-accent)]" />
            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Fonds Sécurisés</span>
         </div>
@@ -114,23 +114,23 @@ const FarmerWalletPage: React.FC = () => {
 
       {/* Main Balances */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Card className="p-8 bg-slate-800 text-white border-none relative overflow-hidden group col-span-1 md:col-span-2 transition-colors duration-500">
+        <Card className="p-8 bg-[var(--text-accent)] text-white border-none relative overflow-hidden group col-span-1 md:col-span-2 shadow-2xl shadow-[var(--text-accent)]/20 transition-all duration-500">
            <div className="relative z-10 space-y-6">
               <div className="flex items-center justify-between">
-                <div className="p-3 bg-white/10 rounded-2xl">
-                   <Wallet size={24} className="text-[var(--text-accent)]" />
+                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
+                   <Wallet size={24} className="text-white" />
                 </div>
-                <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Solde Dispo</span>
+                <span className="text-[10px] font-black text-white/80 uppercase tracking-widest">Solde Dispo</span>
               </div>
               <div className="space-y-1">
                 <h3 className="text-5xl font-mono font-bold tracking-tighter">{formatFCFA(availableBalance)}</h3>
-                <p className="text-[10px] font-bold text-[var(--green-500)] flex items-center gap-1.5">
-                   <Zap size={12} className="fill-current" />
+                <p className="text-[10px] font-bold text-white/90 flex items-center gap-1.5 mt-2">
+                   <Zap size={14} className="fill-current text-[#FACC15]" />
                    RÉACTIF POUR TRANSFERT IMMÉDIAT
                 </p>
               </div>
            </div>
-           <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-[var(--text-accent)]/20 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-1000"></div>
+           <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-1000"></div>
         </Card>
 
         <Card className="p-8 bg-[var(--bg-muted)] border-[var(--border-light)] flex flex-col justify-between">

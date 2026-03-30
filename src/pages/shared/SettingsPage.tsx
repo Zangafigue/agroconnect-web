@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Bell, Lock, Eye, Save, ChevronRight, RefreshCw } from 'lucide-react';
+import { Settings, Bell, Lock, Eye, Save, ChevronRight, RefreshCw, Globe, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
 import toast from 'react-hot-toast';
@@ -14,6 +14,18 @@ const SettingsPage: React.FC = () => {
     promotions: false,
     profileVisibility: true,
   });
+  const [lang, setLang] = useState(localStorage.getItem('theme_lang') || 'fr');
+
+  const handleLangSelect = (code: string) => {
+    if (['fr', 'en'].includes(code)) {
+      setLang(code);
+      localStorage.setItem('theme_lang', code);
+      toast.success(code === 'fr' ? 'Langue changée en Français' : 'Language changed to English');
+    } else {
+      toast('Cette langue sera bientôt disponible sur AgroConnect !', { icon: '🌍' });
+    }
+  };
+
   const handleToggle = (key: keyof typeof prefs) => {
     setPrefs(p => ({ ...p, [key]: !p[key] }));
   };
@@ -156,6 +168,37 @@ const SettingsPage: React.FC = () => {
                   <span className="text-sm font-bold text-red-600">Suppression du compte</span>
                   <ChevronRight className="text-red-500 opacity-0 group-hover/item:opacity-70 transition-opacity" size={16} />
               </div>
+          </div>
+        </section>
+
+        {/* Langues */}
+        <section className="bg-[var(--bg-surface)] rounded-[2.5rem] p-8 border border-[var(--border-light)] shadow-sm relative overflow-hidden group">
+          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform">
+             <Globe size={100} className="text-[var(--text-accent)]" />
+          </div>
+          <h3 className="text-xl font-display text-[var(--text-primary)] mb-6 flex items-center gap-3 relative z-10">
+             <Globe size={20} className="text-[var(--text-accent)]" /> Préférences de Langue
+          </h3>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
+              {[
+                { code: 'fr', label: 'Français', status: 'Actif' },
+                { code: 'en', label: 'English', status: 'Actif' },
+                { code: 'mo', label: 'Mooré', status: 'bientôt' },
+                { code: 'di', label: 'Dioula', status: 'bientôt' },
+                { code: 'fu', label: 'Fulfuldé', status: 'bientôt' },
+              ].map(l => (
+                  <button 
+                    key={l.code}
+                    onClick={() => handleLangSelect(l.code)}
+                    className={`p-4 rounded-2xl border text-left flex items-start justify-between transition-all ${lang === l.code ? 'border-[var(--text-accent)] bg-[var(--text-accent)]/5' : 'border-[var(--border-light)] hover:bg-[var(--bg-muted)]'}`}
+                  >
+                    <div>
+                      <span className={`block font-bold mb-1 ${lang === l.code ? 'text-[var(--text-accent)]' : 'text-[var(--text-primary)]'}`}>{l.label}</span>
+                      <span className={`text-[10px] uppercase font-bold tracking-widest ${l.status === 'Actif' ? 'text-green-600' : 'text-[var(--text-muted)]'}`}>{l.status}</span>
+                    </div>
+                    {lang === l.code && <Check size={18} className="text-[var(--text-accent)] mt-1" />}
+                  </button>
+              ))}
           </div>
         </section>
       </div>

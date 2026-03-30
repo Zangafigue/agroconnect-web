@@ -134,6 +134,7 @@ const AdminStatsPage = lazy(() => import('../pages/admin/AdminStatsPage'));
 const AdminSettingsPage = lazy(() => import('../pages/admin/AdminSettingsPage'));
 const AdminNotificationsPage = lazy(() => import('../pages/admin/AdminNotificationsPage'));
 const AdminProfilePage = lazy(() => import('../pages/admin/AdminProfilePage'));
+const AdminRoleRequestsPage = lazy(() => import('../pages/admin/AdminRoleRequestsPage'));
 
 export const router = createBrowserRouter([
   { element: <RootLayout />, children: [
@@ -212,6 +213,7 @@ export const router = createBrowserRouter([
     { path: '/admin/payments', element: <AdminPaymentsPage /> },
     { path: '/admin/stats', element: <AdminStatsPage /> },
     { path: '/admin/settings', element: <AdminSettingsPage /> },
+    { path: '/admin/requests', element: <AdminRoleRequestsPage /> },
     { path: '/admin/notifications', element: <AdminNotificationsPage /> },
     { path: '/admin/profile', element: <AdminProfilePage /> },
     { path: '/admin', element: <Navigate to="/admin/dashboard" replace /> },

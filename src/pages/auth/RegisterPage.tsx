@@ -15,7 +15,6 @@ const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth) as any;
 
-  const [role, setRole] = useState('');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -43,13 +42,12 @@ const RegisterPage: React.FC = () => {
     e.preventDefault();
     setError('');
 
-    if (!role) return setError('Veuillez sélectionner un profil (Agriculteur, Acheteur ou Transporteur).');
     if (pwScore < 3) return setError('Votre mot de passe est trop faible. Veuillez respecter les critères.');
     if (!cguAccepted) return setError('Vous devez accepter les conditions pour continuer.');
 
     setLoading(true);
     try {
-      const response = await api.post('/auth/register', { ...formData, role });
+      const response = await api.post('/auth/register', { ...formData });
       const { access_token, user } = response.data;
       setAuth(access_token, user);
       navigate('/verify-otp');
@@ -60,11 +58,6 @@ const RegisterPage: React.FC = () => {
     }
   };
 
-  const roles = [
-    { id: 'FARMER', label: 'Producteur', desc: 'Vendre mes récoltes', icon: Leaf },
-    { id: 'BUYER', label: 'Acheteur', desc: 'Commander en volume', icon: ShoppingCart },
-    { id: 'TRANSPORTER', label: 'Livreur', desc: 'Gérer des trajets', icon: Tractor },
-  ];
 
   return (
     <div className="min-h-screen bg-[var(--bg-page)] font-body flex flex-col">
@@ -130,7 +123,7 @@ const RegisterPage: React.FC = () => {
           <div className="max-w-xl mx-auto">
             <div className="mb-12">
               <h2 className="text-5xl font-display text-[var(--text-primary)] mb-4 tracking-tight">Rejoignez-nous.</h2>
-              <p className="text-[var(--text-secondary)] text-lg">Choisissez votre profil pour commencer votre aventure.</p>
+              <p className="text-[var(--text-secondary)] text-lg">Inscrivez-vous pour rejoindre l'écosystème AgroConnect.</p>
             </div>
 
             {error && (
@@ -141,34 +134,6 @@ const RegisterPage: React.FC = () => {
             )}
 
             <form onSubmit={handleRegister} className="space-y-10">
-              {/* Role Selector */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {roles.map((r) => (
-                  <button 
-                    key={r.id}
-                    onClick={() => setRole(r.id)} 
-                    type="button" 
-                    className={`flex flex-col items-center p-6 rounded-2xl border-2 transition-all duration-300 relative group ${
-                      role === r.id 
-                      ? 'border-[var(--green-600)] bg-[var(--green-600)]/5 text-[var(--text-primary)] shadow-xl shadow-[var(--green-600)]/10' 
-                      : 'border-[var(--border-light)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:border-[var(--gray-300)]'
-                    }`}
-                  >
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all ${role === r.id ? 'bg-[var(--green-600)] text-white scale-110 shadow-lg' : 'bg-[var(--bg-muted)] text-[var(--gray-400)] group-hover:bg-[var(--green-600)] group-hover:text-white'}`}>
-                      <r.icon size={28} />
-                    </div>
-                    <span className="text-xs font-bold uppercase tracking-widest mb-1 text-center">{r.label}</span>
-                    <span className="text-[10px] text-center opacity-60 leading-tight">{r.desc}</span>
-                    {role === r.id && (
-                      <div className="absolute top-2 right-2 text-[var(--green-600)] animate-in zoom-in">
-                        <CheckCircle2 size={18} fill="currentColor" className="text-white" />
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-
-              {/* Input Fields */}
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">

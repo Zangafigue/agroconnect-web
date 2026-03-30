@@ -7,7 +7,9 @@ import {
   Heart,
   ArrowRight,
   TrendingUp,
-  Package
+  Package,
+  Leaf,
+  Tractor
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useBuyerStore } from '../../store/buyerStore';
@@ -17,7 +19,7 @@ import DataTable from '../../components/shared/DataTable';
 import StatusBadge from '../../components/shared/StatusBadge';
 
 const BuyerDashboard: React.FC = () => {
-  const { user } = useAuthStore() as any;
+  const { user, setShowUpgradeModal } = useAuthStore() as any;
   const { stats, activeOrders, loading, fetchDashboardData } = useBuyerStore() as any;
 
   useEffect(() => {
@@ -162,6 +164,23 @@ const BuyerDashboard: React.FC = () => {
             <Button variant="secondary" size="md" className="w-full">
                En profiter
             </Button>
+          </Card>
+
+          <Card className="p-6 border-l-4 border-l-[var(--green-500)] shadow-sm bg-[var(--bg-surface)]">
+             <h3 className="text-[14px] font-bold text-[var(--text-primary)] mb-4 uppercase tracking-widest flex items-center gap-2">
+                <Leaf size={16} className="text-[var(--green-600)]" /> Extensions
+             </h3>
+             <p className="text-[12px] text-[var(--text-secondary)] mb-4 leading-relaxed">
+               Vous êtes producteur agricole ou chauffeur de transport ? Activez ces fonctionnalités pour développer votre activité sur AgroConnect.
+             </p>
+             <div className="space-y-3">
+               <Button onClick={() => setShowUpgradeModal(true)} variant="secondary" size="sm" className="w-full flex justify-start pl-4 group border border-[var(--border-light)] hover:border-[var(--green-600)]/30 transition-all font-bold" icon={<Leaf size={16} className="text-[var(--text-secondary)] group-hover:text-[var(--green-600)] transition-colors" />}>
+                 Devenir Producteur
+               </Button>
+               <Button onClick={() => setShowUpgradeModal(true)} variant="secondary" size="sm" className="w-full flex justify-start pl-4 group border border-[var(--border-light)] hover:border-blue-500/30 transition-all font-bold" icon={<Tractor size={16} className="text-[var(--text-secondary)] group-hover:text-blue-500 transition-colors" />}>
+                 Devenir Livreur
+               </Button>
+             </div>
           </Card>
         </div>
       </div>

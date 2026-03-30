@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../../api/axios';
-import { Mail, ArrowLeft, ArrowRight, Lock, ShieldCheck, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Mail, ArrowLeft, ArrowRight, Lock, ShieldCheck, AlertCircle } from 'lucide-react';
 import VisitorFooter from '../../components/shared/VisitorFooter';
 
 const ForgotPasswordPage: React.FC = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
-  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [countdown, setCountdown] = useState(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,31 +16,12 @@ const ForgotPasswordPage: React.FC = () => {
     setLoading(true);
     try {
       await api.post('/auth/forgot-password', { email });
-      setSuccess(true);
-      startCountdown();
+      navigate('/reset-password', { state: { email } });
     } catch (err: any) {
       setError(err.response?.data?.message || 'Erreur lors de la demande. Veuillez réessayer.');
     } finally {
       setLoading(false);
     }
-  };
-
-  const startCountdown = () => {
-    setCountdown(59);
-    const interval = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-
-  const handleResend = async () => {
-    if (countdown > 0) return;
-    handleSubmit(new Event('submit') as unknown as React.FormEvent);
   };
 
   return (
@@ -57,8 +37,7 @@ const ForgotPasswordPage: React.FC = () => {
 
       <main className="flex-grow flex items-center justify-center px-6 pb-24">
         <div className="w-full max-w-[480px]">
-          {!success ? (
-            <div className="bg-[var(--bg-surface)] rounded-[3rem] p-10 md:p-12 shadow-2xl shadow-[var(--text-primary)]/5 border border-[var(--border-light)]">
+          <div className="bg-[var(--bg-surface)] rounded-[3rem] p-10 md:p-12 shadow-2xl shadow-[var(--text-primary)]/5 border border-[var(--border-light)]">
               <div className="text-center mb-12">
                 <div className="w-20 h-20 rounded-3xl bg-[var(--bg-muted)] text-[var(--text-primary)] flex items-center justify-center mx-auto mb-8 border border-[var(--border-light)]">
                   <Lock size={36} />
@@ -109,37 +88,6 @@ const ForgotPasswordPage: React.FC = () => {
                 </Link>
               </div>
             </div>
-          ) : (
-            <div className="bg-[var(--bg-surface)] rounded-[3rem] p-12 shadow-2xl shadow-[var(--text-primary)]/5 border border-[var(--border-light)] text-center">
-              <div className="w-20 h-20 rounded-3xl bg-[var(--text-accent)]/10 text-[var(--text-accent)] flex items-center justify-center mx-auto mb-8 animate-in zoom-in">
-                <CheckCircle2 size={40} />
-              </div>
-              <h2 className="text-4xl font-display text-[var(--text-primary)] mb-4 tracking-tight">Consultez votre boîte.</h2>
-              <p className="text-[var(--text-secondary)] text-lg leading-relaxed mb-10">
-                Un lien de réinitialisation a été envoyé à votre adresse e-mail.
-              </p>
-              
-              <div className="w-full bg-[var(--bg-muted)] p-5 rounded-2xl flex items-center justify-between gap-4 mb-10 border border-[var(--border-light)]">
-                <span className="text-[10px] uppercase font-bold tracking-widest text-[var(--text-secondary)]">Nouvel envoi possible</span>
-                <span className="font-mono text-[var(--text-primary)] font-black text-xl">{countdown}s</span>
-              </div>
-              
-              <button 
-                onClick={handleResend} 
-                disabled={countdown > 0} 
-                className="text-[var(--text-primary)] disabled:text-[var(--text-muted)] text-sm font-bold hover:underline underline-offset-8 transition-all"
-              >
-                Renvoyer le lien de récupération
-              </button>
-
-              <div className="mt-12 pt-10 border-t border-[var(--border-light)] flex justify-center">
-                <Link className="text-[var(--text-secondary)] text-sm font-bold flex items-center gap-3 hover:text-[var(--text-primary)] transition-colors" to="/login">
-                  <ArrowLeft size={18} />
-                  Retour à la connexion
-                </Link>
-              </div>
-            </div>
-          )}
         </div>
       </main>
 

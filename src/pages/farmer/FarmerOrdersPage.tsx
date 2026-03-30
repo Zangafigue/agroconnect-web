@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { 
   Search, 
   ArrowRight,
   Package,
   TrendingUp,
   Download,
-  Filter
+  Filter,
+  CheckCircle2
 } from 'lucide-react';
 import { useOrderStore } from '../../store/orderStore';
+import orderService from '../../services/orderService';
 import { formatFCFA } from '../../utils/currency';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -28,6 +31,16 @@ const FarmerOrdersPage: React.FC = () => {
   useEffect(() => {
     fetchOrders();
   }, [fetchOrders]);
+
+  const handleConfirm = async (id: string) => {
+    try {
+      await orderService.confirmOrder(id);
+      toast.success("Commande confirmée avec succès !");
+      fetchOrders();
+    } catch (error) {
+      toast.error("Erreur lors de la confirmation.");
+    }
+  };
 
   const filteredOrders = (orders || []).filter((o: any) => {
     const matchesFilter = filter === 'all' || o.status === filter;
@@ -82,12 +95,24 @@ const FarmerOrdersPage: React.FC = () => {
     {
       header: '',
       accessor: (o: any) => (
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          icon={<ArrowRight size={16} />}
-          onClick={(e) => { e.stopPropagation(); navigate(`/farmer/orders/${o._id}`); }}
-        />
+        <div className="flex justify-end items-center gap-2">
+          {o.status === 'PENDING' && (
+             <Button 
+               variant="primary" 
+               size="sm" 
+               className="text-[10px] uppercase font-bold tracking-widest h-8"
+               onClick={(e) => { e.stopPropagation(); handleConfirm(o._id); }}
+             >
+               Confirmer
+             </Button>
+          )}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            icon={<ArrowRight size={16} />}
+            onClick={(e) => { e.stopPropagation(); navigate(`/farmer/orders/${o._id}`); }}
+          />
+        </div>
       ),
       className: 'text-right'
     }

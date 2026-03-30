@@ -17,6 +17,7 @@ export default function Sidebar() {
         ).length;
         return [
           { name: 'Tableau de bord', path: '/admin/dashboard', icon: 'dashboard' },
+          { name: 'Requêtes Espaces', path: '/admin/requests', icon: 'verified_user' },
           { name: 'Utilisateurs', path: '/admin/users', icon: 'group' },
           { name: 'Produits', path: '/admin/products', icon: 'inventory_2' },
           { name: 'Commandes', path: '/admin/orders', icon: 'shopping_cart' },

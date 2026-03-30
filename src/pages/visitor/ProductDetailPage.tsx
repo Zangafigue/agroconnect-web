@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import orderService from '../../services/orderService';
 import { 
   ChevronRight, 
   CheckCircle2, 
@@ -28,6 +30,7 @@ const ProductDetailPage: React.FC = () => {
   const { fetchProductById, loading, products } = useProductStore() as any;
   const { token } = useAuthStore() as any;
   const [product, setProduct] = useState<any>(null);
+  const [orderLoading, setOrderLoading] = useState(false);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -38,6 +41,25 @@ const ProductDetailPage: React.FC = () => {
     };
     loadProduct();
   }, [id, fetchProductById]);
+
+  const handleOrderCreation = async () => {
+     setOrderLoading(true);
+     try {
+        const payload = {
+           items: [{ product: product._id || product.id, quantity: 1, price: product.price }],
+           seller: product.seller?._id || product.seller || product.farmer?._id || product.farmer,
+           totalAmount: product.price,
+           status: 'PENDING'
+        };
+        await orderService.createOrder(payload);
+        toast.success("Commande envoyée au producteur !");
+        navigate('/buyer/orders');
+     } catch (err) {
+        toast.error("Erreur lors de la commande.");
+     } finally {
+        setOrderLoading(false);
+     }
+  };
 
   const similarProducts = Array.isArray(products)
     ? products
@@ -187,19 +209,29 @@ const ProductDetailPage: React.FC = () => {
                         </button>
                       </>
                     ) : (
-                      <button 
-                        onClick={() => {
-                          const sellerId = product?.seller?._id || product?.seller || product?.farmer?._id || product?.farmer;
-                          const productId = product?._id || product?.id;
-                          const params = new URLSearchParams();
-                          if (sellerId) params.set('recipientId', sellerId);
-                          if (productId) params.set('productId', productId);
-                          navigate(`/buyer/messages?${params.toString()}`);
-                        }} 
-                        className="w-full bg-[var(--text-accent)] text-white py-4 rounded-2xl font-bold shadow-xl shadow-[var(--text-accent)]/20 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3 text-lg"
-                      >
-                        Contacter le Vendeur
-                      </button>
+                      <>
+                        <button 
+                          onClick={handleOrderCreation} 
+                          disabled={orderLoading}
+                          className="w-full bg-[var(--text-accent)] text-white py-4 rounded-2xl font-bold shadow-xl shadow-[var(--text-accent)]/20 hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3 text-lg"
+                        >
+                          {orderLoading ? <Loader2 className="animate-spin" size={22} /> : <ShoppingBag size={22} />}
+                          {orderLoading ? 'Création...' : 'Commander (Sans paiement direct)'}
+                        </button>
+                        <button 
+                          onClick={() => {
+                            const sellerId = product?.seller?._id || product?.seller || product?.farmer?._id || product?.farmer;
+                            const productId = product?._id || product?.id;
+                            const params = new URLSearchParams();
+                            if (sellerId) params.set('recipientId', sellerId);
+                            if (productId) params.set('productId', productId);
+                            navigate(`/buyer/messages?${params.toString()}`);
+                          }} 
+                          className="w-full bg-[var(--bg-muted)] text-[var(--text-primary)] py-4 rounded-2xl font-bold border border-[var(--border-light)] hover:bg-[var(--border-light)] active:scale-95 transition-all flex items-center justify-center gap-3 text-lg"
+                        >
+                          Discuter avec le Vendeur
+                        </button>
+                      </>
                     )}
                   </div>
                </div>
