@@ -142,7 +142,7 @@ const BuyerDashboard: React.FC = () => {
           <Card className="p-6">
             <h3 className="text-[14px] font-bold text-[var(--text-primary)] mb-4 uppercase tracking-widest">Catégories d'intérêt</h3>
             <div className="grid grid-cols-2 gap-2">
-              {['Céréales', 'Légumes', 'Fruits'].map((cat) => (
+              {['Céréales', 'Légumes', 'Fruits', 'Tubercules'].map((cat) => (
                 <button key={cat} className="px-3 py-2 bg-[var(--bg-muted)] border border-[var(--border-light)] rounded-lg text-[12px] font-medium text-[var(--text-secondary)] hover:bg-[var(--text-accent)]/10 hover:border-[var(--text-accent)]/30 hover:text-[var(--text-accent)] transition-all">
                   {cat}
                 </button>
