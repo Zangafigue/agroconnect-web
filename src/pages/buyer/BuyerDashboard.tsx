@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  ShoppingCart, 
-  MessageSquare, 
+import {
+  ShoppingCart,
+  MessageSquare,
   Search,
   Heart,
   ArrowRight,
@@ -91,50 +91,50 @@ const BuyerDashboard: React.FC = () => {
       {/* KPI Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="flex items-center gap-4 py-6 hover:border-[var(--text-accent)]/30 transition-colors">
-           <div className="w-10 h-10 rounded-xl bg-[var(--text-accent)]/10 text-[var(--text-accent)] flex items-center justify-center">
-              <ShoppingCart size={20} />
-           </div>
-           <div>
-              <p className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Commandes Actives</p>
-              <h3 className="text-xl font-bold text-[var(--text-primary)]">{stats?.activeOrdersCount || 0} en cours</h3>
-           </div>
+          <div className="w-10 h-10 rounded-xl bg-[var(--text-accent)]/10 text-[var(--text-accent)] flex items-center justify-center">
+            <ShoppingCart size={20} />
+          </div>
+          <div>
+            <p className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Commandes Actives</p>
+            <h3 className="text-xl font-bold text-[var(--text-primary)]">{stats?.activeOrdersCount || 0} en cours</h3>
+          </div>
         </Card>
         <Card className="flex items-center gap-4 py-6 hover:border-red-500/30 transition-colors">
-           <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center">
-              <Heart size={20} />
-           </div>
-           <div>
-              <p className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Favoris</p>
-              <h3 className="text-xl font-bold text-[var(--text-primary)]">{stats?.favoritesCount || 0} produits</h3>
-           </div>
+          <div className="w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center">
+            <Heart size={20} />
+          </div>
+          <div>
+            <p className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Favoris</p>
+            <h3 className="text-xl font-bold text-[var(--text-primary)]">{stats?.favoritesCount || 0} produits</h3>
+          </div>
         </Card>
         <Card className="flex items-center gap-4 py-6 hover:border-blue-500/30 transition-colors">
-           <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
-              <MessageSquare size={20} />
-           </div>
-           <div>
-              <p className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Messages</p>
-              <h3 className="text-xl font-bold text-[var(--text-primary)]">{stats?.unreadMessages || 0} non lus</h3>
-           </div>
+          <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
+            <MessageSquare size={20} />
+          </div>
+          <div>
+            <p className="text-[11px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">Messages</p>
+            <h3 className="text-xl font-bold text-[var(--text-primary)]">{stats?.unreadMessages || 0} non lus</h3>
+          </div>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Recent Purchases */}
         <div className="lg:col-span-2 space-y-4">
-           <div className="flex items-center justify-between px-2">
-              <h2 className="text-[16px] font-bold text-[var(--text-primary)]">Derniers Achats</h2>
-              <Link to="/buyer/orders">
-                 <Button variant="ghost" size="sm" icon={<ArrowRight size={14} />} iconPosition="right">Historique</Button>
-              </Link>
-           </div>
-           <DataTable 
-             columns={columns} 
-             data={activeOrders || []} 
-             isLoading={loading}
-             onRowClick={() => {}}
-             emptyMessage="Aucun achat récent. Vos commandes en cours s'afficheront ici."
-           />
+          <div className="flex items-center justify-between px-2">
+            <h2 className="text-[16px] font-bold text-[var(--text-primary)]">Derniers Achats</h2>
+            <Link to="/buyer/orders">
+              <Button variant="ghost" size="sm" icon={<ArrowRight size={14} />} iconPosition="right">Historique</Button>
+            </Link>
+          </div>
+          <DataTable
+            columns={columns}
+            data={activeOrders || []}
+            isLoading={loading}
+            onRowClick={() => { }}
+            emptyMessage="Aucun achat récent. Vos commandes en cours s'afficheront ici."
+          />
         </div>
 
         {/* Sidebar / Filters */}
@@ -142,7 +142,7 @@ const BuyerDashboard: React.FC = () => {
           <Card className="p-6">
             <h3 className="text-[14px] font-bold text-[var(--text-primary)] mb-4 uppercase tracking-widest">Catégories d'intérêt</h3>
             <div className="grid grid-cols-2 gap-2">
-              {['Céréales', 'Légumes', 'Fruits', 'Bétail'].map((cat) => (
+              {['Céréales', 'Légumes', 'Fruits'].map((cat) => (
                 <button key={cat} className="px-3 py-2 bg-[var(--bg-muted)] border border-[var(--border-light)] rounded-lg text-[12px] font-medium text-[var(--text-secondary)] hover:bg-[var(--text-accent)]/10 hover:border-[var(--text-accent)]/30 hover:text-[var(--text-accent)] transition-all">
                   {cat}
                 </button>
@@ -155,32 +155,32 @@ const BuyerDashboard: React.FC = () => {
 
           <Card className="bg-[var(--bg-muted)]/50 border-dashed p-6 border-t-4 border-t-[var(--text-accent)] hover:bg-[var(--bg-muted)] transition-colors">
             <div className="flex items-center gap-2 mb-3">
-               <TrendingUp size={18} className="text-[var(--text-accent)]" />
-               <h3 className="text-[14px] font-bold text-[var(--text-primary)]">Offre Flash</h3>
+              <TrendingUp size={18} className="text-[var(--text-accent)]" />
+              <h3 className="text-[14px] font-bold text-[var(--text-primary)]">Offre Flash</h3>
             </div>
             <p className="text-[13px] text-[var(--text-secondary)] mb-4">
               -10% sur les commandes groupées de maïs cette semaine !
             </p>
             <Button variant="secondary" size="md" className="w-full">
-               En profiter
+              En profiter
             </Button>
           </Card>
 
           <Card className="p-6 border-l-4 border-l-[var(--green-500)] shadow-sm bg-[var(--bg-surface)]">
-             <h3 className="text-[14px] font-bold text-[var(--text-primary)] mb-4 uppercase tracking-widest flex items-center gap-2">
-                <Leaf size={16} className="text-[var(--green-600)]" /> Extensions
-             </h3>
-             <p className="text-[12px] text-[var(--text-secondary)] mb-4 leading-relaxed">
-               Vous êtes producteur agricole ou chauffeur de transport ? Activez ces fonctionnalités pour développer votre activité sur AgroConnect.
-             </p>
-             <div className="space-y-3">
-               <Button onClick={() => setShowUpgradeModal(true)} variant="secondary" size="sm" className="w-full flex justify-start pl-4 group border border-[var(--border-light)] hover:border-[var(--green-600)]/30 transition-all font-bold" icon={<Leaf size={16} className="text-[var(--text-secondary)] group-hover:text-[var(--green-600)] transition-colors" />}>
-                 Devenir Producteur
-               </Button>
-               <Button onClick={() => setShowUpgradeModal(true)} variant="secondary" size="sm" className="w-full flex justify-start pl-4 group border border-[var(--border-light)] hover:border-blue-500/30 transition-all font-bold" icon={<Tractor size={16} className="text-[var(--text-secondary)] group-hover:text-blue-500 transition-colors" />}>
-                 Devenir Livreur
-               </Button>
-             </div>
+            <h3 className="text-[14px] font-bold text-[var(--text-primary)] mb-4 uppercase tracking-widest flex items-center gap-2">
+              <Leaf size={16} className="text-[var(--green-600)]" /> Extensions
+            </h3>
+            <p className="text-[12px] text-[var(--text-secondary)] mb-4 leading-relaxed">
+              Vous êtes producteur agricole ou chauffeur de transport ? Activez ces fonctionnalités pour développer votre activité sur AgroConnect.
+            </p>
+            <div className="space-y-3">
+              <Button onClick={() => setShowUpgradeModal(true)} variant="secondary" size="sm" className="w-full flex justify-start pl-4 group border border-[var(--border-light)] hover:border-[var(--green-600)]/30 transition-all font-bold" icon={<Leaf size={16} className="text-[var(--text-secondary)] group-hover:text-[var(--green-600)] transition-colors" />}>
+                Devenir Producteur
+              </Button>
+              <Button onClick={() => setShowUpgradeModal(true)} variant="secondary" size="sm" className="w-full flex justify-start pl-4 group border border-[var(--border-light)] hover:border-blue-500/30 transition-all font-bold" icon={<Tractor size={16} className="text-[var(--text-secondary)] group-hover:text-blue-500 transition-colors" />}>
+                Devenir Livreur
+              </Button>
+            </div>
           </Card>
         </div>
       </div>
